@@ -26,6 +26,8 @@ public class Project {
     @OneToMany(mappedBy = "project")
     private List<ProjectVersion> projectVersions;
 
+    private long currentProjectVersion;
+
     public Long getId() {
         return id;
     }
@@ -64,6 +66,22 @@ public class Project {
 
     public void setMaven(boolean maven) {
         this.maven = maven;
+    }
+
+    public List<ProjectVersion> getProjectVersions() {
+        return projectVersions;
+    }
+
+    public void setProjectVersions(List<ProjectVersion> projectVersions) {
+        this.projectVersions = projectVersions;
+    }
+
+    public long getCurrentProjectVersion() {
+        return currentProjectVersion;
+    }
+
+    public void setCurrentProjectVersion(long currentProjectVersion) {
+        this.currentProjectVersion = currentProjectVersion;
     }
 
     @Override
