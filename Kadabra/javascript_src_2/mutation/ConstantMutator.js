@@ -4,15 +4,13 @@ laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
 
 class ConstantMutator extends Mutator {
-  constructor($expr, $startingPoint) {
+  constructor($expr) {
+    super("ConstantMutator");
     //Parent constructor
     Mutator.call(this);
 
     checkDefined($expr, "ConstantMutator");
 
-    if ($startingPoint === undefined) {
-      $startingPoint = WeaverJps.root();
-    }
 
     this.$expr = $expr;
     this.newValue = undefined;
@@ -21,15 +19,13 @@ class ConstantMutator extends Mutator {
     this.previousValue = undefined;
   }
 
-  getType() {
-    return "ConstantMutator";
-  }
 
   addJp($joinpoint) {
     if (
       $joinpoint.instanceOf("field") ||
       $joinpoint.instanceOf("localVariable")
     ) {
+      println("Potato" + $joinpoint);
       if (
         $joinpoint.init === undefined ||
         !$joinpoint.isFinal ||
@@ -38,7 +34,7 @@ class ConstantMutator extends Mutator {
         return false;
       }
       this.mutationPoints.push($joinpoint);
-
+      println("xxx" + $joinpoint);
       return true;
     }
 
@@ -106,11 +102,11 @@ class ConstantMutator extends Mutator {
     println("/*--------------------------------------*/");
     println(
       "Mutating operator n." +
-        this.currentIndex +
-        ": " +
-        this.previousValue +
-        " to " +
-        this.newValue
+      this.currentIndex +
+      ": " +
+      this.previousValue +
+      " to " +
+      this.newValue
     );
     println("/*--------------------------------------*/");
   }
