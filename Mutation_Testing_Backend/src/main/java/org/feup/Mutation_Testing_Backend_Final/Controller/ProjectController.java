@@ -7,8 +7,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.feup.Mutation_Testing_Backend_Final.Dto.SimpleResponse;
-import org.feup.Mutation_Testing_Backend_Final.Model.Project;
-import org.feup.Mutation_Testing_Backend_Final.Model.ProjectVersion;
+import org.feup.Mutation_Testing_Backend_Final.Model.Project.Project;
+import org.feup.Mutation_Testing_Backend_Final.Model.Project.ProjectVersion;
 import org.feup.Mutation_Testing_Backend_Final.Service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -69,6 +69,12 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sr);
         }
 
+        //Checks if the data is correct
+        if (newProject.getTestFolder() == null){
+            sr.setAsError("Test folder can't be null");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sr);
+        }
+
         try {
             Project savedProject = projectService.addNewProject(newProject);
 
@@ -105,36 +111,6 @@ public class ProjectController {
         }
 
         List<ProjectVersion> projectVersionList = projectService.getProjectVersions(projectId);
-        sr.setAsSuccess();
-
-        if (projectVersionList.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(sr);
-        }else{
-            sr.setData(projectVersionList);
-            return ResponseEntity.status(HttpStatus.OK).body(sr);
-        }
-    }
-
-    @PostMapping("/setProjectVersions")
-    @Operation(summary = "Get Current Project Versions")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found versions of the project",
-                    content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = SimpleResponse.class)) }),
-            @ApiResponse(responseCode = "204", description = "No project Versions",
-                    content = @Content),
-            @ApiResponse(responseCode = "400", description = "Error in the data recieved",
-                    content = @Content)})
-    public ResponseEntity<SimpleResponse> getProjectVersions(@RequestBody Project project) {
-        SimpleResponse sr = new SimpleResponse();
-
-        //Checks if the data is correct
-        if (project.getId() == null || project.getId() < 1 || project.getCurrentProjectVersion() > 0){
-            sr.setAsError("You must especify a valid project ID and project version");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sr);
-        }
-
-        Project projectNew = projectService.setProjectVersion(project);
         sr.setAsSuccess();
 
         if (projectVersionList.isEmpty()){

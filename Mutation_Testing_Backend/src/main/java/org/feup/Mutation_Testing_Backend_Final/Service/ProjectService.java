@@ -2,21 +2,15 @@ package org.feup.Mutation_Testing_Backend_Final.Service;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-import org.feup.Mutation_Testing_Backend_Final.Model.Project;
-import org.feup.Mutation_Testing_Backend_Final.Model.ProjectVersion;
-import org.feup.Mutation_Testing_Backend_Final.Repository.projectRepository;
-import org.feup.Mutation_Testing_Backend_Final.Repository.projectVersionRepository;
+import org.feup.Mutation_Testing_Backend_Final.Helper.Githelper;
+import org.feup.Mutation_Testing_Backend_Final.Model.Project.Project;
+import org.feup.Mutation_Testing_Backend_Final.Model.Project.ProjectVersion;
+import org.feup.Mutation_Testing_Backend_Final.Repository.Project.projectRepository;
+import org.feup.Mutation_Testing_Backend_Final.Repository.Project.projectVersionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,32 +42,16 @@ public class ProjectService {
 
 
     public Project addNewProject(Project newProject) throws GitAPIException, IOException {
-        Git git = Git.cloneRepository()
-                .setURI(newProject.getProjectUrl())
-                .setDirectory(new File(projectsPath + newProject.getProjectPath()))
-                .call();
+        // Clone Repo
+        Git gitRepo = Githelper.cloneRepo(newProject.getProjectUrl(), projectsPath + newProject.getProjectPath());
 
-        // Get all the refs (branches, tags, etc.) in the repository
-        List<Ref> refs = git.tagList().call();
-        refs.addAll(git.branchList().call());
+        // Get Repo Versions
+        List<ProjectVersion> projectVersionList = Githelper.getCommitsHistory(gitRepo, newProject);
 
-        // Create a list to hold the commit SHAs
-        List<String> commitSHAs = new ArrayList<>();
-
+        // Save Repo and Repo Versions
+        newProject.setProjectVersions(projectVersionList);
         Project savedProject = projectRepository.save(newProject);
-
-        // Loop through all the refs and add their commit SHAs to the list
-        for (Ref ref : refs) {
-            commitSHAs.add(ref.getObjectId().getName());
-
-            ProjectVersion projectVersion = new ProjectVersion();
-            projectVersion.setVersion(ref.getObjectId().getName());
-            projectVersion.setBranch(ref.getTarget().getName());
-            projectVersion.setProject(savedProject);
-            projectVersionRepository.save(projectVersion);
-        }
-
-        git.close();
+        projectVersionRepository.saveAll(projectVersionList);
 
         return savedProject;
     }
@@ -89,11 +67,4 @@ public class ProjectService {
         }
     }
 
-    public Project setProjectVersion(Project project) {
-        Optional<Project> optionalProject = projectRepository.findById(project.getId());
-
-        //falta verificar as versões
-
-        return optionalProject.get();
-    }
 }
