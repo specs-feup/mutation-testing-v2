@@ -1,34 +1,36 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.Query");
+laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
 
-class AssignmentOperatorMutator extends Mutator {
-    constructor(original, result) {
-        super("AssignmentOperatorMutator");
+class RandomActionIntentDefinitionOperatorMutator extends Mutator {
+    constructor() {
+        super("RandomActionIntentDefinitionOperatorMutator");
 
-        this.original = original;
-        this.expr = result;
         this.mutationPoints = [];
         this.currentIndex = 0;
         this.mutationPoint = undefined;
         this.previousValue = undefined;
     }
 
+    /*&&
+            $joinpoint.typeReference === "Intent" &&
+            $joinpoint.name === "<init>"
+            && $joinpoint.type === "Executable"
     /*** IMPLEMENTATION OF INSTANCE METHODS ***/
-    addJp(joinpoint) {
+
+    addJp($joinpoint) {
         if (
-            joinpoint.instanceOf("opAssignment") &&
-            joinpoint.operator === this.original
+            $joinpoint.type === "Intent" && $joinpoint.instanceOf('expression') && !$joinpoint.instanceOf('var')
         ) {
-            this.mutationPoints.push(joinpoint);
+            this.mutationPoints.push($joinpoint);
             debug(
                 "Adicionou um ponto de mutação " +
-                this.expr +
+                this.$expr +
                 " a " +
-                joinpoint +
+                $joinpoint +
                 " na linha " +
-                joinpoint.line
+                $joinpoint.line
             );
             return true;
         }
@@ -52,36 +54,43 @@ class AssignmentOperatorMutator extends Mutator {
     }
 
     _mutatePrivate() {
+
+        let randomValue = (Math.random() + 1).toString(36).substring(7);
+
         this.mutationPoint = this.mutationPoints[this.currentIndex];
         this.currentIndex++;
 
 
-        this.previousValue = this.mutationPoint.operator;
-        this.mutationPoint.operator = this.expr;
+        this.previousValue = this.mutationPoint.copy();
+
+
+        this.mutationPoint = this.mutationPoint.insertReplace(randomValue);
+
 
         println("/*--------------------------------------*/");
         println("Mutating operator n." + this.currentIndex + ": " + this.previousValue
             + " to " + this.mutationPoint);
         println("/*--------------------------------------*/");
 
+
+        println(" this.mutationPoint" + this.mutationPoint);
     }
 
+
+
     _restorePrivate() {
-        this.mutationPoint.operator = this.previousValue;
+        this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
         this.mutationPoint = undefined;
     }
 
     toString() {
-        return `Assignment Operator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
+        return `Random Action Intent Definition Operator Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
     }
 
     toJson() {
         return {
-            mutationOperatorArgumentsList: {
-                mutationOperatorFirstArgument: this.original,
-                mutationOperatorSecondArgument: this.expr,
-            },
+            mutationOperatorArgumentsList: [],
             operator: this.name,
         };
     }
