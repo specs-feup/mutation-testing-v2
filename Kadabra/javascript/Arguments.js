@@ -27,8 +27,11 @@ class Arguments {
       ).trim();
     }
 
-    this.includesFolder =
-      "/home/david/Desktop/Tese-Final/Kadabra/javascript/MutationExecution".trim();
+    this.includesFolder = (
+        includesFolder +
+        Io.getSeparator() +
+        "MutationExecution"
+      ).trim();
     this.stackTrace = true;
     this.externalDependencies = [];
     this.debugMode = true;
