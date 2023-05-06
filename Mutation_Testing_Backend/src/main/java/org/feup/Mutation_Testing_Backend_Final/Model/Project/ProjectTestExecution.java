@@ -27,10 +27,12 @@ public class ProjectTestExecution {
     private TestExecutionType testExecutionType;
     private Float compilationTime;
     private Float testRunTime;
-
     private boolean failedCompilation;
-
     private boolean failedTests;
+    private int mutationLine;
+    private String mutationFilePath;
+    private String mutantId;
+    private String projectExecutionName;
 
     @ManyToOne(cascade = CascadeType.DETACH)
     @JsonIgnore
@@ -59,10 +61,20 @@ public class ProjectTestExecution {
         this.failedCompilation = true;
     }
 
-    public ProjectTestExecution(TestExecutionType testExecutionType, ProjectVersion projectVersion, ProjectTestExecution projectTestExecution) {
+    public ProjectTestExecution(TestExecutionType testExecutionType, ProjectVersion projectVersion, String projectExecutionName) {
+        this.testExecutionType = testExecutionType;
+        this.projectVersion = projectVersion;
+        this.projectExecutionName = projectExecutionName;
+        this.failedCompilation = true;
+    }
+
+    public ProjectTestExecution(TestExecutionType testExecutionType, ProjectVersion projectVersion, ProjectTestExecution projectTestExecution, int mutationLine, String mutationFilePath,  String mutantId) {
         this.testExecutionType = testExecutionType;
         this.projectVersion = projectVersion;
         this.projectTestExecution = projectTestExecution;
+        this.mutationLine = mutationLine;
+        this.mutationFilePath =mutationFilePath;
+        this.mutantId = mutantId;
         this.failedCompilation = true;
     }
 
@@ -170,6 +182,38 @@ public class ProjectTestExecution {
 
     public void setFailedCompilation(boolean failedCompilation) {
         this.failedCompilation = failedCompilation;
+    }
+
+    public int getMutationLine() {
+        return mutationLine;
+    }
+
+    public void setMutationLine(int mutationLine) {
+        this.mutationLine = mutationLine;
+    }
+
+    public String getMutationFilePath() {
+        return mutationFilePath;
+    }
+
+    public void setMutationFilePath(String mutationFilePath) {
+        this.mutationFilePath = mutationFilePath;
+    }
+
+    public String getMutantId() {
+        return mutantId;
+    }
+
+    public void setMutantId(String mutantId) {
+        this.mutantId = mutantId;
+    }
+
+    public String getProjectExecutionName() {
+        return projectExecutionName;
+    }
+
+    public void setProjectExecutionName(String projectExecutionName) {
+        this.projectExecutionName = projectExecutionName;
     }
 }
 

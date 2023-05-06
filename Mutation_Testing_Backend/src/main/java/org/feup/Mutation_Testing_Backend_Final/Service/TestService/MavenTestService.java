@@ -82,6 +82,7 @@ public class MavenTestService {
             projectTestExecution.setFailedTests(failedtest);
             projectTestExecution.setTestRunTime(testRunTime);
             projectTestExecution.setCompilationTime(round(totalElapsedTime-testRunTime));
+            projectTestExecution.setFailedCompilation(false);
             projectTestExecutionRepository.save(projectTestExecution);
 
         }else{
@@ -106,9 +107,11 @@ public class MavenTestService {
 
 
             if (validOperators){
+                String projectExecutionName = projectVersion.getProject().getProjectName() + "_" + UUID.randomUUID();
+
                 if (testExecutionTypeEnum == ProjectTestExecution.TestExecutionType.MUTANTSCHEMATA) {
                     // Creates the agregated execution
-                    ProjectTestExecution projectTestExecution = new ProjectTestExecution(ProjectTestExecution.TestExecutionType.MUTANTSCHEMATA, projectVersion);
+                    ProjectTestExecution projectTestExecution = new ProjectTestExecution(ProjectTestExecution.TestExecutionType.MUTANTSCHEMATA, projectVersion, projectExecutionName);
                     Float projectTestExecutionTotalCompilationTime = Float.parseFloat("0");
                     Float projectTestExecutionTotalTestTime = Float.parseFloat("0");
                     projectTestExecutionRepository.save(projectTestExecution);
@@ -124,7 +127,6 @@ public class MavenTestService {
                         }
                     }
 
-                    String projectExecutionName = projectVersion.getProject().getProjectName() + "_" + UUID.randomUUID();
                     KadabraHelper.callKadabra(projectsPath + projectVersion.getProject().getProjectPath(), projectsPath + projectVersion.getProject().getProjectPath()+ projectVersion.getProject().getTestFolder(), pathToKadabraIncludes, pathToKadabraEntryPoint, projectsPath, false, operatorNameList, operatorArgumentList, projectExecutionName);
 
                     JSONParser parser = new JSONParser();
@@ -133,9 +135,9 @@ public class MavenTestService {
                         JSONObject jsonObject = (JSONObject) obj;
 
                         //Executes the tests
-                        Float totalElapsedTime = executeMavenTests(projectsPath + projectVersion.getProject().getProjectPath(), " -DMUID=" + jsonObject.get("mutantId"));
+                        Float totalElapsedTime = executeMavenTests(projectsPath + File.separator + projectExecutionName, " -DMUID=" + jsonObject.get("mutantId"));
 
-                        ProjectTestExecution projectTestExecutionChild = new ProjectTestExecution(ProjectTestExecution.TestExecutionType.MUTANTSCHEMATA, projectVersion, projectTestExecution);
+                        ProjectTestExecution projectTestExecutionChild = new ProjectTestExecution(ProjectTestExecution.TestExecutionType.MUTANTSCHEMATA, projectVersion, projectTestExecution, Integer.parseInt(String.valueOf(jsonObject.get("mutationLine"))), (String) jsonObject.get("filePath"), (String) jsonObject.get("mutantId"));
                         projectTestExecutionRepository.save(projectTestExecutionChild);
 
 
@@ -173,7 +175,7 @@ public class MavenTestService {
 
 
                 } else if (testExecutionTypeEnum == ProjectTestExecution.TestExecutionType.TRADITIONALMUTATION) {
-                    ProjectTestExecution projectTestExecution = new ProjectTestExecution(ProjectTestExecution.TestExecutionType.TRADITIONALMUTATION, projectVersion);
+                    ProjectTestExecution projectTestExecution = new ProjectTestExecution(ProjectTestExecution.TestExecutionType.TRADITIONALMUTATION, projectVersion, projectExecutionName);
                     Float projectTestExecutionTotalCompilationTime = Float.parseFloat("0");
                     Float projectTestExecutionTotalTestTime = Float.parseFloat("0");
                     projectTestExecutionRepository.save(projectTestExecution);
@@ -188,7 +190,6 @@ public class MavenTestService {
                         }
                     }
 
-                    String projectExecutionName = projectVersion.getProject().getProjectName() + "_" + UUID.randomUUID();
                     KadabraHelper.callKadabra(projectsPath + projectVersion.getProject().getProjectPath(), projectsPath + projectVersion.getProject().getProjectPath()+ projectVersion.getProject().getTestFolder(), pathToKadabraIncludes, pathToKadabraEntryPoint, projectsPath, true, operatorNameList, operatorArgumentList, projectExecutionName);
 
                     JSONParser parser = new JSONParser();
@@ -199,7 +200,7 @@ public class MavenTestService {
                         //Executes the tests
                         Float totalElapsedTime = executeMavenTests(projectsPath + File.separator + projectExecutionName + File.separator + jsonObject.get("mutantId"), "");
 
-                        ProjectTestExecution projectTestExecutionChild = new ProjectTestExecution(ProjectTestExecution.TestExecutionType.TRADITIONALMUTATION, projectVersion, projectTestExecution);
+                        ProjectTestExecution projectTestExecutionChild = new ProjectTestExecution(ProjectTestExecution.TestExecutionType.TRADITIONALMUTATION, projectVersion, projectTestExecution, Integer.parseInt(String.valueOf(jsonObject.get("mutationLine"))), (String) jsonObject.get("filePath"), (String) jsonObject.get("mutantId"));
                         projectTestExecutionRepository.save(projectTestExecutionChild);
 
                         JSONObject jsonObjectAux = (JSONObject) jsonObject.get("mutantion");
@@ -315,7 +316,6 @@ public class MavenTestService {
             String className = suite.getFullClassName().replace(suite.getPackageName()+".", "");
 
             for(ReportTestCase testCase :suite.getTestCases()){
-                System.out.println("Test Case Time: " + testCase.getName() + " " + testCase.getTime());
                 String testCaseName = testCase.getName();
 
                 if (testes.containsKey(className)){
