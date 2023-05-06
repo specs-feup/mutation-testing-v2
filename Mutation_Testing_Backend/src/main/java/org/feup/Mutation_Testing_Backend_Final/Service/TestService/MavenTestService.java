@@ -145,7 +145,7 @@ public class MavenTestService {
                         MutationOperator mutationOperatorAux = new MutationOperator((String) jsonObjectAux.get("operator"), projectTestExecutionChild);
                         mutationOperatorRepository.save(mutationOperatorAux);
 
-                        JSONArray jsonArray = (JSONArray) jsonObjectAux.get("arguments");
+                        JSONArray jsonArray = (JSONArray) jsonObjectAux.get("mutationOperatorArgumentsList");
                         for(Object mutationOperatorArguments: jsonArray){
                             MutationOperatorArguments mutationOperatorArgumentsAux = new MutationOperatorArguments((String) mutationOperatorArguments, mutationOperatorAux);
                             mutationOperatorArgumentsRepository.save(mutationOperatorArgumentsAux);
@@ -207,7 +207,7 @@ public class MavenTestService {
                         MutationOperator mutationOperatorAux = new MutationOperator((String) jsonObjectAux.get("operator"), projectTestExecutionChild);
                         mutationOperatorRepository.save(mutationOperatorAux);
 
-                        JSONArray jsonArray = (JSONArray) jsonObjectAux.get("arguments");
+                        JSONArray jsonArray = (JSONArray) jsonObjectAux.get("mutationOperatorArgumentsList");
                         for(Object mutationOperatorArguments: jsonArray){
                             MutationOperatorArguments mutationOperatorArgumentsAux = new MutationOperatorArguments((String) mutationOperatorArguments, mutationOperatorAux);
                             mutationOperatorArgumentsRepository.save(mutationOperatorArgumentsAux);
