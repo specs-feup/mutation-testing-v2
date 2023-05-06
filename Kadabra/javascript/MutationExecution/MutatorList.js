@@ -3,6 +3,25 @@ laraImport("MutationOperators.*");
 const classes = {
   AssignmentOperatorMutator,
   BinaryMutator,
+  BinaryOperatorDeletionMutator,
+  ConstantMutator,
+  FindViewByIdDeletionMutator,
+  IntentPayloadReplacementOperatorMutator,
+  InvalidDateOperatorMutator,
+  InvalidKeyIntentOperatorMutator,
+  InvalidKeyIntentPutExtraOperatorMutator,
+  InvalidMethodCallArgumentOperatorMutator,
+  InvalidValueIntentPutExtraOperatorMutator,
+  NonVoidCallMutator,
+  NotSerializableOperatorMutator,
+  NullIntentOperatorMutator,
+  NullValueIntentOperatorMutator,
+  RandomActionIntentDefinitionOperatorMutator,
+  RemoveConditionalMutator,
+  RemoveNullCheck,
+  StringArgumentReplacementOperatorMutator,
+  UnaryAddOperatorMutator,
+  UnaryDeletionOperatorMutator,
 };
 
 const mutatorList = getMutators();
