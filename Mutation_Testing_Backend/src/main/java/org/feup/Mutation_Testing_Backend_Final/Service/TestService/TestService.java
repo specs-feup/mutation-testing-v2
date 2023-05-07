@@ -47,24 +47,14 @@ public class TestService {
     private String pathToKadabraEntryPoint;
 
     private final projectVersionRepository projectVersionRepository;
-    private final projectTestExecutionRepository projectTestExecutionRepository;
-    private final testPackageRepository testPackageRepository;
-    private final testClassRepository testClassRepository;
-    private final testUnitRepository testUnitRepository;
-    private final mutationOperatorRepository mutationOperatorRepository;
-    private final mutationOperatorArgumentsRepository mutationOperatorArgumentsRepository;
     private final MavenTestService mavenTestService;
+    private final GradleTestService gradleTestService;
 
     @Autowired
-    public TestService(projectVersionRepository projectVersionRepository, projectTestExecutionRepository projectTestExecutionRepository, testPackageRepository testPackageRepository, testClassRepository testClassRepository, testUnitRepository testUnitRepository, mutationOperatorRepository mutationOperatorRepository, mutationOperatorArgumentsRepository mutationOperatorArgumentsRepository, MavenTestService mavenTestService) {
+    public TestService(projectVersionRepository projectVersionRepository, MavenTestService mavenTestService, GradleTestService gradleTestService) {
         this.projectVersionRepository = projectVersionRepository;
-        this.projectTestExecutionRepository = projectTestExecutionRepository;
-        this.testPackageRepository = testPackageRepository;
-        this.testClassRepository = testClassRepository;
-        this.testUnitRepository = testUnitRepository;
-        this.mutationOperatorRepository = mutationOperatorRepository;
-        this.mutationOperatorArgumentsRepository = mutationOperatorArgumentsRepository;
         this.mavenTestService = mavenTestService;
+        this.gradleTestService = gradleTestService;
     }
 
     public String executeAllTests(String projectVersionId, String testExecutionType, List<MutationOperator> operatorList) throws Exception {
@@ -76,6 +66,10 @@ public class TestService {
         if (projectVersionOptional.isPresent()){
             ProjectVersion projectVersion = projectVersionOptional.get();
 
+            System.out.println("Entrou Antes");
+            System.out.println(!projectVersion.getProject().isAndroid());
+            System.out.println(!projectVersion.getProject().isMaven());
+
             //Maven project
             if (!projectVersion.getProject().isAndroid() && projectVersion.getProject().isMaven()){
                 mavenTestService.ExecuteAllTestsMaven(projectVersion, testExecutionTypeEnum, operatorList);
@@ -85,19 +79,13 @@ public class TestService {
                 ExecuteAllTestsAndroid();
             //Gradle Project
             }else if (!projectVersion.getProject().isAndroid() && !projectVersion.getProject().isMaven()) {
-                ExecuteAllTestsGradle();
+                gradleTestService.ExecuteAllTestsGradle(projectVersion, testExecutionTypeEnum, operatorList);
             }else{
                 return "Erro";
             }
 
         }
         return "Project Version Not Found";
-    }
-
-
-
-    private void ExecuteAllTestsGradle(){
-
     }
 
     private void ExecuteAllTestsAndroid(){

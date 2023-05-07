@@ -16,7 +16,7 @@ public class TestUnit {
 
     private Float testRunTime;
 
-    private boolean skiped;
+    private boolean skipped;
 
     private String unitTestName;
 
@@ -28,10 +28,10 @@ public class TestUnit {
     public TestUnit() {
     }
 
-    public TestUnit(boolean failed, Float testRunTime, boolean skiped, String unitTestName) {
+    public TestUnit(boolean failed, Float testRunTime, boolean skipped, String unitTestName) {
         this.failed = failed;
         this.testRunTime = testRunTime;
-        this.skiped = skiped;
+        this.skipped = skipped;
         this.unitTestName = unitTestName;
     }
 
@@ -68,11 +68,11 @@ public class TestUnit {
     }
 
     public boolean isSkiped() {
-        return skiped;
+        return skipped;
     }
 
     public void setSkiped(boolean skiped) {
-        this.skiped = skiped;
+        this.skipped = skiped;
     }
 
     public String getUnitTestName() {
@@ -89,7 +89,7 @@ public class TestUnit {
                 "id=" + id +
                 ", failed=" + failed +
                 ", testRunTime=" + testRunTime +
-                ", skiped=" + skiped +
+                ", skipped=" + skipped +
                 ", unitTestName='" + unitTestName + '\'' +
                 ", testClass=" + testClass +
                 '}';

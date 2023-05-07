@@ -1,14 +1,12 @@
 package org.feup.Mutation_Testing_Backend_Final.Service.TestService;
 
-import org.apache.maven.plugin.surefire.log.api.NullConsoleLogger;
-import org.apache.maven.plugins.surefire.report.ReportTestCase;
-import org.apache.maven.plugins.surefire.report.ReportTestSuite;
-import org.apache.maven.plugins.surefire.report.SurefireReportParser;
-import org.apache.maven.reporting.MavenReportException;
+
 import org.feup.Mutation_Testing_Backend_Final.Helper.Githelper;
 import org.feup.Mutation_Testing_Backend_Final.Helper.KadabraHelper;
 import org.feup.Mutation_Testing_Backend_Final.Helper.OperatorValidator;
 import org.feup.Mutation_Testing_Backend_Final.Helper.OutputParsingHelper;
+import org.feup.Mutation_Testing_Backend_Final.Helper.XMLParser.TestCase;
+import org.feup.Mutation_Testing_Backend_Final.Helper.XMLParser.TestSuite;
 import org.feup.Mutation_Testing_Backend_Final.Model.MutationOperator.MutationOperator;
 import org.feup.Mutation_Testing_Backend_Final.Model.MutationOperator.MutationOperatorArguments;
 import org.feup.Mutation_Testing_Backend_Final.Model.Project.ProjectTestExecution;
@@ -19,7 +17,6 @@ import org.feup.Mutation_Testing_Backend_Final.Model.Test.TestUnit;
 import org.feup.Mutation_Testing_Backend_Final.Repository.MutationOperator.mutationOperatorArgumentsRepository;
 import org.feup.Mutation_Testing_Backend_Final.Repository.MutationOperator.mutationOperatorRepository;
 import org.feup.Mutation_Testing_Backend_Final.Repository.Project.projectTestExecutionRepository;
-import org.feup.Mutation_Testing_Backend_Final.Repository.Project.projectVersionRepository;
 import org.feup.Mutation_Testing_Backend_Final.Repository.Test.testClassRepository;
 import org.feup.Mutation_Testing_Backend_Final.Repository.Test.testPackageRepository;
 import org.feup.Mutation_Testing_Backend_Final.Repository.Test.testUnitRepository;
@@ -30,12 +27,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
 
+import static org.feup.Mutation_Testing_Backend_Final.Helper.OutputParsingHelper.extractTotalTimeGradle;
+import static org.feup.Mutation_Testing_Backend_Final.Helper.OutputParsingHelper.getGradleClassName;
+
 @Service
-public class MavenTestService {
+public class GradleTestService {
+
     @Value("${pathToStoreProjects}")
     private String projectsPath;
     @Value("${pathToKadabraIncludes}")
@@ -52,7 +56,7 @@ public class MavenTestService {
 
 
     @Autowired
-    public MavenTestService(projectTestExecutionRepository projectTestExecutionRepository, testPackageRepository testPackageRepository, testClassRepository testClassRepository, testUnitRepository testUnitRepository, mutationOperatorRepository mutationOperatorRepository, mutationOperatorArgumentsRepository mutationOperatorArgumentsRepository) {
+    public GradleTestService(projectTestExecutionRepository projectTestExecutionRepository, testPackageRepository testPackageRepository, testClassRepository testClassRepository, testUnitRepository testUnitRepository, mutationOperatorRepository mutationOperatorRepository, mutationOperatorArgumentsRepository mutationOperatorArgumentsRepository) {
         this.projectTestExecutionRepository = projectTestExecutionRepository;
         this.testPackageRepository = testPackageRepository;
         this.testClassRepository = testClassRepository;
@@ -61,30 +65,28 @@ public class MavenTestService {
         this.mutationOperatorArgumentsRepository = mutationOperatorArgumentsRepository;
     }
 
-
-    public void ExecuteAllTestsMaven(ProjectVersion projectVersion, ProjectTestExecution.TestExecutionType testExecutionTypeEnum, List<MutationOperator> operatorList) throws Exception {
+    public void ExecuteAllTestsGradle(ProjectVersion projectVersion, ProjectTestExecution.TestExecutionType testExecutionTypeEnum, List<MutationOperator> operatorList) throws Exception {
         // Changes the project version
         Githelper.updateCurrentVersion(projectsPath + projectVersion.getProject().getProjectPath(), projectVersion.getVersion());
 
         if (testExecutionTypeEnum == ProjectTestExecution.TestExecutionType.NOMUTATION){
-            //Executes the tests
-            Float totalElapsedTime = executeMavenTests(projectsPath + projectVersion.getProject().getProjectPath(), "");
+            System.out.println("Entrou!!!");
+            Float totalElapsedTime = executeGradleTests(projectsPath + projectVersion.getProject().getProjectPath(), "");
 
             //Creates the Test Execution on the Database
             ProjectTestExecution projectTestExecution = new ProjectTestExecution(ProjectTestExecution.TestExecutionType.NOMUTATION, projectVersion);
             projectTestExecutionRepository.save(projectTestExecution);
 
             //Creates the tests in the database
-            HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults = getMavenTestResults(projectsPath + projectVersion.getProject().getProjectPath() +  File.separator +"target" +File.separator +"surefire-reports");
+            HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults = getGradeTestResults(projectsPath + projectVersion.getProject().getProjectPath() + File.separator +"build" +File.separator +"test-results" + File.separator + "test");
             Float testRunTime = getTestTime(testResults);
             boolean failedtest = saveTestResults(testResults, projectTestExecution);
 
             projectTestExecution.setFailedTests(failedtest);
             projectTestExecution.setTestRunTime(testRunTime);
-            projectTestExecution.setCompilationTime(OutputParsingHelper.round(totalElapsedTime-testRunTime));
+            projectTestExecution.setCompilationTime(round(totalElapsedTime-testRunTime));
             projectTestExecution.setFailedCompilation(false);
             projectTestExecutionRepository.save(projectTestExecution);
-
         }else{
             // Cria a lista de argumentos e a lista com os nomes
             // operatorNameList = ["BinaryMutator", "BinaryMutator"]
@@ -135,7 +137,7 @@ public class MavenTestService {
                         JSONObject jsonObject = (JSONObject) obj;
 
                         //Executes the tests
-                        Float totalElapsedTime = executeMavenTests(projectsPath + File.separator + projectExecutionName, " -DMUID=" + jsonObject.get("mutantId"));
+                        Float totalElapsedTime = executeGradleTests(projectsPath + File.separator + projectExecutionName, " -DMUID=" + jsonObject.get("mutantId"));
 
                         ProjectTestExecution projectTestExecutionChild = new ProjectTestExecution(ProjectTestExecution.TestExecutionType.MUTANTSCHEMATA, projectVersion, projectTestExecution, Integer.parseInt(String.valueOf(jsonObject.get("mutationLine"))), (String) jsonObject.get("filePath"), (String) jsonObject.get("mutantId"));
                         projectTestExecutionRepository.save(projectTestExecutionChild);
@@ -151,7 +153,7 @@ public class MavenTestService {
                             mutationOperatorArgumentsRepository.save(mutationOperatorArgumentsAux);
                         }
 
-                        HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults = getMavenTestResults(projectsPath + File.separator + projectExecutionName + File.separator +"target" +File.separator +"surefire-reports");
+                        HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults = getGradeTestResults(projectsPath + File.separator + projectExecutionName + File.separator +"build" +File.separator +"test-results" + File.separator + "test");
                         Float testRunTime = getTestTime(testResults);
                         boolean failedtest = saveTestResults(testResults, projectTestExecutionChild);
 
@@ -198,7 +200,7 @@ public class MavenTestService {
                         JSONObject jsonObject = (JSONObject) obj;
 
                         //Executes the tests
-                        Float totalElapsedTime = executeMavenTests(projectsPath + File.separator + projectExecutionName + File.separator + jsonObject.get("mutantId"), "");
+                        Float totalElapsedTime = executeGradleTests(projectsPath + File.separator + projectExecutionName + File.separator + jsonObject.get("mutantId"), "");
 
                         ProjectTestExecution projectTestExecutionChild = new ProjectTestExecution(ProjectTestExecution.TestExecutionType.TRADITIONALMUTATION, projectVersion, projectTestExecution, Integer.parseInt(String.valueOf(jsonObject.get("mutationLine"))), (String) jsonObject.get("filePath"), (String) jsonObject.get("mutantId"));
                         projectTestExecutionRepository.save(projectTestExecutionChild);
@@ -214,7 +216,7 @@ public class MavenTestService {
                         }
 
 
-                        HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults = getMavenTestResults(projectsPath + File.separator + projectExecutionName + jsonObject.get("mutantId")+ File.separator +"target" +File.separator +"surefire-reports");
+                        HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults = getGradeTestResults(projectsPath + File.separator + projectExecutionName + jsonObject.get("mutantId")+ File.separator +"build" +File.separator +"test-results" + File.separator + "test");
                         Float testRunTime = getTestTime(testResults);
                         boolean failedtest = saveTestResults(testResults, projectTestExecutionChild);
 
@@ -240,49 +242,93 @@ public class MavenTestService {
                 System.out.println("Invalid Operators");
             }
         }
+
     }
 
-    private Float getTestTime(HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults) {
-        Float testTime = Float.parseFloat("0");
-        for(String packageName: testResults.keySet()){
-            for (String className: testResults.get(packageName).keySet()){
-                for(String testname: testResults.get(packageName).get(className).keySet()){
-                    testTime = OutputParsingHelper.round(testTime + testResults.get(packageName).get(className).get(testname).getTestRunTime());
-                }
-            }
-        }
-        return testTime;
-    }
-
-    private Float executeMavenTests(String projectsPath, String aditionalCommand) throws IOException {
-        String command = "mvn surefire-report:report" + aditionalCommand;
+    private Float executeGradleTests(String projectsPath, String aditionalCommand) throws IOException {
+        String chmod = "chmod +x gradlew";
+        Runtime.getRuntime().exec(chmod, null, new File(projectsPath));
 
         long start = System.currentTimeMillis();
+        String command = "./gradlew test" + aditionalCommand;
         Process process = Runtime.getRuntime().exec(command, null, new File(projectsPath));
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line, totalTimeLine = "";
         while ((line = reader.readLine()) != null) {
-            if (line.contains("Total time:")) {
+            if (line.contains("BUILD") && line.contains("in")) {
                 totalTimeLine = line;
             }
+            System.out.println(line);
         }
-        reader.close();
 
         long end = System.currentTimeMillis();
 
         Float totalCompilationTime;
         if (!totalTimeLine.equals("")){
             try {
-                totalCompilationTime = OutputParsingHelper.round(OutputParsingHelper.extractTotalTime(totalTimeLine));
+                totalCompilationTime = extractTotalTimeGradle(totalTimeLine);
             }catch (Exception e){
                 System.out.println(e);
-                totalCompilationTime = (end - start) / 1000F;
+                return (end - start) / 1000F;
             }
         }else{
             return (end - start) / 1000F;
         }
 
         return totalCompilationTime;
+    }
+
+
+    private static HashMap<String, HashMap<String, HashMap<String, TestUnit>>> getGradeTestResults(String path){
+        System.out.println(path);
+        HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults = new HashMap<>();
+        File reportFolder = new File(path);
+
+        for (File reportFile: reportFolder.listFiles()){
+            if (reportFile.isFile()){
+                try {
+                    JAXBContext jaxbContext = JAXBContext.newInstance(TestSuite.class);
+                    Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+                    TestSuite testSuite = (TestSuite) jaxbUnmarshaller.unmarshal(reportFile);
+
+                    String className = getGradleClassName(testSuite.getName());
+                    String packageName = testSuite.getName().replace("." + className, "");
+
+                    HashMap<String, HashMap<String, TestUnit>> classList = testResults.computeIfAbsent(packageName, k -> new HashMap<>());
+                    HashMap<String, TestUnit> testList = classList.computeIfAbsent(className, k -> new HashMap<>());
+
+                    for (TestCase testCase : testSuite.getTestCases()) {
+                        String testCaseName = testCase.getName().replace("(","").replace(")", "");
+                        boolean failed = testCase.getFailureMessage() != null;
+                        double time = testCase.getTime();
+                        boolean skipped = false;
+
+                        testList.put(testCaseName, new TestUnit(failed, (float) time, skipped, testCaseName));
+                    }
+
+                } catch (JAXBException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return testResults;
+    }
+
+
+    private Float getTestTime(HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults) {
+        Float testTime = Float.parseFloat("0");
+        for(String packageName: testResults.keySet()){
+            for (String className: testResults.get(packageName).keySet()){
+                for(String testname: testResults.get(packageName).get(className).keySet()){
+                    testTime = round(testTime + testResults.get(packageName).get(className).get(testname).getTestRunTime());
+                }
+            }
+        }
+        return testTime;
+    }
+
+    private float round(float number) {
+        return BigDecimal.valueOf(number).setScale(3, BigDecimal.ROUND_HALF_UP).floatValue();
     }
 
     private boolean saveTestResults(HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults, ProjectTestExecution projectTestExecution) {
@@ -309,61 +355,4 @@ public class MavenTestService {
 
         return failedtest;
     }
-
-
-    private HashMap<String, HashMap<String, HashMap<String, TestUnit>>> getMavenTestResults(String path) throws MavenReportException {
-        File reports = new File(path);
-        List<File> aux = new ArrayList<>();
-        aux.add(reports);
-        SurefireReportParser parser = new SurefireReportParser(aux, Locale.ENGLISH, new NullConsoleLogger());
-
-        List<ReportTestSuite> suites = parser.parseXMLReportFiles();
-        HashMap<String, HashMap<String, TestUnit>> testes = new HashMap<>();
-        for (ReportTestSuite suite : suites) {
-            String className = suite.getFullClassName().replace(suite.getPackageName()+".", "");
-
-            for(ReportTestCase testCase :suite.getTestCases()){
-                String testCaseName = testCase.getName();
-
-                if (testes.containsKey(className)){
-                    HashMap<String, TestUnit> hashMapTestCase = testes.get(className);
-
-                    if (hashMapTestCase.containsKey(testCaseName)){
-                        hashMapTestCase.replace(testCaseName, new TestUnit(
-                                !testCase.isSuccessful() && hashMapTestCase.get(testCaseName).isFailed(),
-                                OutputParsingHelper.round(hashMapTestCase.get(testCaseName).getTestRunTime()+testCase.getTime()),
-                                testCase.hasSkipped() && hashMapTestCase.get(testCaseName).isSkiped(),
-                                testCaseName
-                        ));
-                        testes.replace(className, hashMapTestCase);
-                    }else{
-                        hashMapTestCase.put(testCaseName, new TestUnit(!testCase.isSuccessful(), OutputParsingHelper.round(testCase.getTime()), testCase.hasSkipped(), testCaseName));
-                        testes.replace(className, hashMapTestCase);
-                    }
-                }else{
-                    HashMap<String, TestUnit> hashMapTestCase = new HashMap<>();
-                    hashMapTestCase.put(testCaseName, new TestUnit(!testCase.isSuccessful(),OutputParsingHelper.round(testCase.getTime()), testCase.hasSkipped(), testCaseName));
-                    testes.put(className, hashMapTestCase);
-                }
-            }
-        }
-
-        HashMap<String, HashMap<String, HashMap<String, TestUnit>>> finalResult = new HashMap<>();
-        for (ReportTestSuite suite : suites) {
-            String packageName = suite.getPackageName();
-            String className = suite.getFullClassName().replace(suite.getPackageName()+".", "");
-
-            if (finalResult.containsKey(packageName)){
-                finalResult.get(packageName).put(className, testes.get(className));
-            }else{
-                HashMap<String, HashMap<String, TestUnit>> auxHashMap = new HashMap<>();
-                auxHashMap.put(className, testes.get(className));
-                finalResult.put(packageName, auxHashMap);
-            }
-
-        }
-
-        return finalResult;
-    }
-
 }
