@@ -78,10 +78,7 @@ class AssignmentOperatorMutator extends Mutator {
 
     toJson() {
         return {
-            mutationOperatorArgumentsList: {
-                mutationOperatorFirstArgument: this.original,
-                mutationOperatorSecondArgument: this.expr,
-            },
+            mutationOperatorArgumentsList: [this.original, this.expr],
             operator: this.name,
         };
     }

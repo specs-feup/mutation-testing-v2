@@ -112,9 +112,7 @@ class ConstantMutator extends Mutator {
 
   toJson() {
     return {
-      mutationOperatorArgumentsList: {
-        mutationOperatorFirstArgument: this.expr,
-      },
+      mutationOperatorArgumentsList: [this.expr],
       operator: this.name,
     };
   }

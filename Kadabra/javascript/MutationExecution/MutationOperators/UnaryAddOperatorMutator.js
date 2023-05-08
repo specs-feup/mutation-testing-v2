@@ -91,9 +91,7 @@ class UnaryAddOperatorMutator extends Mutator {
 
     toJson() {
         return {
-            mutationOperatorArgumentsList: {
-                mutationOperatorFirstArgument: this.operator,
-            },
+            mutationOperatorArgumentsList: [this.operator],
             operator: this.name,
         };
     }

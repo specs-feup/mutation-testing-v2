@@ -57,7 +57,7 @@ class UnaryDeletionOperatorMutator extends Mutator {
         this.previousValue = this.mutationPoint;
         console.log(this.mutationPoint);
         this.mutationPoint = KadabraNodes.snippetExpr(this.mutationPoint.descendants.code)
-        
+
         //this.mutationPoint.insertReplace(this.$conditional.cond.operand.copy());
 
         this.previousValue.replaceWith(this.mutationPoint);
@@ -74,7 +74,7 @@ class UnaryDeletionOperatorMutator extends Mutator {
 			this.$node = this.$node.insertReplace(this.$node.lhs);
 		}
 
-        
+
 
 
         println("/*--------------------------------------*/");
@@ -97,5 +97,11 @@ class UnaryDeletionOperatorMutator extends Mutator {
 
         this.previousValue = undefined;
         this.mutationPoint = undefined;
+    }
+    toJson() {
+        return {
+            mutationOperatorArgumentsList: [this.operator],
+            operator: this.name,
+        };
     }
 }
