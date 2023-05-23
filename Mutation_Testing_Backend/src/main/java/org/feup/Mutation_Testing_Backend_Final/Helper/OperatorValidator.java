@@ -40,7 +40,7 @@ public class OperatorValidator {
     }
 
     public boolean validate(List<String> operatorNameList, List<List<String>> operatorArgumentList) {
-        for (int i = 0; i < operatorNameList.size(); i++){
+        /*for (int i = 0; i < operatorNameList.size(); i++){
             //unknown operator
             if (validArguments.get(operatorNameList.get(i)) == null){
                 return false;
@@ -58,7 +58,7 @@ public class OperatorValidator {
                 }
             }
 
-        }
+        }*/
         return true;
     }
 }

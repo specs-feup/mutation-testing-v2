@@ -16,6 +16,11 @@ import java.util.List;
 public class KadabraHelper {
 
     public static boolean callKadabra(String projectPath, String projectFolderToIgnore, String includesFolder, String pathToKadabraEntryPoint, String outputPath, boolean traditionaMutation, List<String> operatorNameList, List<List<String>> operatorArgumentList, String projectExecutionName){
+        return callKadabra(projectPath, projectFolderToIgnore, null, includesFolder, pathToKadabraEntryPoint,  outputPath,  traditionaMutation, operatorNameList,  operatorArgumentList, projectExecutionName);
+    }
+
+    public static boolean callKadabra(String projectPath, String projectFolderToIgnore, String projectFolderToIgnoreAndroid, String includesFolder, String pathToKadabraEntryPoint, String outputPath, boolean traditionaMutation, List<String> operatorNameList, List<List<String>> operatorArgumentList, String projectExecutionName){
+        System.out.println("Chamada ao kadabra");
         DataStore data = DataStore.newInstance("Kadabra Options");
 
         data.put(LaraiKeys.LARA_FILE, new File(pathToKadabraEntryPoint));
@@ -37,6 +42,7 @@ public class KadabraHelper {
         javascriptArguments.put("outputPath", outputPath);
         javascriptArguments.put("traditionalMutation", traditionaMutation);
         javascriptArguments.put("folderToIgnore", projectFolderToIgnore);
+        javascriptArguments.put("folderToIgnoreAndroid", projectFolderToIgnoreAndroid);
         javascriptArguments.put("projectPath", projectPath);
         javascriptArguments.put("debugMessages", false);
         javascriptArguments.put("operatorNameList", operatorNameList);

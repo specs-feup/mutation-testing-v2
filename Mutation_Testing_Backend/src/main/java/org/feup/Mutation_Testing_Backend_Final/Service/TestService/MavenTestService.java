@@ -5,6 +5,7 @@ import org.apache.maven.plugins.surefire.report.ReportTestCase;
 import org.apache.maven.plugins.surefire.report.ReportTestSuite;
 import org.apache.maven.plugins.surefire.report.SurefireReportParser;
 import org.apache.maven.reporting.MavenReportException;
+import org.feup.Mutation_Testing_Backend_Final.Dto.SimpleResponse;
 import org.feup.Mutation_Testing_Backend_Final.Helper.Githelper;
 import org.feup.Mutation_Testing_Backend_Final.Helper.KadabraHelper;
 import org.feup.Mutation_Testing_Backend_Final.Helper.OperatorValidator;
@@ -62,7 +63,9 @@ public class MavenTestService {
     }
 
 
-    public void ExecuteAllTestsMaven(ProjectVersion projectVersion, ProjectTestExecution.TestExecutionType testExecutionTypeEnum, List<MutationOperator> operatorList) throws Exception {
+    public SimpleResponse ExecuteAllTestsMaven(ProjectVersion projectVersion, ProjectTestExecution.TestExecutionType testExecutionTypeEnum, List<MutationOperator> operatorList) throws Exception {
+        SimpleResponse sr = new SimpleResponse();
+
         // Changes the project version
         Githelper.updateCurrentVersion(projectsPath + projectVersion.getProject().getProjectPath(), projectVersion.getVersion());
 
@@ -72,7 +75,7 @@ public class MavenTestService {
 
             //Creates the Test Execution on the Database
             ProjectTestExecution projectTestExecution = new ProjectTestExecution(ProjectTestExecution.TestExecutionType.NOMUTATION, projectVersion);
-            projectTestExecutionRepository.save(projectTestExecution);
+            projectTestExecution = projectTestExecutionRepository.save(projectTestExecution);
 
             //Creates the tests in the database
             HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults = getMavenTestResults(projectsPath + projectVersion.getProject().getProjectPath() +  File.separator +"target" +File.separator +"surefire-reports");
@@ -83,8 +86,10 @@ public class MavenTestService {
             projectTestExecution.setTestRunTime(testRunTime);
             projectTestExecution.setCompilationTime(OutputParsingHelper.round(totalElapsedTime-testRunTime));
             projectTestExecution.setFailedCompilation(false);
-            projectTestExecutionRepository.save(projectTestExecution);
+            projectTestExecution = projectTestExecutionRepository.save(projectTestExecution);
 
+            sr.setAsSuccess();
+            sr.setData(projectTestExecution);
         }else{
             // Cria a lista de argumentos e a lista com os nomes
             // operatorNameList = ["BinaryMutator", "BinaryMutator"]
@@ -114,7 +119,7 @@ public class MavenTestService {
                     ProjectTestExecution projectTestExecution = new ProjectTestExecution(ProjectTestExecution.TestExecutionType.MUTANTSCHEMATA, projectVersion, projectExecutionName);
                     Float projectTestExecutionTotalCompilationTime = Float.parseFloat("0");
                     Float projectTestExecutionTotalTestTime = Float.parseFloat("0");
-                    projectTestExecutionRepository.save(projectTestExecution);
+                    projectTestExecution = projectTestExecutionRepository.save(projectTestExecution);
 
                     // Saves all of the operators in agregatted execution
                     for (MutationOperator mutationOperator: operatorList) {
@@ -171,14 +176,15 @@ public class MavenTestService {
                     projectTestExecution.setCompilationTime(projectTestExecutionTotalCompilationTime);
                     projectTestExecution.setTestRunTime(projectTestExecutionTotalTestTime);
                     projectTestExecution.setFailedCompilation(false);
-                    projectTestExecutionRepository.save(projectTestExecution);
+                    projectTestExecution = projectTestExecutionRepository.save(projectTestExecution);
 
-
+                    sr.setAsSuccess();
+                    sr.setData(projectTestExecution);
                 } else if (testExecutionTypeEnum == ProjectTestExecution.TestExecutionType.TRADITIONALMUTATION) {
                     ProjectTestExecution projectTestExecution = new ProjectTestExecution(ProjectTestExecution.TestExecutionType.TRADITIONALMUTATION, projectVersion, projectExecutionName);
                     Float projectTestExecutionTotalCompilationTime = Float.parseFloat("0");
                     Float projectTestExecutionTotalTestTime = Float.parseFloat("0");
-                    projectTestExecutionRepository.save(projectTestExecution);
+                    projectTestExecution = projectTestExecutionRepository.save(projectTestExecution);
 
                     for (MutationOperator mutationOperator: operatorList) {
                         MutationOperator mutationOperatorAux = new MutationOperator(mutationOperator.getOperador(), projectTestExecution);
@@ -235,11 +241,17 @@ public class MavenTestService {
                     projectTestExecution.setTestRunTime(projectTestExecutionTotalTestTime);
                     projectTestExecution.setFailedCompilation(false);
                     projectTestExecutionRepository.save(projectTestExecution);
+
+                    sr.setAsSuccess();
+                    sr.setData(projectTestExecution);
+                }else{
+                    sr.setAsError("Unknown project Execution");
                 }
             }else{
-                System.out.println("Invalid Operators");
+                sr.setAsError("Invalid Operators");
             }
         }
+        return sr;
     }
 
     private Float getTestTime(HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults) {
@@ -366,4 +378,48 @@ public class MavenTestService {
         return finalResult;
     }
 
+    public SimpleResponse ExecuteAllTestsMavenGit(ProjectVersion projectVersionFrom, ProjectVersion projectVersionTo, ProjectTestExecution.TestExecutionType testExecutionTypeEnum, List<MutationOperator> operatorList) throws Exception {
+        SimpleResponse sr = new SimpleResponse();
+
+        // Changes the project version
+        Githelper.updateCurrentVersion(projectsPath + projectVersionTo.getProject().getProjectPath(), projectVersionFrom.getVersion());
+
+        // Cria a lista de argumentos e a lista com os nomes
+        // operatorNameList = ["BinaryMutator", "BinaryMutator"]
+        // operatorArgumentList = [["+", "-"],["+", "*"]]
+        List<String> operatorNameList = new ArrayList<>();
+        List<List<String>> operatorArgumentList = new ArrayList<>();
+        for (MutationOperator mutationOperator: operatorList) {
+            operatorNameList.add(mutationOperator.getOperador());
+            List<String> argumentsAux = new ArrayList<>();
+            if (mutationOperator.getMutationOperatorArgumentsList()!= null){
+                for (MutationOperatorArguments mutationOperatorArguments: mutationOperator.getMutationOperatorArgumentsList()){
+                    argumentsAux.add(mutationOperatorArguments.getMutationOperatorArgument());
+                }
+            }
+            operatorArgumentList.add(argumentsAux);
+        }
+
+        OperatorValidator operatorValidator = new OperatorValidator();
+        boolean validOperators = operatorValidator.validate(operatorNameList, operatorArgumentList);
+        System.out.println("Valid Operators: " + validOperators);
+
+        if (validOperators){
+            System.out.println("Entrou 2.0");
+            String projectExecutionName = projectVersionTo.getProject().getProjectName() + "_" + UUID.randomUUID();
+            List<String> fileList = Githelper.getChangedFiles(projectVersionFrom.getVersion(), projectVersionTo.getVersion(), projectsPath + projectVersionTo.getProject().getProjectPath(), projectVersionTo.getProject().getTestFolder());
+
+            if (testExecutionTypeEnum == ProjectTestExecution.TestExecutionType.GITIMMPROVEMENTMUTANTSCHEMATA){
+
+
+            }else if (testExecutionTypeEnum == ProjectTestExecution.TestExecutionType.GITIMMPROVEMENTTRADITIONALMUTATION){
+
+            }
+            for (String i : fileList){
+                System.out.println("Ficheiro:" + i);
+            }
+        }
+
+        return sr;
+    }
 }

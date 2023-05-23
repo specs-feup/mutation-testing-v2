@@ -16,7 +16,9 @@ public class ProjectTestExecution {
     public enum TestExecutionType{
         TRADITIONALMUTATION,
         MUTANTSCHEMATA,
-        NOMUTATION
+        NOMUTATION,
+        GITIMMPROVEMENTMUTANTSCHEMATA,
+        GITIMMPROVEMENTTRADITIONALMUTATION
     }
 
     @Id
@@ -43,6 +45,7 @@ public class ProjectTestExecution {
     private List<ProjectTestExecution> ProjectTestExecutionSubExecutions = new ArrayList<>();
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(referencedColumnName = "id")
     private ProjectTestExecution projectTestExecution;
 
@@ -214,6 +217,27 @@ public class ProjectTestExecution {
 
     public void setProjectExecutionName(String projectExecutionName) {
         this.projectExecutionName = projectExecutionName;
+    }
+
+    @Override
+    public String toString() {
+        return "ProjectTestExecution{" +
+                "id=" + id +
+                ", testExecutionType=" + testExecutionType +
+                ", compilationTime=" + compilationTime +
+                ", testRunTime=" + testRunTime +
+                ", failedCompilation=" + failedCompilation +
+                ", failedTests=" + failedTests +
+                ", mutationLine=" + mutationLine +
+                ", mutationFilePath='" + mutationFilePath + '\'' +
+                ", mutantId='" + mutantId + '\'' +
+                ", projectExecutionName='" + projectExecutionName + '\'' +
+                ", projectVersion=" + projectVersion +
+                ", ProjectTestExecutionSubExecutions=" + ProjectTestExecutionSubExecutions +
+                ", projectTestExecution=" + projectTestExecution +
+                ", mutationOperators=" + mutationOperators +
+                ", testPackage=" + testPackage +
+                '}';
     }
 }
 

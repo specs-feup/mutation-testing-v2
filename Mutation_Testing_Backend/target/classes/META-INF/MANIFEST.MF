@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: org.feup.Mutation_Testing_Backend_Final.MutationTestingBacke
+ ndFinalApplication
+

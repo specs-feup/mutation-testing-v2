@@ -6,6 +6,7 @@ import org.apache.maven.plugins.surefire.report.ReportTestSuite;
 import org.apache.maven.plugins.surefire.report.SurefireReportParser;
 import org.apache.maven.reporting.MavenReportException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.feup.Mutation_Testing_Backend_Final.Dto.SimpleResponse;
 import org.feup.Mutation_Testing_Backend_Final.Helper.Githelper;
 import org.feup.Mutation_Testing_Backend_Final.Helper.KadabraHelper;
 import org.feup.Mutation_Testing_Backend_Final.Helper.OperatorValidator;
@@ -39,12 +40,6 @@ import java.util.*;
 
 @Service
 public class TestService {
-    @Value("${pathToStoreProjects}")
-    private String projectsPath;
-    @Value("${pathToKadabraIncludes}")
-    private String pathToKadabraIncludes;
-    @Value("${pathToKadabraEntryPoint}")
-    private String pathToKadabraEntryPoint;
 
     private final projectVersionRepository projectVersionRepository;
     private final MavenTestService mavenTestService;
@@ -57,7 +52,8 @@ public class TestService {
         this.gradleTestService = gradleTestService;
     }
 
-    public String executeAllTests(String projectVersionId, String testExecutionType, List<MutationOperator> operatorList) throws Exception {
+    public SimpleResponse executeAllTests(String projectVersionId, String testExecutionType, List<MutationOperator> operatorList) throws Exception {
+        SimpleResponse sr = new SimpleResponse();
         Long i = Long.parseLong(projectVersionId);
         TestExecutionType testExecutionTypeEnum = TestExecutionType.valueOf(testExecutionType.toUpperCase());
 
@@ -66,45 +62,52 @@ public class TestService {
         if (projectVersionOptional.isPresent()){
             ProjectVersion projectVersion = projectVersionOptional.get();
 
-            System.out.println("Entrou Antes");
-            System.out.println(!projectVersion.getProject().isAndroid());
-            System.out.println(!projectVersion.getProject().isMaven());
-
             //Maven project
             if (!projectVersion.getProject().isAndroid() && projectVersion.getProject().isMaven()){
-                mavenTestService.ExecuteAllTestsMaven(projectVersion, testExecutionTypeEnum, operatorList);
-                return "";
+                return mavenTestService.ExecuteAllTestsMaven(projectVersion, testExecutionTypeEnum, operatorList);
             //Gradle Android App
-            } else if (projectVersion.getProject().isAndroid() && !projectVersion.getProject().isMaven()) {
-                ExecuteAllTestsAndroid();
             //Gradle Project
-            }else if (!projectVersion.getProject().isAndroid() && !projectVersion.getProject().isMaven()) {
-                gradleTestService.ExecuteAllTestsGradle(projectVersion, testExecutionTypeEnum, operatorList);
+            }else if (!projectVersion.getProject().isMaven()) {
+                return gradleTestService.ExecuteAllTestsGradle(projectVersion, testExecutionTypeEnum, operatorList);
             }else{
-                return "Erro";
+                sr.setAsError("No support for Android projects using Maven");
             }
 
+        }else{
+            sr.setAsError("Project Version Not Found");
         }
-        return "Project Version Not Found";
+        return sr;
     }
 
-    private void ExecuteAllTestsAndroid(){
+    public SimpleResponse executeAllTestsGitImprovement(String projectVersionFromStr, String projectVersionToStr, String testExecutionType, List<MutationOperator> operatorList) throws Exception {
+        SimpleResponse sr = new SimpleResponse();
+        Long from = Long.parseLong(projectVersionFromStr);
+        Long to = Long.parseLong(projectVersionToStr);
+        TestExecutionType testExecutionTypeEnum = TestExecutionType.valueOf(testExecutionType.toUpperCase());
 
-    }
+        Optional<ProjectVersion> projectVersionOptionalFrom = projectVersionRepository.findById(from);
+        Optional<ProjectVersion> projectVersionOptionalTo = projectVersionRepository.findById(to);
 
-    public void getDiferences() throws GitAPIException, IOException {
-        Optional<ProjectVersion> projectVersionOptional = projectVersionRepository.findById(63L);
-        Optional<ProjectVersion> projectVersionOptionalOlder = projectVersionRepository.findById(62L);
+        if (projectVersionOptionalFrom.isPresent() && projectVersionOptionalTo.isPresent()){
+            ProjectVersion projectVersionFrom = projectVersionOptionalFrom.get();
+            ProjectVersion projectVersionTo = projectVersionOptionalTo.get();
 
-        if (projectVersionOptional.isPresent() && projectVersionOptionalOlder.isPresent()){
-            ProjectVersion projectVersion = projectVersionOptional.get();
-            ProjectVersion projectVersionOlder = projectVersionOptionalOlder.get();
+            //Maven project
+            if (!projectVersionFrom.getProject().isAndroid() && projectVersionFrom.getProject().isMaven()){
 
-            List<String> lista = Githelper.getChangedFiles(projectVersionOlder.getVersion(), projectVersion.getVersion(), projectsPath + projectVersion.getProject().getProjectPath());
-
-            for (String fileName:lista) {
-                System.out.println(fileName);
+                return mavenTestService.ExecuteAllTestsMavenGit(projectVersionFrom, projectVersionTo, testExecutionTypeEnum, operatorList);
+                //Gradle Android App
+                //Gradle Project
+            }else if (!projectVersionFrom.getProject().isAndroid() && !projectVersionFrom.getProject().isMaven()) {
+                return gradleTestService.ExecuteAllTestsGradleGit(projectVersionFrom, projectVersionTo, testExecutionTypeEnum, operatorList);
+            }else{
+                sr.setAsError("No support for Android projects using Maven");
             }
+
+        }else{
+            sr.setAsError("Project Version Not Found");
         }
+        return sr;
     }
+
 }

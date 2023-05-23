@@ -26,6 +26,9 @@ public class Project {
     private boolean android;
 
     private String testFolder;
+    private String androidTestFolder;
+
+    private String androidBuildFolder;
 
     @OneToMany(mappedBy = "project")
     private List<ProjectVersion> projectVersions;
@@ -92,6 +95,22 @@ public class Project {
 
     public void setTestFolder(String testFolder) {
         this.testFolder = testFolder;
+    }
+
+    public String getAndroidBuildFolder() {
+        return androidBuildFolder;
+    }
+
+    public void setAndroidBuildFolder(String androidBuildFolder) {
+        this.androidBuildFolder = androidBuildFolder;
+    }
+
+    public String getAndroidTestFolder() {
+        return androidTestFolder;
+    }
+
+    public void setAndroidTestFolder(String androidTestFolder) {
+        this.androidTestFolder = androidTestFolder;
     }
 
     @Override

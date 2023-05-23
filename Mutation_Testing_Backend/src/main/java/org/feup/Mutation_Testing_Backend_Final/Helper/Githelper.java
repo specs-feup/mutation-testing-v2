@@ -18,21 +18,23 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Githelper {
 
     public static void checkoutCommit(String localPath, String commit) throws IOException, GitAPIException {
         Repository repository = new FileRepositoryBuilder().setGitDir(new File(localPath + "/.git")).build();
 
-        try (Git git = new Git(repository)) {
-            ObjectId commitId = repository.resolve(commit);
+        Git git = new Git(repository);
+        ObjectId commitId = repository.resolve(commit);
 
-            if (commitId == null) {
-                throw new IllegalArgumentException("Invalid commit version: " + commit);
-            }
-
-            git.checkout().setName(commitId.getName()).call();
+        if (commitId == null) {
+            throw new IllegalArgumentException("Invalid commit");
         }
+
+        git.checkout().setName(commitId.getName()).call();
+
     }
 
     public static Git cloneRepo(String url, String path) throws GitAPIException {
@@ -74,39 +76,59 @@ public class Githelper {
     }
 
 
-    public static List<String> getChangedFiles(String oldCommitId, String newCommitId, String repoPath)
+    public static List<String> getChangedFiles(String oldCommitId, String newCommitId, String repoPath, String ignorePath)
             throws IOException, RevisionSyntaxException, GitAPIException {
 
         List<String> changedFiles = new ArrayList<>();
 
-        try (Repository repository = Git.open(new File(repoPath)).getRepository()) {
-            RevWalk walk = new RevWalk(repository);
+        Repository repository = Git.open(new File(repoPath)).getRepository();
+        RevWalk walk = new RevWalk(repository);
 
-            ObjectId oldCommit = repository.resolve(oldCommitId);
-            ObjectId newCommit = repository.resolve(newCommitId);
+        ObjectId oldCommit = repository.resolve(oldCommitId);
+        ObjectId newCommit = repository.resolve(newCommitId);
 
-            RevCommit oldRevCommit = walk.parseCommit(oldCommit);
-            RevCommit newRevCommit = walk.parseCommit(newCommit);
+        RevCommit oldRevCommit = walk.parseCommit(oldCommit);
+        RevCommit newRevCommit = walk.parseCommit(newCommit);
 
-            CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
-            oldTreeParser.reset(repository.newObjectReader(), oldRevCommit.getTree().getId());
+        CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
+        oldTreeParser.reset(repository.newObjectReader(), oldRevCommit.getTree().getId());
 
-            CanonicalTreeParser newTreeParser = new CanonicalTreeParser();
-            newTreeParser.reset(repository.newObjectReader(), newRevCommit.getTree().getId());
+        CanonicalTreeParser newTreeParser = new CanonicalTreeParser();
+        newTreeParser.reset(repository.newObjectReader(), newRevCommit.getTree().getId());
 
-            try (Git git = new Git(repository)) {
-                List<DiffEntry> diffs = git.diff()
-                        .setOldTree(oldTreeParser)
-                        .setNewTree(newTreeParser)
-                        .call();
+        Git git = new Git(repository);
+        List<DiffEntry> diffs = git.diff()
+                .setOldTree(oldTreeParser)
+                .setNewTree(newTreeParser)
+                .call();
 
-                for (DiffEntry diff : diffs) {
-                    changedFiles.add(diff.getNewPath());
-                }
-            }
+        for (DiffEntry diff : diffs) {
+            changedFiles.add(File.separator + diff.getNewPath());
         }
 
-        return changedFiles;
+        return changedFiles.stream().filter(file -> !file.contains(ignorePath) && file.endsWith(".java")).collect(Collectors.toList());
     }
 
+
+    public static boolean isFirst(String version, String repoPath) throws IOException {
+        Repository repository = Git.open(new File(repoPath)).getRepository();
+
+        ObjectId commitId = repository.resolve(version);
+
+        if (commitId == null) {
+            throw new IllegalArgumentException("Invalid commit");
+        }
+
+        RevWalk revWalk = new RevWalk(repository);
+        RevCommit commit = revWalk.parseCommit(commitId);
+        Ref firstCommitRef = repository.getRefDatabase().findRef("refs/heads/master");
+
+        if (firstCommitRef == null) {
+            return true;
+        }
+
+        ObjectId firstCommitId = firstCommitRef.getObjectId();
+
+        return commit.getId().equals(firstCommitId);
+    }
 }

@@ -1,6 +1,8 @@
 package org.feup.Mutation_Testing_Backend_Final.Service.TestService;
 
 
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.feup.Mutation_Testing_Backend_Final.Dto.SimpleResponse;
 import org.feup.Mutation_Testing_Backend_Final.Helper.Githelper;
 import org.feup.Mutation_Testing_Backend_Final.Helper.KadabraHelper;
 import org.feup.Mutation_Testing_Backend_Final.Helper.OperatorValidator;
@@ -17,12 +19,14 @@ import org.feup.Mutation_Testing_Backend_Final.Model.Test.TestUnit;
 import org.feup.Mutation_Testing_Backend_Final.Repository.MutationOperator.mutationOperatorArgumentsRepository;
 import org.feup.Mutation_Testing_Backend_Final.Repository.MutationOperator.mutationOperatorRepository;
 import org.feup.Mutation_Testing_Backend_Final.Repository.Project.projectTestExecutionRepository;
+import org.feup.Mutation_Testing_Backend_Final.Repository.Project.projectVersionRepository;
 import org.feup.Mutation_Testing_Backend_Final.Repository.Test.testClassRepository;
 import org.feup.Mutation_Testing_Backend_Final.Repository.Test.testPackageRepository;
 import org.feup.Mutation_Testing_Backend_Final.Repository.Test.testUnitRepository;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -33,6 +37,7 @@ import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.feup.Mutation_Testing_Backend_Final.Helper.OutputParsingHelper.extractTotalTimeGradle;
 import static org.feup.Mutation_Testing_Backend_Final.Helper.OutputParsingHelper.getGradleClassName;
@@ -53,10 +58,12 @@ public class GradleTestService {
     private final testUnitRepository testUnitRepository;
     private final mutationOperatorRepository mutationOperatorRepository;
     private final mutationOperatorArgumentsRepository mutationOperatorArgumentsRepository;
+    private final projectVersionRepository projectVersionRepository;
 
 
     @Autowired
-    public GradleTestService(projectTestExecutionRepository projectTestExecutionRepository, testPackageRepository testPackageRepository, testClassRepository testClassRepository, testUnitRepository testUnitRepository, mutationOperatorRepository mutationOperatorRepository, mutationOperatorArgumentsRepository mutationOperatorArgumentsRepository) {
+    public GradleTestService(projectVersionRepository projectVersionRepository,projectTestExecutionRepository projectTestExecutionRepository, testPackageRepository testPackageRepository, testClassRepository testClassRepository, testUnitRepository testUnitRepository, mutationOperatorRepository mutationOperatorRepository, mutationOperatorArgumentsRepository mutationOperatorArgumentsRepository) {
+        this.projectVersionRepository = projectVersionRepository;
         this.projectTestExecutionRepository = projectTestExecutionRepository;
         this.testPackageRepository = testPackageRepository;
         this.testClassRepository = testClassRepository;
@@ -65,12 +72,13 @@ public class GradleTestService {
         this.mutationOperatorArgumentsRepository = mutationOperatorArgumentsRepository;
     }
 
-    public void ExecuteAllTestsGradle(ProjectVersion projectVersion, ProjectTestExecution.TestExecutionType testExecutionTypeEnum, List<MutationOperator> operatorList) throws Exception {
+    public SimpleResponse ExecuteAllTestsGradle(ProjectVersion projectVersion, ProjectTestExecution.TestExecutionType testExecutionTypeEnum, List<MutationOperator> operatorList) throws Exception {
+        SimpleResponse sr = new SimpleResponse();
+
         // Changes the project version
-        Githelper.updateCurrentVersion(projectsPath + projectVersion.getProject().getProjectPath(), projectVersion.getVersion());
+        //Githelper.updateCurrentVersion(projectsPath + projectVersion.getProject().getProjectPath(), projectVersion.getVersion());
 
         if (testExecutionTypeEnum == ProjectTestExecution.TestExecutionType.NOMUTATION){
-            System.out.println("Entrou!!!");
             Float totalElapsedTime = executeGradleTests(projectsPath + projectVersion.getProject().getProjectPath(), "");
 
             //Creates the Test Execution on the Database
@@ -78,7 +86,18 @@ public class GradleTestService {
             projectTestExecutionRepository.save(projectTestExecution);
 
             //Creates the tests in the database
-            HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults = getGradeTestResults(projectsPath + projectVersion.getProject().getProjectPath() + File.separator +"build" +File.separator +"test-results" + File.separator + "test");
+            HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults;
+            if(projectVersion.getProject().isAndroid()){
+                testResults = getGradeTestResults(projectsPath + projectVersion.getProject().getProjectPath() + File.separator +projectVersion.getProject().getAndroidBuildFolder() +File.separator +"build" + File.separator + "test-results"+ File.separator + "testDebugUnitTest");
+
+                Float totalElapsedTimeAndroidTests = executeGradleTests(projectsPath + projectVersion.getProject().getProjectPath(), "connectedAndroidTest");
+                totalElapsedTime += totalElapsedTimeAndroidTests;
+
+                testResults.putAll(getGradeTestResults(projectsPath + projectVersion.getProject().getProjectPath() + File.separator +projectVersion.getProject().getAndroidBuildFolder() +File.separator +"build" + File.separator + "outputs"+ File.separator + "androidTest-results" + File.separator + "connected"));
+
+            }else{
+                testResults = getGradeTestResults(projectsPath + projectVersion.getProject().getProjectPath() + File.separator +"build" +File.separator +"test-results" + File.separator + "test");
+            }
             Float testRunTime = getTestTime(testResults);
             boolean failedtest = saveTestResults(testResults, projectTestExecution);
 
@@ -87,6 +106,9 @@ public class GradleTestService {
             projectTestExecution.setCompilationTime(round(totalElapsedTime-testRunTime));
             projectTestExecution.setFailedCompilation(false);
             projectTestExecutionRepository.save(projectTestExecution);
+
+            sr.setAsSuccess();
+            sr.setData(projectTestExecution);
         }else{
             // Cria a lista de argumentos e a lista com os nomes
             // operatorNameList = ["BinaryMutator", "BinaryMutator"]
@@ -107,7 +129,7 @@ public class GradleTestService {
             OperatorValidator operatorValidator = new OperatorValidator();
             boolean validOperators = operatorValidator.validate(operatorNameList, operatorArgumentList);
 
-
+            System.out.println("Valid Operators: " + validOperators);
             if (validOperators){
                 String projectExecutionName = projectVersion.getProject().getProjectName() + "_" + UUID.randomUUID();
 
@@ -129,7 +151,11 @@ public class GradleTestService {
                         }
                     }
 
-                    KadabraHelper.callKadabra(projectsPath + projectVersion.getProject().getProjectPath(), projectsPath + projectVersion.getProject().getProjectPath()+ projectVersion.getProject().getTestFolder(), pathToKadabraIncludes, pathToKadabraEntryPoint, projectsPath, false, operatorNameList, operatorArgumentList, projectExecutionName);
+                    if(projectVersion.getProject().isAndroid()){
+                        KadabraHelper.callKadabra(projectsPath + projectVersion.getProject().getProjectPath(), projectsPath + projectVersion.getProject().getProjectPath()+ projectVersion.getProject().getTestFolder(), projectsPath + projectVersion.getProject().getProjectPath()+ projectVersion.getProject().getAndroidTestFolder(), pathToKadabraIncludes, pathToKadabraEntryPoint, projectsPath, false, operatorNameList, operatorArgumentList, projectExecutionName);
+                    }else{
+                        KadabraHelper.callKadabra(projectsPath + projectVersion.getProject().getProjectPath(), projectsPath + projectVersion.getProject().getProjectPath()+ projectVersion.getProject().getTestFolder(), pathToKadabraIncludes, pathToKadabraEntryPoint, projectsPath, false, operatorNameList, operatorArgumentList, projectExecutionName);
+                    }
 
                     JSONParser parser = new JSONParser();
                     JSONArray array = (JSONArray) parser.parse(new FileReader(projectsPath + File.separator + projectExecutionName + File.separator + "MutationInfo.json"));
@@ -153,7 +179,19 @@ public class GradleTestService {
                             mutationOperatorArgumentsRepository.save(mutationOperatorArgumentsAux);
                         }
 
-                        HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults = getGradeTestResults(projectsPath + File.separator + projectExecutionName + File.separator +"build" +File.separator +"test-results" + File.separator + "test");
+                        HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults;
+                        if(projectVersion.getProject().isAndroid()){
+                            testResults = getGradeTestResults(projectsPath + File.separator + projectExecutionName + File.separator +projectVersion.getProject().getAndroidBuildFolder() +File.separator +"build" + File.separator + "test-results"+ File.separator + "testDebugUnitTest");
+
+                            Float totalElapsedTimeAndroidTests = executeGradleTests(projectsPath + File.separator + projectExecutionName, "connectedAndroidTest");
+                            totalElapsedTime += totalElapsedTimeAndroidTests;
+
+                            testResults.putAll(getGradeTestResults(projectsPath + File.separator + projectExecutionName + File.separator + projectVersion.getProject().getAndroidBuildFolder() +File.separator +"build" + File.separator + "outputs"+ File.separator + "androidTest-results" + File.separator + "connected"));
+
+                        }else{
+                            testResults = getGradeTestResults(projectsPath + File.separator + projectExecutionName + File.separator +"build" +File.separator +"test-results" + File.separator + "test");
+                        }
+
                         Float testRunTime = getTestTime(testResults);
                         boolean failedtest = saveTestResults(testResults, projectTestExecutionChild);
 
@@ -175,8 +213,10 @@ public class GradleTestService {
                     projectTestExecution.setFailedCompilation(false);
                     projectTestExecutionRepository.save(projectTestExecution);
 
-
+                    sr.setAsSuccess();
+                    sr.setData(projectTestExecution);
                 } else if (testExecutionTypeEnum == ProjectTestExecution.TestExecutionType.TRADITIONALMUTATION) {
+                    System.out.println("Traditional Mutation!!");
                     ProjectTestExecution projectTestExecution = new ProjectTestExecution(ProjectTestExecution.TestExecutionType.TRADITIONALMUTATION, projectVersion, projectExecutionName);
                     Float projectTestExecutionTotalCompilationTime = Float.parseFloat("0");
                     Float projectTestExecutionTotalTestTime = Float.parseFloat("0");
@@ -192,7 +232,14 @@ public class GradleTestService {
                         }
                     }
 
-                    KadabraHelper.callKadabra(projectsPath + projectVersion.getProject().getProjectPath(), projectsPath + projectVersion.getProject().getProjectPath()+ projectVersion.getProject().getTestFolder(), pathToKadabraIncludes, pathToKadabraEntryPoint, projectsPath, true, operatorNameList, operatorArgumentList, projectExecutionName);
+                    System.out.println("Kadabra Traditional Mutation!!");
+
+                    if(projectVersion.getProject().isAndroid()){
+                        KadabraHelper.callKadabra(projectsPath + projectVersion.getProject().getProjectPath(), projectsPath + projectVersion.getProject().getProjectPath()+ File.separator + projectVersion.getProject().getAndroidBuildFolder() + projectVersion.getProject().getTestFolder(), projectsPath + projectVersion.getProject().getProjectPath()+ File.separator + projectVersion.getProject().getAndroidBuildFolder()+ projectVersion.getProject().getAndroidTestFolder(), pathToKadabraIncludes, pathToKadabraEntryPoint, projectsPath, false, operatorNameList, operatorArgumentList, projectExecutionName);
+                    }else{
+                        KadabraHelper.callKadabra(projectsPath + projectVersion.getProject().getProjectPath(), projectsPath + projectVersion.getProject().getProjectPath()+ projectVersion.getProject().getTestFolder(), pathToKadabraIncludes, pathToKadabraEntryPoint, projectsPath, true, operatorNameList, operatorArgumentList, projectExecutionName);
+                    }
+
 
                     JSONParser parser = new JSONParser();
                     JSONArray array = (JSONArray) parser.parse(new FileReader(projectsPath + File.separator + projectExecutionName + File.separator + "MutationInfo.json"));
@@ -237,12 +284,60 @@ public class GradleTestService {
                     projectTestExecution.setTestRunTime(projectTestExecutionTotalTestTime);
                     projectTestExecution.setFailedCompilation(false);
                     projectTestExecutionRepository.save(projectTestExecution);
+
+                    sr.setAsSuccess();
+                    sr.setData(projectTestExecution);
+                }else{
+                    sr.setAsError("Unknown project Execution");
                 }
             }else{
-                System.out.println("Invalid Operators");
+                sr.setAsError("Invalid Operators");
+            }
+        }
+        return sr;
+    }
+
+    public SimpleResponse ExecuteAllTestsGradleGit(ProjectVersion projectVersionFrom, ProjectVersion projectVersionTo, ProjectTestExecution.TestExecutionType testExecutionTypeEnum, List<MutationOperator> operatorList) throws Exception {
+        SimpleResponse sr = new SimpleResponse();
+
+        // Changes the project version
+        Githelper.updateCurrentVersion(projectsPath + projectVersionTo.getProject().getProjectPath(), projectVersionFrom.getVersion());
+
+        // Cria a lista de argumentos e a lista com os nomes
+        // operatorNameList = ["BinaryMutator", "BinaryMutator"]
+        // operatorArgumentList = [["+", "-"],["+", "*"]]
+        List<String> operatorNameList = new ArrayList<>();
+        List<List<String>> operatorArgumentList = new ArrayList<>();
+        for (MutationOperator mutationOperator: operatorList) {
+            operatorNameList.add(mutationOperator.getOperador());
+            List<String> argumentsAux = new ArrayList<>();
+            if (mutationOperator.getMutationOperatorArgumentsList()!= null){
+                for (MutationOperatorArguments mutationOperatorArguments: mutationOperator.getMutationOperatorArgumentsList()){
+                    argumentsAux.add(mutationOperatorArguments.getMutationOperatorArgument());
+                }
+            }
+            operatorArgumentList.add(argumentsAux);
+        }
+
+        OperatorValidator operatorValidator = new OperatorValidator();
+        boolean validOperators = operatorValidator.validate(operatorNameList, operatorArgumentList);
+
+        if (validOperators){
+            String projectExecutionName = projectVersionTo.getProject().getProjectName() + "_" + UUID.randomUUID();
+            List<String> fileList = Githelper.getChangedFiles(projectVersionFrom.getVersion(), projectVersionTo.getVersion(), projectsPath + projectVersionTo.getProject().getProjectPath(), projectVersionFrom.getProject().getTestFolder());
+
+            if (testExecutionTypeEnum == ProjectTestExecution.TestExecutionType.GITIMMPROVEMENTMUTANTSCHEMATA){
+
+
+            }else if (testExecutionTypeEnum == ProjectTestExecution.TestExecutionType.GITIMMPROVEMENTTRADITIONALMUTATION){
+
+            }
+            for (String i : fileList){
+                System.out.println(i);
             }
         }
 
+        return sr;
     }
 
     private Float executeGradleTests(String projectsPath, String aditionalCommand) throws IOException {
@@ -250,7 +345,15 @@ public class GradleTestService {
         Runtime.getRuntime().exec(chmod, null, new File(projectsPath));
 
         long start = System.currentTimeMillis();
-        String command = "./gradlew test" + aditionalCommand;
+        String command = "./gradlew ";
+        if (aditionalCommand.contains("connectedAndroidTest")){
+            command += aditionalCommand;
+        }else{
+            command += "test" + aditionalCommand;
+        }
+
+        System.out.println("Comando: " + command);
+
         Process process = Runtime.getRuntime().exec(command, null, new File(projectsPath));
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line, totalTimeLine = "";
@@ -285,7 +388,7 @@ public class GradleTestService {
         File reportFolder = new File(path);
 
         for (File reportFile: reportFolder.listFiles()){
-            if (reportFile.isFile()){
+            if (reportFile.isFile() && reportFile.getName().endsWith(".xml")){
                 try {
                     JAXBContext jaxbContext = JAXBContext.newInstance(TestSuite.class);
                     Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
@@ -355,4 +458,21 @@ public class GradleTestService {
 
         return failedtest;
     }
+
+
+    /*public void getDiferences() throws GitAPIException, IOException {
+        Optional<ProjectVersion> projectVersionOptional = projectVersionRepository.findById(63L);
+        Optional<ProjectVersion> projectVersionOptionalOlder = projectVersionRepository.findById(62L);
+
+        if (projectVersionOptional.isPresent() && projectVersionOptionalOlder.isPresent()){
+            ProjectVersion projectVersion = projectVersionOptional.get();
+            ProjectVersion projectVersionOlder = projectVersionOptionalOlder.get();
+
+            List<String> lista = Githelper.getChangedFiles(projectVersionOlder.getVersion(), projectVersion.getVersion(), projectsPath + projectVersion.getProject().getProjectPath(), projectVersionTo.getProject());
+
+            for (String fileName:lista) {
+                System.out.println(fileName);
+            }
+        }
+    }*/
 }

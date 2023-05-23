@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.feup.Mutation_Testing_Backend_Final.Dto.SimpleResponse;
 import org.feup.Mutation_Testing_Backend_Final.Model.MutationOperator.MutationOperator;
+import org.feup.Mutation_Testing_Backend_Final.Model.Project.ProjectTestExecution;
+import org.feup.Mutation_Testing_Backend_Final.Service.ProjectTestExecutionService;
 import org.feup.Mutation_Testing_Backend_Final.Service.TestService.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,10 +21,12 @@ import java.util.List;
 public class TestController {
 
     private final TestService testService;
+    private final ProjectTestExecutionService projectTestExecutionService;
 
     @Autowired
-    public TestController(TestService testService) {
+    public TestController(TestService testService, ProjectTestExecutionService projectTestExecutionService) {
         this.testService = testService;
+        this.projectTestExecutionService = projectTestExecutionService;
     }
 
     @PostMapping("{projectVersionId}/executeAllTests")
@@ -31,11 +35,13 @@ public class TestController {
         SimpleResponse sr = new SimpleResponse();
 
         try{
-            String result = testService.executeAllTests(projectVersionId, testExecutionType, operatorList);
+            sr = testService.executeAllTests(projectVersionId, testExecutionType, operatorList);
+            ProjectTestExecution aux = (ProjectTestExecution) sr.getData();
 
-            if (result.equals("")){
-                return ResponseEntity.status(HttpStatus.OK).body(sr);
-            }
+            //sr.setData(projectTestExecutionService.getProjectTestExecution(aux.getId()));
+
+            return ResponseEntity.status(HttpStatus.OK).body(sr);
+
         }catch (NumberFormatException e){
             sr.setAsError("Invalid Project Id");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sr);
@@ -46,34 +52,27 @@ public class TestController {
             throw new RuntimeException(e);
         }
 
-
-        //Checks if the data is correct
-        /*if (newProject.getId() != null && newProject.getCurrentProjectVersion() != null){
-            sr.setAsError("Id must be null");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sr);
-        }*/
-
-        /*try {
-            Project savedProject = projectService.addNewProject(newProject);
-
-            sr.setData(savedProject);
-            sr.setAsSuccess();
-            return ResponseEntity.status(HttpStatus.OK).body(sr);
-        } catch (GitAPIException e) {
-            sr.setAsError("Error cloning from git");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sr);
-        } catch (IOException e) {
-            sr.setAsError("Error");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sr);
-        }*/
-
-        return ResponseEntity.status(HttpStatus.OK).body(sr);
     }
 
-    @PostMapping("test")
-    public ResponseEntity<SimpleResponse> test() throws GitAPIException, IOException {
+    @PostMapping("/executeAllTestsGitImprovement")
+    @Operation(summary = "Execute All tests")
+    public ResponseEntity<SimpleResponse> executeAllTestsGitImprovement(@RequestParam String projectVersionIdFrom, @RequestParam String projectVersionIdTo, @RequestParam String testExecutionType, @RequestBody List<MutationOperator> operatorList) {
         SimpleResponse sr = new SimpleResponse();
-        testService.getDiferences();
-        return ResponseEntity.status(HttpStatus.OK).body(sr);
+
+        try{
+            sr = testService.executeAllTestsGitImprovement(projectVersionIdFrom, projectVersionIdTo, testExecutionType, operatorList);
+
+            return ResponseEntity.status(HttpStatus.OK).body(sr);
+        }catch (NumberFormatException e){
+            sr.setAsError("Invalid Project Id");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sr);
+        }catch (IllegalArgumentException e){
+            sr.setAsError("Invalid Test Execution Type");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sr);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
+
 }

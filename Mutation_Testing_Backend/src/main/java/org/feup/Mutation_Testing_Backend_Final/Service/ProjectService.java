@@ -2,6 +2,7 @@ package org.feup.Mutation_Testing_Backend_Final.Service;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.feup.Mutation_Testing_Backend_Final.Dto.Wrapper.ProjectVersionChange;
 import org.feup.Mutation_Testing_Backend_Final.Helper.Githelper;
 import org.feup.Mutation_Testing_Backend_Final.Model.Project.Project;
 import org.feup.Mutation_Testing_Backend_Final.Model.Project.ProjectVersion;
@@ -11,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +26,9 @@ public class ProjectService {
     //Value from application.properties
     @Value("${pathToStoreProjects}")
     private String projectsPath;
+
+    @Value("${skdPath}")
+    private String skdPath;
 
     private final projectRepository projectRepository;
     private final projectVersionRepository projectVersionRepository;
@@ -53,6 +60,14 @@ public class ProjectService {
         Project savedProject = projectRepository.save(newProject);
         projectVersionRepository.saveAll(projectVersionList);
 
+        if (newProject.isAndroid()){
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(projectsPath + newProject.getProjectPath() + File.separator + "local.properties"))) {
+                writer.write("sdk.dir="+skdPath);
+            } catch (IOException e) {
+                System.err.println("Error creating local.properties" + e.getMessage());
+            }
+        }
+
         return savedProject;
     }
 
@@ -66,5 +81,31 @@ public class ProjectService {
             return Collections.emptyList();
         }
     }
+
+    public List<ProjectVersionChange> getMetricsBetweenVersions(Long projectId) throws Exception {
+        Optional<Project> optionalProject = projectRepository.findById(projectId);
+
+        if (optionalProject.isPresent()){
+            List<ProjectVersionChange> projectVersionChangeList = new ArrayList<>();
+            Project project = optionalProject.get();
+
+            for (ProjectVersion projectVersion: project.getProjectVersions()){
+                // Changes the project version
+                Githelper.updateCurrentVersion(projectsPath + projectVersion.getProject().getProjectPath(), projectVersion.getVersion());
+
+                /*if(){
+
+                }else{
+
+                }*/
+            }
+
+            return Collections.emptyList();
+        }else{
+            return Collections.emptyList();
+        }
+    }
+
+
 
 }

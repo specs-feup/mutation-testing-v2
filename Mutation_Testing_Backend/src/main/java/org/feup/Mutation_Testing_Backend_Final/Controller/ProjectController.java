@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.feup.Mutation_Testing_Backend_Final.Dto.SimpleResponse;
+import org.feup.Mutation_Testing_Backend_Final.Dto.Wrapper.ProjectVersionChange;
 import org.feup.Mutation_Testing_Backend_Final.Model.Project.Project;
 import org.feup.Mutation_Testing_Backend_Final.Model.Project.ProjectVersion;
 import org.feup.Mutation_Testing_Backend_Final.Service.ProjectService;
@@ -118,6 +119,41 @@ public class ProjectController {
         }else{
             sr.setData(projectVersionList);
             return ResponseEntity.status(HttpStatus.OK).body(sr);
+        }
+    }
+
+    @GetMapping("/getMetricsBetweenVersions/{projectId}")
+    @Operation(summary = "Get Changes Between versions")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found all changes in the project",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = SimpleResponse.class)) }),
+            @ApiResponse(responseCode = "204", description = "No project Version",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Error in the data recieved",
+                    content = @Content)})
+    public ResponseEntity<SimpleResponse> getMetricsBetweenVersions(@RequestParam Long projectId) {
+        SimpleResponse sr = new SimpleResponse();
+
+        //Checks if the data is correct
+        if (projectId == null || projectId < 1){
+            sr.setAsError("You must especify a valid project ID");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sr);
+        }
+
+        try {
+            List<ProjectVersionChange> projectVersionList = projectService.getMetricsBetweenVersions(projectId);
+            sr.setAsSuccess();
+
+            if (projectVersionList.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(sr);
+            } else {
+                sr.setData(projectVersionList);
+                return ResponseEntity.status(HttpStatus.OK).body(sr);
+            }
+        }catch (Exception e) {
+            sr.setAsError("Error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sr);
         }
     }
 
