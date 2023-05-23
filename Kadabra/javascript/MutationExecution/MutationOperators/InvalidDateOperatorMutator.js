@@ -14,28 +14,28 @@ class InvalidDateOperatorMutator extends Mutator {
     }
 
     /*&&
-            $joinpoint.typeReference === "Intent" &&
-            $joinpoint.name === "<init>"
-            && $joinpoint.type === "Executable"
+            joinpoint.typeReference === "Intent" &&
+            joinpoint.name === "<init>"
+            && joinpoint.type === "Executable"
     /*** IMPLEMENTATION OF INSTANCE METHODS ***/
 
-    addJp($joinpoint) {
+    addJp(joinpoint) {
 
-        if ($joinpoint.type === "Date" && $joinpoint.instanceOf('localVariable') && !$joinpoint.instanceOf('var')
+        if (joinpoint.type === "Date" && joinpoint.instanceOf('localVariable') && !joinpoint.instanceOf('var')
         ) {
 
-            if ($joinpoint.children[0].name === "Date" && $joinpoint.children[1].instanceOf('new')) {
+            if (joinpoint.children[0].name === "Date" && joinpoint.children[1].instanceOf('new')) {
 
 
-                this.mutationPoints.push($joinpoint.children[1]);
+                this.mutationPoints.push(joinpoint.children[1]);
 
                 debug(
                     "Adicionou um ponto de mutação " +
                     this.$expr +
                     " a " +
-                    $joinpoint +
+                    joinpoint +
                     " na linha " +
-                    $joinpoint.line
+                    joinpoint.line
                 );
                 return true;
             }
@@ -91,7 +91,7 @@ class InvalidDateOperatorMutator extends Mutator {
     }
 
     toString() {
-        return `Invalid Date Operator Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+        return `Invalid Date Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
     }
 
     toJson() {

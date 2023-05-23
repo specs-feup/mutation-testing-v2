@@ -16,10 +16,10 @@ class RemoveNullCheck extends Mutator {
 	}
 
 
-	addJp($joinpoint) {
-		if ($joinpoint.instanceOf("binaryExpression") && ($joinpoint.operator === '!=' || $joinpoint.operator === '==')) {
-			if ($joinpoint.rhs.type === "<nulltype>" || $joinpoint.lhs.type === "<nulltype>") {
-				this.mutationPoints.push($joinpoint);
+	addJp(joinpoint) {
+		if (joinpoint.instanceOf("binaryExpression") && (joinpoint.operator === '!=' || joinpoint.operator === '==')) {
+			if (joinpoint.rhs.type === "<nulltype>" || joinpoint.lhs.type === "<nulltype>") {
+				this.mutationPoints.push(joinpoint);
 				return true;
 			}
 		}
@@ -68,12 +68,6 @@ class RemoveNullCheck extends Mutator {
 
 	}
 
-	toJson() {
-		return {
-			mutationOperatorArgumentsList: [],
-			operator: this.name,
-		};
-	}
 
 
 	_restorePrivate() {
@@ -85,4 +79,15 @@ class RemoveNullCheck extends Mutator {
 		this.previousValue = undefined;
 	}
 
+	toString() {
+		return `Remove Null Check Mutator from ${this.previousValue} to ${this.newValue}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+	}
+
+
+	toJson() {
+		return {
+			mutationOperatorArgumentsList: [],
+			operator: this.name,
+		};
+	}
 }

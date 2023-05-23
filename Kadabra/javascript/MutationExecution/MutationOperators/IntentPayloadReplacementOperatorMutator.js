@@ -15,32 +15,32 @@ class IntentPayloadReplacementOperatorMutator extends Mutator {
     }
 
     /*&&
-            $joinpoint.typeReference === "Intent" &&
-            $joinpoint.name === "<init>"
-            && $joinpoint.type === "Executable"
+            joinpoint.typeReference === "Intent" &&
+            joinpoint.name === "<init>"
+            && joinpoint.type === "Executable"
     /*** IMPLEMENTATION OF INSTANCE METHODS ***/
-    addJp($joinpoint) {
+    addJp(joinpoint) {
 
 
-        if ($joinpoint.instanceOf('callStatement')) {
+        if (joinpoint.instanceOf('callStatement')) {
 
 
-            for (let i = 0; i < jp.call.children.length; i++) {
+            for (let i = 0; i < joinpoint.call.children.length; i++) {
 
 
-                if ($joinpoint.call.children[i].instanceOf('reference') && $joinpoint.call.children[i].name === "putExtra") {
-                    this.mutationPoints.push($joinpoint.call.children[i + 2]);
+                if (joinpoint.call.children[i].instanceOf('reference') && joinpoint.call.children[i].name === "putExtra") {
+                    this.mutationPoints.push(joinpoint.call.children[i + 2]);
 
-                    if ($joinpoint.call.children[i + 2].typeReference == 'String') {
+                    if (joinpoint.call.children[i + 2].typeReference == 'String') {
                         this.dataTypeOfSecondParam = "\"\"";
 
-                    } else if ($joinpoint.call.children[i + 2].typeReference == 'int' || $joinpoint.call.children[i + 2].typeReference == 'float' || $joinpoint.call.children[i + 2].typeReference == 'double' || $joinpoint.call.children[i + 2].typeReference == 'long' || $joinpoint.call.children[i + 2].typeReference == 'short' || $joinpoint.call.children[i + 2].typeReference == 'short' || $joinpoint.call.children[i + 2].typeReference == 'char' || $joinpoint.call.children[i + 2].typeReference == 'byte') {
+                    } else if (joinpoint.call.children[i + 2].typeReference == 'int' || joinpoint.call.children[i + 2].typeReference == 'float' || joinpoint.call.children[i + 2].typeReference == 'double' || joinpoint.call.children[i + 2].typeReference == 'long' || joinpoint.call.children[i + 2].typeReference == 'short' || joinpoint.call.children[i + 2].typeReference == 'short' || joinpoint.call.children[i + 2].typeReference == 'char' || joinpoint.call.children[i + 2].typeReference == 'byte') {
                         this.dataTypeOfSecondParam = "0";
 
-                    } else if ($joinpoint.call.children[i + 2].typeReference == 'boolean') {
+                    } else if (joinpoint.call.children[i + 2].typeReference == 'boolean') {
                         this.dataTypeOfSecondParam = "true";
 
-                    } else if ($joinpoint.call.children[i + 2].typeReference == 'ArrayList') {
+                    } else if (joinpoint.call.children[i + 2].typeReference == 'ArrayList') {
                         this.dataTypeOfSecondParam = "[]";
                     } else {
                         this.dataTypeOfSecondParam = "null";
@@ -50,9 +50,9 @@ class IntentPayloadReplacementOperatorMutator extends Mutator {
                         "Adicionou um ponto de mutação " +
                         this.$expr +
                         " a " +
-                        $joinpoint +
+                        joinpoint +
                         " na linha " +
-                        $joinpoint.line
+                        joinpoint.line
                     );
                     return true;
                 }
@@ -107,7 +107,7 @@ class IntentPayloadReplacementOperatorMutator extends Mutator {
 
 
     toString() {
-        return `Intent Payload Replacement Operator Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+        return `Intent Payload Replacement Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
     }
 
     toJson() {
@@ -116,10 +116,5 @@ class IntentPayloadReplacementOperatorMutator extends Mutator {
             operator: this.name,
         };
     }
-    toJson() {
-        return {
-            mutationOperatorArgumentsList: [],
-            operator: this.name,
-        };
-    }
+
 }

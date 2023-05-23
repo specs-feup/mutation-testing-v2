@@ -110,6 +110,9 @@ class ConstantMutator extends Mutator {
     this.newValue = undefined;
   }
 
+  toString() {
+    return `Constant Mutator from ${this.previousValue} to ${this.newValue}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
+  }
   toJson() {
     return {
       mutationOperatorArgumentsList: [this.expr],

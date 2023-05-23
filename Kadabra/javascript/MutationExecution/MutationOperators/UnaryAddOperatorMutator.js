@@ -17,20 +17,20 @@ class UnaryAddOperatorMutator extends Mutator {
 
 
     /*** IMPLEMENTATION OF INSTANCE METHODS ***/
-    addJp($joinpoint) {
-        println("type" + $joinpoint.joinPointType);
+    addJp(joinpoint) {
+
         // based on https://docs.oracle.com/javase/tutorial/java/nutsandbolts/op1.html
         if (!this.operator == "++" || !this.operator == "--" || !this.operator == "-" || !this.operator == "+" || !this.operator == "!") {
             return false;
         }
 
-        if (!$joinpoint.instanceOf("var") && !$joinpoint.instanceOf("literal")
+        if (!joinpoint.instanceOf("var") && !joinpoint.instanceOf("literal")
         ) {
             return false;
         }
 
-        if ($joinpoint.isBoolean && this.operator === "!") {
-            this.mutationPoints.push($joinpoint);
+        if (joinpoint.isBoolean && this.operator === "!") {
+            this.mutationPoints.push(joinpoint);
             return true;
         }
 
@@ -89,6 +89,9 @@ class UnaryAddOperatorMutator extends Mutator {
         this.mutationPoint = undefined;
     }
 
+    toString() {
+        return `Unary Add Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
+    }
     toJson() {
         return {
             mutationOperatorArgumentsList: [this.operator],

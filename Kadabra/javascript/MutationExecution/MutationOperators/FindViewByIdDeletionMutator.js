@@ -17,9 +17,9 @@ class FindViewByIdDeletionMutator extends Mutator {
 
 
 
-    addJp($joinpoint) {
-        if ($joinpoint.instanceOf('call') && $joinpoint.toString().includes("findViewById")) {
-            this.mutationPoints.push($joinpoint);
+    addJp(joinpoint) {
+        if (joinpoint.instanceOf('call') && joinpoint.toString().includes("findViewById")) {
+            this.mutationPoints.push(joinpoint);
             return true;
         }
         return false;
@@ -62,7 +62,9 @@ class FindViewByIdDeletionMutator extends Mutator {
         this.previousValue = undefined;
         this.mutationPoint = undefined;
     }
-
+    toString() {
+        return `Find View By Id Deletion Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
+    }
     toJson() {
         return {
             mutationOperatorArgumentsList: [],

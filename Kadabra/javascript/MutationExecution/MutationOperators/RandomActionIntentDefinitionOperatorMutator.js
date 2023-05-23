@@ -14,23 +14,23 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
     }
 
     /*&&
-            $joinpoint.typeReference === "Intent" &&
-            $joinpoint.name === "<init>"
-            && $joinpoint.type === "Executable"
+            joinpoint.typeReference === "Intent" &&
+            joinpoint.name === "<init>"
+            && joinpoint.type === "Executable"
     /*** IMPLEMENTATION OF INSTANCE METHODS ***/
 
-    addJp($joinpoint) {
+    addJp(joinpoint) {
         if (
-            $joinpoint.type === "Intent" && $joinpoint.instanceOf('expression') && !$joinpoint.instanceOf('var')
+            joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var')
         ) {
-            this.mutationPoints.push($joinpoint);
+            this.mutationPoints.push(joinpoint);
             debug(
                 "Adicionou um ponto de mutação " +
                 this.$expr +
                 " a " +
-                $joinpoint +
+                joinpoint +
                 " na linha " +
-                $joinpoint.line
+                joinpoint.line
             );
             return true;
         }
@@ -85,7 +85,7 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
     }
 
     toString() {
-        return `Random Action Intent Definition Operator Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+        return `Random Action Intent Definition Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
     }
 
     toJson() {

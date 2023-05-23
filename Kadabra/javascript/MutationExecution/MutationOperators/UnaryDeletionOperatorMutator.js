@@ -17,17 +17,17 @@ class UnaryDeletionOperatorMutator extends Mutator {
 
 
     /*** IMPLEMENTATION OF INSTANCE METHODS ***/
-    addJp($joinpoint) {
+    addJp(joinpoint) {
 
         if (
-            !$joinpoint.instanceOf("unaryExpression") || $joinpoint.typeReference.isBoolean
+            !joinpoint.instanceOf("unaryExpression") || joinpoint.typeReference.isBoolean
         ) {
             return false;
         } else {
 
 
-            this.mutationPoints.push($joinpoint);
-            println("Adicionou um ponto de mutação " + $joinpoint + " na linha " + $joinpoint.line);
+            this.mutationPoints.push(joinpoint);
+            println("Adicionou um ponto de mutação " + joinpoint + " na linha " + joinpoint.line);
             return true;
         }
     }
@@ -66,13 +66,13 @@ class UnaryDeletionOperatorMutator extends Mutator {
 
         this.$node = this.toMutate[this.currentIndex++];
 
-		this.$originalNode = this.$node.copy();
+        this.$originalNode = this.$node.copy();
 
-		if (this.targetConstant.contains(this.$node.lhs.srcCode)) {
-			this.$node = this.$node.insertReplace(this.$node.rhs);
-		} else if (this.targetConstant.contains(this.$node.rhs.srcCode)) {
-			this.$node = this.$node.insertReplace(this.$node.lhs);
-		}
+        if (this.targetConstant.contains(this.$node.lhs.srcCode)) {
+            this.$node = this.$node.insertReplace(this.$node.rhs);
+        } else if (this.targetConstant.contains(this.$node.rhs.srcCode)) {
+            this.$node = this.$node.insertReplace(this.$node.lhs);
+        }
 
 
 
@@ -97,6 +97,9 @@ class UnaryDeletionOperatorMutator extends Mutator {
 
         this.previousValue = undefined;
         this.mutationPoint = undefined;
+    }
+    toString() {
+        return `Unary Deletion Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
     }
     toJson() {
         return {

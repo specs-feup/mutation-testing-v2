@@ -14,28 +14,28 @@ class NullValueIntentOperatorMutator extends Mutator {
     }
 
     /*&&
-            $joinpoint.typeReference === "Intent" &&
-            $joinpoint.name === "<init>"
-            && $joinpoint.type === "Executable"
+            joinpoint.typeReference === "Intent" &&
+            joinpoint.name === "<init>"
+            && joinpoint.type === "Executable"
     /*** IMPLEMENTATION OF INSTANCE METHODS ***/
 
-    addJp($joinpoint) {
+    addJp(joinpoint) {
 
 
-        if ($joinpoint.type === "Intent" && $joinpoint.instanceOf('expression') && !$joinpoint.instanceOf('var')
+        if (joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var')
         ) {
-            if (jp.children[0].name === "<init>" && jp.children[0].type === "Executable") {
+            if (joinpoint.children[0].name === "<init>" && joinpoint.children[0].type === "Executable") {
 
 
-                this.mutationPoints.push(jp.children[2]);
+                this.mutationPoints.push(joinpoint.children[2]);
 
                 debug(
                     "Adicionou um ponto de mutação " +
                     this.$expr +
                     " a " +
-                    $joinpoint +
+                    joinpoint +
                     " na linha " +
-                    $joinpoint.line
+                    joinpoint.line
                 );
                 return true;
             }
@@ -86,7 +86,7 @@ class NullValueIntentOperatorMutator extends Mutator {
     }
 
     toString() {
-        return `Null Value Intent Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+        return `Null Value Intent Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
     }
 
     toJson() {

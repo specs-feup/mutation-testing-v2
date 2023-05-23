@@ -15,28 +15,28 @@ class InvalidMethodCallArgumentOperatorMutator extends Mutator {
     }
 
     /*&&
-            $joinpoint.typeReference === "Intent" &&
-            $joinpoint.name === "<init>"
-            && $joinpoint.type === "Executable"
+            joinpoint.typeReference === "Intent" &&
+            joinpoint.name === "<init>"
+            && joinpoint.type === "Executable"
     /*** IMPLEMENTATION OF INSTANCE METHODS ***/
-    addJp($joinpoint) {
+    addJp(joinpoint) {
 
 
-        if ($joinpoint.instanceOf('callStatement')) {
+        if (joinpoint.instanceOf('callStatement')) {
 
 
 
-            if ($joinpoint.call.children[1].instanceOf('var')) {
-                this.mutationPoints.push($joinpoint.call.children[1]);
-                println("touuuaquiii");
+            if (joinpoint.call.children[1].instanceOf('var')) {
+                this.mutationPoints.push(joinpoint.call.children[1]);
+
 
                 debug(
                     "Adicionou um ponto de mutação " +
                     this.$expr +
                     " a " +
-                    $joinpoint +
+                    joinpoint +
                     " na linha " +
-                    $joinpoint.line
+                    joinpoint.line
                 );
                 return true;
             }
@@ -92,7 +92,7 @@ class InvalidMethodCallArgumentOperatorMutator extends Mutator {
 
 
     toString() {
-        return `Invalid Method Call Argument Operator Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+        return `Invalid Method Call Argument Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
     }
 
     toJson() {

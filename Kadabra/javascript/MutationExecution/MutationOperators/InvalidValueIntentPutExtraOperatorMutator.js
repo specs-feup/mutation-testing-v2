@@ -14,30 +14,30 @@ class InvalidValueIntentPutExtraOperatorMutator extends Mutator {
     }
 
     /*&&
-            $joinpoint.typeReference === "Intent" &&
-            $joinpoint.name === "<init>"
-            && $joinpoint.type === "Executable"
+            joinpoint.typeReference === "Intent" &&
+            joinpoint.name === "<init>"
+            && joinpoint.type === "Executable"
     /*** IMPLEMENTATION OF INSTANCE METHODS ***/
 
-    addJp($joinpoint) {
+    addJp(joinpoint) {
 
 
-        if ($joinpoint.instanceOf('callStatement')) {
+        if (joinpoint.instanceOf('callStatement')) {
 
 
-            for (let i = 0; i < jp.call.children.length; i++) {
+            for (let i = 0; i < joinpoint.call.children.length; i++) {
 
 
-                if ($joinpoint.call.children[i].instanceOf('reference') && $joinpoint.call.children[i].name === "putExtra") {
-                    this.mutationPoints.push($joinpoint.call.children[i + 2]);
+                if (joinpoint.call.children[i].instanceOf('reference') && joinpoint.call.children[i].name === "putExtra") {
+                    this.mutationPoints.push(joinpoint.call.children[i + 2]);
 
                     debug(
                         "Adicionou um ponto de mutação " +
                         this.$expr +
                         " a " +
-                        $joinpoint +
+                        joinpoint +
                         " na linha " +
-                        $joinpoint.line
+                        joinpoint.line
                     );
                     return true;
                 }
@@ -91,7 +91,7 @@ class InvalidValueIntentPutExtraOperatorMutator extends Mutator {
     }
 
     toString() {
-        return `Invalid Value Intent Put Extra Operator Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+        return `Invalid Value Intent Put Extra Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
     }
 
     toJson() {

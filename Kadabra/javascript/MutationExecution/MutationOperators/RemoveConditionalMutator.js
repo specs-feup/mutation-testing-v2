@@ -3,7 +3,7 @@ laraImport("kadabra.KadabraNodes");
 laraImport("weaver.Query");
 laraImport("weaver.Weaver");
 /**
- *  @param {$joinpoint} $joinpoint - Joinpoint used as starting point to search for if clauses whose condition will be replaced by true.
+ *  @param {joinpoint} joinpoint - Joinpoint used as starting point to search for if clauses whose condition will be replaced by true.
  */
 
 class RemoveConditionalMutator extends Mutator {
@@ -22,11 +22,11 @@ class RemoveConditionalMutator extends Mutator {
 	/*** IMPLEMENTATION OF INSTANCE METHODS ***/
 
 
-	addJp($joinpoint) {
+	addJp(joinpoint) {
 
 		// A conditional can be either an if or a ternary operator
-		if ($joinpoint.instanceOf('if') || $joinpoint.instanceOf('ternary') || $joinpoint.instanceOf('loop')) {
-			this.toMutate.push($joinpoint.cond);
+		if (joinpoint.instanceOf('if') || joinpoint.instanceOf('ternary') || joinpoint.instanceOf('loop')) {
+			this.toMutate.push(joinpoint.cond);
 			return true;
 		}
 		return false;
@@ -70,7 +70,9 @@ class RemoveConditionalMutator extends Mutator {
 			}
 		}
 	}
-
+	toString() {
+		return `Remove Conditional Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
+	}
 
 	toJson() {
 		return {

@@ -12,11 +12,11 @@ class NullIntentOperatorMutator extends Mutator {
         this.mutationPoint = undefined;
         this.previousValue = undefined;
     }
-    addJp($joinpoint) {
+    addJp(joinpoint) {
         if (
-            $joinpoint.type === "Intent" && $joinpoint.instanceOf('expression') && !$joinpoint.instanceOf('var')
+            joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var')
         ) {
-            this.mutationPoints.push($joinpoint);
+            this.mutationPoints.push(joinpoint);
 
             return true;
         }
@@ -64,6 +64,13 @@ class NullIntentOperatorMutator extends Mutator {
     }
 
     toString() {
-        return `Null Intent Operator Mutator from ${this.$original} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+        return `Null Intent Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
+    }
+    toJson() {
+        return {
+            mutationOperatorArgumentsList: [],
+            operator: this.name,
+        };
     }
 }
+

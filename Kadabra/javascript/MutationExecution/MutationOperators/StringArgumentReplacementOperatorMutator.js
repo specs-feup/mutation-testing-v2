@@ -81,13 +81,14 @@ class StringArgumentReplacementOperatorMutator extends Mutator {
     }
 
 
+
+    toString() {
+        return `String Argument Replacement Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
+    }
     toJson() {
         return {
             mutationOperatorArgumentsList: [],
             operator: this.name,
         };
-    }
-    toString() {
-        return `String Argument Replacement Operator Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
     }
 }

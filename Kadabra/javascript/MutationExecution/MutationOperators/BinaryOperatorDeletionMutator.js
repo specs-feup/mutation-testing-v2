@@ -16,9 +16,9 @@ class BinaryOperatorDeletionMutator extends Mutator {
         this.isFirst = false;
     }
 
-    addJp($joinpoint) {
-        if ($joinpoint.instanceOf("binaryExpression")) {
-            this.mutationPoints.push($joinpoint);
+    addJp(joinpoint) {
+        if (joinpoint.instanceOf("binaryExpression")) {
+            this.mutationPoints.push(joinpoint);
             return true;
         }
         return false;
@@ -75,6 +75,9 @@ class BinaryOperatorDeletionMutator extends Mutator {
         this.newValue = undefined;
     }
 
+    toString() {
+        return `Binary Operator Deletion Mutator from ${this.previousValue} to ${this.newValue}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
+    }
     toJson() {
         return {
             mutationOperatorArgumentsList: [],

@@ -4,7 +4,7 @@ laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
 /**
- *  @param {$joinpoint} $joinpoint - Joinpoint used as starting point to search for non void method calls which will be replaced by a hardcoded value.
+ *  @param {joinpoint} joinpoint - Joinpoint used as starting point to search for non void method calls which will be replaced by a hardcoded value.
  *  Method call mutations:
  *  - If method type is primitive or boxed BOOLEAN, method call is replaced by false.
  *  - If method type is primitive INT, BYTE, SHORT OR LONG, method call is replaced by 0.
@@ -30,7 +30,7 @@ class NonVoidCallMutator extends Mutator {
 	/*** IMPLEMENTATION OF INSTANCE METHODS ***/
 
 	// Analyze method calls available for Non Void Call mutation and store them
-	addJp($joinpoint) {
+	addJp(joinpoint) {
 
 		// Map method call type to the respective mutation value (if a type is not on the list, it's mapped to 'null' value)
 		let typeToValue = {
@@ -49,12 +49,12 @@ class NonVoidCallMutator extends Mutator {
 
 		let hasMutations = false;
 
-		if ($joinpoint.instanceOf('assignment') || $joinpoint.instanceOf('localVariable') || $joinpoint.instanceOf('if') || $joinpoint.instanceOf('loop')) {
+		if (joinpoint.instanceOf('assignment') || joinpoint.instanceOf('localVariable') || joinpoint.instanceOf('if') || joinpoint.instanceOf('loop')) {
 
 
-			let descendants = ($joinpoint.instanceOf('if') || $joinpoint.instanceOf('loop')) ? $joinpoint.cond.descendants : $joinpoint.descendants;
+			let descendants = (joinpoint.instanceOf('if') || joinpoint.instanceOf('loop')) ? joinpoint.cond.descendants : joinpoint.descendants;
 
-			for (let descendant of $joinpoint.descendants) {
+			for (let descendant of joinpoint.descendants) {
 				println("dentro1   " + descendant)
 				try {
 					if (descendant.instanceOf('call') && descendant.returnType !== 'void') {
@@ -136,6 +136,10 @@ class NonVoidCallMutator extends Mutator {
 		} else {
 			return undefined;
 		}
+	}
+
+	toString() {
+		return `Non Void Call  Mutator from ${this.originalCallNode} to ${this.CallNode}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
 	}
 
 	toJson() {

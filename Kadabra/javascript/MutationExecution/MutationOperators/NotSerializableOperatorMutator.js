@@ -14,11 +14,11 @@ class NotSerializableOperatorMutator extends Mutator {
         this.removedInterface = undefined;
     }
 
-    addJp($joinpoint) {
-        println("joinpoint   " + $joinpoint.interfaces);
+    addJp(joinpoint) {
+        // println("joinpoint   " + joinpoint.interfaces);
 
 
-        // println("joinpoint   " + $joinpoint.superClassJp);
+        // println("joinpoint   " + joinpoint.superClassJp);
 
 
         //const aClass = Query.search("class", "LoginActivity").first();
@@ -27,9 +27,9 @@ class NotSerializableOperatorMutator extends Mutator {
 
 
 
-        if ($joinpoint.instanceOf("class")) {
-            if ($joinpoint.interfaces.contains("java.io.Serializable")) {
-                this.mutationPoints.push($joinpoint);
+        if (joinpoint.instanceOf("class")) {
+            if (joinpoint.interfaces.contains("java.io.Serializable")) {
+                this.mutationPoints.push(joinpoint);
                 return true;
             }
         }
@@ -85,7 +85,7 @@ class NotSerializableOperatorMutator extends Mutator {
 
 
     toString() {
-        return `Not Serializable Operator Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+        return `Not Serializable Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
     }
     toJson() {
         return {

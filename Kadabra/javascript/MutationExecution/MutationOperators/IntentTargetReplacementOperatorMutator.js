@@ -16,20 +16,20 @@ class IntentTargetReplacementOperatorMutator extends Mutator {
         this.allClassValues = [];
     }
 
-    addJp($joinpoint) {
+    addJp(joinpoint) {
 
-        if ($joinpoint.instanceOf('class')) {
-            this.allClassValues.push($joinpoint.package + "-" + $joinpoint.name + ".class");
+        if (joinpoint.instanceOf('class')) {
+            this.allClassValues.push(joinpoint.package + "-" + joinpoint.name + ".class");
         }
 
-        if ($joinpoint.type === "Intent" && $joinpoint.instanceOf('expression') && !$joinpoint.instanceOf('var')
+        if (joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var')
         ) {
-            if ($joinpoint.children[0].name === "<init>" && $joinpoint.children[0].type === "Executable") {
-                this.mutationPoints.push($joinpoint.children[2]);
+            if (joinpoint.children[0].name === "<init>" && joinpoint.children[0].type === "Executable") {
+                this.mutationPoints.push(joinpoint.children[2]);
 
 
-                if ($joinpoint.children[2].type === 'Class' && $joinpoint.children[2].children[1].name === 'class' && $joinpoint.children[2].children[1].type === 'Field') {
-                    this.package = $joinpoint.children[2].children[1].children[0].children[0].name;
+                if (joinpoint.children[2].type === 'Class' && joinpoint.children[2].children[1].name === 'class' && joinpoint.children[2].children[1].type === 'Field') {
+                    this.package = joinpoint.children[2].children[1].children[0].children[0].name;
 
 
                 }
@@ -113,7 +113,7 @@ class IntentTargetReplacementOperatorMutator extends Mutator {
 
 
     toString() {
-        return `Intent Target Replacement Operator Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+        return `Intent Target Replacement Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
     }
 
     toJson() {
@@ -122,10 +122,5 @@ class IntentTargetReplacementOperatorMutator extends Mutator {
             operator: this.name,
         };
     }
-    toJson() {
-        return {
-            mutationOperatorArgumentsList: [],
-            operator: this.name,
-        };
-    }
+
 }
