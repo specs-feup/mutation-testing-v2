@@ -5,6 +5,7 @@ laraImport("weaver.Script");
 laraImport("kadabra.KadabraNodes");
 laraImport("MutationOperators.*");
 laraImport("MutatorList");
+laraImport("Decomposition");
 
 const outputPath = laraArgs.outputPath;
 const filePath = laraArgs.filePath;
@@ -30,6 +31,7 @@ function main() {
     return;
   }
 
+  changeVarDeclarations();
   println("Mutant Schemata");
 
   let output = runTreeAndApplyMetaMutant();
@@ -63,15 +65,6 @@ function runTreeAndApplyMetaMutant() {
     if (mutationPoints >= 2) {
       needElseIf = true;
     }
-
-    /*if ($jp.instanceOf("localVariable") && $jp.numChildren >= 2) {
-      let a = KadabraNodes.snippetExpr($jp.children[0] + " " + $jp.name + ";");
-      let c = KadabraNodes.snippetExpr(
-        $jp.name + " = " + $jp.children[1] + ";"
-      );
-      $jp = $jp.insertReplace(a.code);
-      $jp.insertAfter(c.code);
-    }*/
 
     for (mutator of mutatorList) {
       while (mutator.hasMutations()) {

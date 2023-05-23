@@ -8,6 +8,7 @@ const traditionalMutation = laraArgs.traditionalMutation;
 const projectPath = laraArgs.projectPath;
 const debugMessages = laraArgs.debugMessages;
 const folderToIgnore = laraArgs.folderToIgnore;
+const folderToIgnoreAndroid = laraArgs.folderToIgnoreAndroid;
 const operatorNameList = laraArgs.operatorNameList;
 const operatorArgumentList = laraArgs.operatorArgumentList;
 const projectExecutionName = laraArgs.projectExecutionName;
@@ -23,6 +24,7 @@ function main() {
 
   // Get only java files without the test files
   filesToUse = getFilesToUse();
+  println("Files to use: " + filesToUse);
 
   //makes the project copy if it's not being used traditional mutation
   if (!traditionalMutation) {
@@ -80,6 +82,24 @@ function getFilesToUse() {
         filesToUse.push(allJavaFiles[i]);
       }
     }
+  }
+
+  if (folderToIgnoreAndroid != null && folderToIgnoreAndroid != "") {
+    let javaFilesToRemove = Io.getFiles(folderToIgnoreAndroid, "*.java", true);
+    let filesToUseFinal = [];
+
+    for (i in filesToUse) {
+      for (j in javaFilesToRemove) {
+        if (filesToUse[i].equals(javaFilesToRemove[j])) {
+          break;
+        }
+        if (j == javaFilesToRemove.length - 1) {
+          filesToUseFinal.push(filesToUse[i]);
+        }
+      }
+    }
+
+    return filesToUseFinal;
   }
 
   return filesToUse;

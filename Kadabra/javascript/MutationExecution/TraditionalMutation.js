@@ -5,6 +5,7 @@ laraImport("weaver.Script");
 laraImport("kadabra.KadabraNodes");
 laraImport("MutationOperators.*");
 laraImport("MutatorList");
+laraImport("Decomposition");
 
 const outputPath = laraArgs.outputPath;
 const filePath = laraArgs.filePath;
@@ -29,6 +30,7 @@ function main() {
     return;
   }
 
+  changeVarDeclarations();
   println("Traditional Mutation");
 
   let output = {};
