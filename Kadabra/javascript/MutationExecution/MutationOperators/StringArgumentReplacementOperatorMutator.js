@@ -16,25 +16,36 @@ class StringArgumentReplacementOperatorMutator extends Mutator {
     addJp(joinpoint) {
 
 
-        if (joinpoint.instanceOf('callStatement')) {
+        if (joinpoint.instanceOf('literal') && joinpoint.type == 'String' && joinpoint.parent.type != undefined) {
 
+            println("Parent:  " + joinpoint);
+            println("Type: " + joinpoint.parent.type + ", isUndefined: " + (joinpoint.parent.type === undefined));
 
-            for (const element of joinpoint.call.children) {
+            this.mutationPoints.push(joinpoint);
 
+        } else
 
-                if (element.type == 'String') {
-                    this.mutationPoints.push(element);
+            if (joinpoint.instanceOf('callStatement')) {
 
-                }
-                for (let j = 0; j < element.children.length; j++) {
+                for (const element of joinpoint.call.children) {
 
-                    if (element.children[j].type == 'String') {
-                        this.mutationPoints.push(element.children[j]);
-                        return true;
+                    if (element.type == 'String' && !element.instanceOf('var')) {
+
+                        for (let j = 0; j < element.children.length; j++) {
+
+                            if (element.children[j].type == 'String') {
+                                
+                                this.mutationPoints.push(element.children[j]);
+
+                            }
+                        }
                     }
-                }
 
+                }
             }
+
+        if (this.mutationPoints.length > 0) {
+            return true;
         }
         return false;
     }
@@ -71,7 +82,6 @@ class StringArgumentReplacementOperatorMutator extends Mutator {
         println("/*--------------------------------------*/");
 
 
-        println(" this.mutationPoint" + this.mutationPoint);
     }
 
     _restorePrivate() {
@@ -81,14 +91,13 @@ class StringArgumentReplacementOperatorMutator extends Mutator {
     }
 
 
-
-    toString() {
-        return `String Argument Replacement Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
-    }
     toJson() {
         return {
             mutationOperatorArgumentsList: [],
             operator: this.name,
         };
+    }
+    toString() {
+        return `String Argument Replacement Operator Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
     }
 }
