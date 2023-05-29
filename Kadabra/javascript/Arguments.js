@@ -28,15 +28,15 @@ class Arguments {
     }
 
     this.includesFolder = (
-        includesFolder +
-        Io.getSeparator() +
-        "MutationExecution"
-      ).trim();
-    this.stackTrace = true;
+      includesFolder +
+      Io.getSeparator() +
+      "MutationExecution"
+    ).trim();
+    this.stackTrace = false;
     this.externalDependencies = [];
-    this.debugMode = true;
+    this.debugMode = false;
     this.args = args;
-    this.fullyQualifiedNames = true;
+    this.fullyQualifiedNames = false;
     this.workspaceFolder = workspaceFolder;
   }
 

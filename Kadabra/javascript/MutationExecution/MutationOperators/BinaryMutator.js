@@ -28,12 +28,15 @@ class BinaryMutator extends Mutator {
   addJp(joinpoint) {
     if (
       joinpoint.instanceOf("binaryExpression") &&
-      joinpoint.operator === this.original
+      joinpoint.operator === this.original &&
+      !(joinpoint.type === "String") &&
+      !(joinpoint.type === "char") &&
+      !(joinpoint.rhs.type === "char") &&
+      !(joinpoint.lhs.type === "char")
     ) {
       if (
         this.arithmeticOperators.contains(this.original) &&
-        this.arithmeticOperators.contains(this.result) &&
-        !(joinpoint.type === "String")
+        this.arithmeticOperators.contains(this.result)
       ) {
         this.mutationPoints.push(joinpoint);
       } else if (

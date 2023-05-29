@@ -22,6 +22,7 @@ const classes = {
   StringArgumentReplacementOperatorMutator,
   UnaryAddOperatorMutator,
   UnaryDeletionOperatorMutator,
+  StringCallReplacementOperatorMutator,
 };
 
 const mutatorList = getMutators();

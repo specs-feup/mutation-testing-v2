@@ -79,17 +79,22 @@ public class MavenTestService {
 
             //Creates the tests in the database
             HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults = getMavenTestResults(projectsPath + projectVersion.getProject().getProjectPath() +  File.separator +"target" +File.separator +"surefire-reports");
-            Float testRunTime = getTestTime(testResults);
-            boolean failedtest = saveTestResults(testResults, projectTestExecution);
 
-            projectTestExecution.setFailedTests(failedtest);
-            projectTestExecution.setTestRunTime(testRunTime);
-            projectTestExecution.setCompilationTime(OutputParsingHelper.round(totalElapsedTime-testRunTime));
-            projectTestExecution.setFailedCompilation(false);
-            projectTestExecution = projectTestExecutionRepository.save(projectTestExecution);
+            if (testResults.isEmpty()){
+                sr.setAsError("Error Getting Test Results");
+            }else{
+                Float testRunTime = getTestTime(testResults);
+                boolean failedtest = saveTestResults(testResults, projectTestExecution);
 
-            sr.setAsSuccess();
-            sr.setData(projectTestExecution);
+                projectTestExecution.setFailedTests(failedtest);
+                projectTestExecution.setTestRunTime(testRunTime);
+                projectTestExecution.setCompilationTime(OutputParsingHelper.round(totalElapsedTime-testRunTime));
+                projectTestExecution.setFailedCompilation(false);
+                projectTestExecution = projectTestExecutionRepository.save(projectTestExecution);
+
+                sr.setAsSuccess();
+                sr.setData(projectTestExecution);
+            }
         }else{
             // Cria a lista de argumentos e a lista com os nomes
             // operatorNameList = ["BinaryMutator", "BinaryMutator"]
@@ -256,10 +261,13 @@ public class MavenTestService {
 
     private Float getTestTime(HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults) {
         Float testTime = Float.parseFloat("0");
+        System.out.println(testResults);
         for(String packageName: testResults.keySet()){
             for (String className: testResults.get(packageName).keySet()){
-                for(String testname: testResults.get(packageName).get(className).keySet()){
-                    testTime = OutputParsingHelper.round(testTime + testResults.get(packageName).get(className).get(testname).getTestRunTime());
+                if (testResults.get(packageName).get(className)!= null){
+                    for(String testname: testResults.get(packageName).get(className).keySet()){
+                        testTime = OutputParsingHelper.round(testTime + testResults.get(packageName).get(className).get(testname).getTestRunTime());
+                    }
                 }
             }
         }
@@ -277,6 +285,7 @@ public class MavenTestService {
             if (line.contains("Total time:")) {
                 totalTimeLine = line;
             }
+            System.out.println(line);
         }
         reader.close();
 
@@ -307,15 +316,18 @@ public class MavenTestService {
                 TestClass testClass = new TestClass(classKey, testPackage);
                 testClassRepository.save(testClass);
 
-                for (String testKey: testResults.get(packageKey).get(classKey).keySet()){
-                    TestUnit testUnitAux = testResults.get(packageKey).get(classKey).get(testKey);
-                    testUnitAux.setTestClass(testClass);
-                    testUnitRepository.save(testUnitAux);
+                if (testResults.get(packageKey).get(classKey) != null){
+                    for (String testKey: testResults.get(packageKey).get(classKey).keySet()){
+                        TestUnit testUnitAux = testResults.get(packageKey).get(classKey).get(testKey);
+                        testUnitAux.setTestClass(testClass);
+                        testUnitRepository.save(testUnitAux);
 
-                    if (testUnitAux.isFailed()){
-                        failedtest = true;
+                        if (testUnitAux.isFailed() && !testUnitAux.isSkiped()){
+                            failedtest = true;
+                        }
                     }
                 }
+
             }
         }
 
@@ -324,6 +336,7 @@ public class MavenTestService {
 
 
     private HashMap<String, HashMap<String, HashMap<String, TestUnit>>> getMavenTestResults(String path) throws MavenReportException {
+        System.out.println("Getting test results: " + path);
         File reports = new File(path);
         List<File> aux = new ArrayList<>();
         aux.add(reports);
@@ -402,10 +415,8 @@ public class MavenTestService {
 
         OperatorValidator operatorValidator = new OperatorValidator();
         boolean validOperators = operatorValidator.validate(operatorNameList, operatorArgumentList);
-        System.out.println("Valid Operators: " + validOperators);
 
         if (validOperators){
-            System.out.println("Entrou 2.0");
             String projectExecutionName = projectVersionTo.getProject().getProjectName() + "_" + UUID.randomUUID();
             List<String> fileList = Githelper.getChangedFiles(projectVersionFrom.getVersion(), projectVersionTo.getVersion(), projectsPath + projectVersionTo.getProject().getProjectPath(), projectVersionTo.getProject().getTestFolder());
 

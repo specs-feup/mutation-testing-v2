@@ -70,6 +70,8 @@ function applyTraditionalMutation() {
   let auxOutputStr = [];
   for (mutator of mutatorList) {
     while (mutator.hasMutations()) {
+      let auxLine = mutator.getMutationPoint().line;
+
       //Aplies the mutation
       mutator.mutate();
 
@@ -79,7 +81,7 @@ function applyTraditionalMutation() {
       auxOutputStr.push({
         mutantId: path,
         mutantion: mutator.toJson(),
-        mutationLine: mutator.getMutationPoint().line,
+        mutationLine: auxLine,
         filePath: Io.getRelativePath(filePath, projectPath),
       });
     }

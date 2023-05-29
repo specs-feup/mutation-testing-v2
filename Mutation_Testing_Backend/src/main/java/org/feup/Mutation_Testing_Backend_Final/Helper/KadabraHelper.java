@@ -16,10 +16,10 @@ import java.util.List;
 public class KadabraHelper {
 
     public static boolean callKadabra(String projectPath, String projectFolderToIgnore, String includesFolder, String pathToKadabraEntryPoint, String outputPath, boolean traditionaMutation, List<String> operatorNameList, List<List<String>> operatorArgumentList, String projectExecutionName){
-        return callKadabra(projectPath, projectFolderToIgnore, null, includesFolder, pathToKadabraEntryPoint,  outputPath,  traditionaMutation, operatorNameList,  operatorArgumentList, projectExecutionName);
+        return callKadabra(projectPath, projectFolderToIgnore, null, includesFolder, pathToKadabraEntryPoint,  outputPath,  traditionaMutation, operatorNameList,  operatorArgumentList, projectExecutionName, false);
     }
 
-    public static boolean callKadabra(String projectPath, String projectFolderToIgnore, String projectFolderToIgnoreAndroid, String includesFolder, String pathToKadabraEntryPoint, String outputPath, boolean traditionaMutation, List<String> operatorNameList, List<List<String>> operatorArgumentList, String projectExecutionName){
+    public static boolean callKadabra(String projectPath, String projectFolderToIgnore, String projectFolderToIgnoreAndroid, String includesFolder, String pathToKadabraEntryPoint, String outputPath, boolean traditionaMutation, List<String> operatorNameList, List<List<String>> operatorArgumentList, String projectExecutionName, boolean isAndroid){
         System.out.println("Chamada ao kadabra");
         DataStore data = DataStore.newInstance("Kadabra Options");
 
@@ -31,7 +31,7 @@ public class KadabraHelper {
         //data.set(JavaWeaverKeys.NO_CLASSPATH);
         //data.set(JavaWeaverKeys.INCLUDE_DIRS, FileList.newInstance(new File()))
         data.set(JavaWeaverKeys.WRITE_CODE, false);
-        data.set(JavaWeaverKeys.FORMAT, true);
+        //data.set(JavaWeaverKeys.FORMAT, true);
         data.set(LaraiKeys.EXTERNAL_DEPENDENCIES,
                 StringList.newInstance(
                         "https://github.com/specs-feup/lara-framework.git?folder=experimental/SourceAction",
@@ -49,6 +49,8 @@ public class KadabraHelper {
         javascriptArguments.put("operatorArgumentList", operatorArgumentList);
         javascriptArguments.put("projectExecutionName", projectExecutionName);
         javascriptArguments.put("includesFolder", includesFolder);
+        javascriptArguments.put("isAndroid", isAndroid);
+
 
         data.put(LaraiKeys.ASPECT_ARGS, javascriptArguments.toJSONString());
 

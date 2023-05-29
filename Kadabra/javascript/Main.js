@@ -13,6 +13,7 @@ const operatorNameList = laraArgs.operatorNameList;
 const operatorArgumentList = laraArgs.operatorArgumentList;
 const projectExecutionName = laraArgs.projectExecutionName;
 const includesFolder = laraArgs.includesFolder;
+const isAndroid = laraArgs.isAndroid;
 
 main();
 

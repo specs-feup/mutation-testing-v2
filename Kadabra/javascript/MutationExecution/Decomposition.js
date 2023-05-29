@@ -1,6 +1,11 @@
 function changeVarDeclarations() {
   for (var jp of Query.root().descendants) {
-    if (jp.instanceOf("localVariable") && jp.numChildren >= 2) {
+    if (
+      jp.instanceOf("localVariable") &&
+      jp.numChildren >= 2 &&
+      !(jp.parent.type == "for") &&
+      !jp.parent.instanceOf("try")
+    ) {
       // Create write reference to local variable
       let localVar = KadabraNodes.var(jp, true);
       // Get initialization, and remove it from declaration
