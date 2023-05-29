@@ -12,6 +12,9 @@ class NullIntentOperatorMutator extends Mutator {
         this.mutationPoint = undefined;
         this.previousValue = undefined;
     }
+    isAndroidSpecific(){
+      return true;
+    }
     addJp(joinpoint) {
         if (
             joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var')
@@ -73,4 +76,3 @@ class NullIntentOperatorMutator extends Mutator {
         };
     }
 }
-

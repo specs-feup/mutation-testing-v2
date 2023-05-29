@@ -3,50 +3,40 @@ laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
 
-class NotSerializableOperatorMutator extends Mutator {
+class InvalidIDFindViewOperatorMutator extends Mutator {
     constructor() {
-        super("NotSerializableOperatorMutator");
+        super("InvalidIDFindViewOperatorMutator");
 
         this.mutationPoints = [];
         this.currentIndex = 0;
         this.mutationPoint = undefined;
         this.previousValue = undefined;
-        this.removedInterface = undefined;
     }
-    
     isAndroidSpecific(){
-      return false;
-    }
-
+  return true;
+}
     addJp(joinpoint) {
-        // println("joinpoint   " + joinpoint.interfaces);
 
+        if (joinpoint.instanceOf('call')
+        ) {
+            println("kks" + joinpoint.ast);
+            if (joinpoint.children[0] == 'findViewById - Executable') {
 
-        // println("joinpoint   " + joinpoint.superClassJp);
-
-
-        //const aClass = Query.search("class", "LoginActivity").first();
-        //println(aClass.removeInterface("java.io.Serializable"));
-
-
-
-
-        if (joinpoint.instanceOf("class")) {
-            if (joinpoint.interfaces.contains("java.io.Serializable")) {
-                this.mutationPoints.push(joinpoint);
-                return true;
+                this.mutationPoints.push(joinpoint.children[1]);
             }
+        }
+        if (this.mutationPoints.length > 0) {
+            return true;
         }
         return false;
     }
+
     hasMutations() {
         return this.currentIndex < this.mutationPoints.length;
     }
 
     getMutationPoint() {
-
         if (this.isMutated) {
-            println("this.isMutated   " + this.mutationPoint);
             return this.mutationPoint;
         } else {
             if (this.currentIndex < this.mutationPoints.length) {
@@ -58,44 +48,39 @@ class NotSerializableOperatorMutator extends Mutator {
     }
 
     _mutatePrivate() {
+        const randomIndex = Math.floor(Math.random() * 1000000).toString();
+
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
         this.currentIndex++;
 
-
         this.previousValue = this.mutationPoint;
-        println("this.previousValue   " + this.previousValue);
-
-        this.removedInterface = this.mutationPoint.removeInterface("java.io.Serializable");
-
-        println("this.removedInterface   " + this.removedInterface);
+        this.mutationPoint = this.mutationPoint.insertReplace(randomIndex);
 
 
         println("/*--------------------------------------*/");
         println("Mutating operator n." + this.currentIndex + ": " + this.previousValue
-            + " to " + "\"\"");
+            + " to " + this.mutationPoint);
         println("/*--------------------------------------*/");
 
 
-        println(" this.mutationPoint" + this.mutationPoint);
     }
-
     _restorePrivate() {
-        this.mutationPoint = this.mutationPoint.addInterface(this.removedInterface);
+
+        this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
         this.mutationPoint = undefined;
-
     }
-
 
     toString() {
-        return `Not Serializable Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
-    }
-    toJson() {
-        return {
-            mutationOperatorArgumentsList: [],
-            operator: this.name,
-        }
+        return `Invalid ID Find View Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
     }
 
+    toJson() {
+        return {
+            mutationOperatorArgumentsList: []
+            ,
+            operator: this.name,
+        };
+    }
 }

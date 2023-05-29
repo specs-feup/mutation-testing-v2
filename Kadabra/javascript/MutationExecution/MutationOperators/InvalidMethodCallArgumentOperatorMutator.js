@@ -14,6 +14,10 @@ class InvalidMethodCallArgumentOperatorMutator extends Mutator {
         this.dataTypeOfSecondParam = undefined;
     }
 
+
+    isAndroidSpecific(){
+      return false;
+    }
     /*&&
             joinpoint.typeReference === "Intent" &&
             joinpoint.name === "<init>"
@@ -92,7 +96,7 @@ class InvalidMethodCallArgumentOperatorMutator extends Mutator {
 
 
     toString() {
-        return `Invalid Method Call Argument Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+        return `Invalid Method Call Argument Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
     }
 
     toJson() {

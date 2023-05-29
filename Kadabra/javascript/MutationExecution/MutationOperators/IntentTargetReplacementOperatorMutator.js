@@ -15,7 +15,9 @@ class IntentTargetReplacementOperatorMutator extends Mutator {
         this.targetValues = [];
         this.allClassValues = [];
     }
-
+    isAndroidSpecific(){
+      return true;
+    }
     addJp(joinpoint) {
 
         if (joinpoint.instanceOf('class')) {
@@ -113,7 +115,7 @@ class IntentTargetReplacementOperatorMutator extends Mutator {
 
 
     toString() {
-        return `Intent Target Replacement Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+        return `Intent Target Replacement Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
     }
 
     toJson() {

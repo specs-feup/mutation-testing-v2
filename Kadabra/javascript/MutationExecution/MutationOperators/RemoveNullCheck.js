@@ -15,6 +15,9 @@ class RemoveNullCheck extends Mutator {
 		this.previousValue = undefined;
 	}
 
+	isAndroidSpecific(){
+		return false;
+	}
 
 	addJp(joinpoint) {
 		if (joinpoint.instanceOf("binaryExpression") && (joinpoint.operator === '!=' || joinpoint.operator === '==')) {
@@ -80,7 +83,7 @@ class RemoveNullCheck extends Mutator {
 	}
 
 	toString() {
-		return `Remove Null Check Mutator from ${this.previousValue} to ${this.newValue}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+		return `Remove Null Check Mutator from ${this.previousValue} to ${this.newValue}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
 	}
 
 

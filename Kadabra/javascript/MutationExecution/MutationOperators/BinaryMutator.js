@@ -21,6 +21,9 @@ class BinaryMutator extends Mutator {
     this.assignmentOperators = ["=", "+=", "-=", "*=", "/=", "%="];
   }
 
+  isAndroidSpecific(){
+    return false;
+  }
   /*** IMPLEMENTATION OF INSTANCE METHODS ***/
   addJp(joinpoint) {
     if (

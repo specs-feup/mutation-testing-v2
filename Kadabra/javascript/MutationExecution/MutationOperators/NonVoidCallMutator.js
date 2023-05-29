@@ -25,7 +25,9 @@ class NonVoidCallMutator extends Mutator {
 		this.$callNode = undefined;
 
 	}
-
+  isAndroidSpecific(){
+    return false;
+  }
 
 	/*** IMPLEMENTATION OF INSTANCE METHODS ***/
 
@@ -149,4 +151,3 @@ class NonVoidCallMutator extends Mutator {
 		};
 	}
 }
-

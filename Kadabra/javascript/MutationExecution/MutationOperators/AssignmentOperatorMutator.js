@@ -14,7 +14,9 @@ class AssignmentOperatorMutator extends Mutator {
         this.mutationPoint = undefined;
         this.previousValue = undefined;
     }
-
+isAndroidSpecific(){
+  return false;
+}
     /*** IMPLEMENTATION OF INSTANCE METHODS ***/
     addJp(joinpoint) {
         if (

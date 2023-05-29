@@ -17,7 +17,10 @@ class StringCallReplacementOperatorMutator extends Mutator {
         this.methodsOfJavaLang1arguments = ["charAt", "startsWith", "endsWith", "contains"];
 
     }
-    /* 
+    isAndroidSpecific(){
+      return false;
+    }
+    /*
            Information From chatGpt
                   String class methods:
                       length()

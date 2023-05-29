@@ -15,7 +15,9 @@ class FindViewByIdDeletionMutator extends Mutator {
 
     }
 
-
+    isAndroidSpecific(){
+      return true;
+    }
 
     addJp(joinpoint) {
         if (joinpoint.instanceOf('call') && joinpoint.toString().includes("findViewById")) {

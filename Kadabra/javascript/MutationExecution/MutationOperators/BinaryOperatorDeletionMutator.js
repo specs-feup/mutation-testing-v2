@@ -16,6 +16,9 @@ class BinaryOperatorDeletionMutator extends Mutator {
         this.isFirst = false;
     }
 
+    isAndroidSpecific(){
+      return false;
+    }
     addJp(joinpoint) {
         if (joinpoint.instanceOf("binaryExpression")) {
             this.mutationPoints.push(joinpoint);

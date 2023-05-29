@@ -19,6 +19,10 @@ class RemoveConditionalMutator extends Mutator {
 
 	}
 
+	isAndroidSpecific(){
+	      return false;
+	    }
+
 	/*** IMPLEMENTATION OF INSTANCE METHODS ***/
 
 

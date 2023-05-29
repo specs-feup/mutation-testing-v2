@@ -13,6 +13,10 @@ class StringArgumentReplacementOperatorMutator extends Mutator {
         this.previousValue = undefined;
     }
 
+    isAndroidSpecific(){
+      return false;
+    }
+
     addJp(joinpoint) {
 
 
@@ -34,7 +38,7 @@ class StringArgumentReplacementOperatorMutator extends Mutator {
                         for (let j = 0; j < element.children.length; j++) {
 
                             if (element.children[j].type == 'String') {
-                                
+
                                 this.mutationPoints.push(element.children[j]);
 
                             }
@@ -98,6 +102,6 @@ class StringArgumentReplacementOperatorMutator extends Mutator {
         };
     }
     toString() {
-        return `String Argument Replacement Operator Mutator from ${this.$original} to ${this.$expr}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+        return `String Argument Replacement Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
     }
 }

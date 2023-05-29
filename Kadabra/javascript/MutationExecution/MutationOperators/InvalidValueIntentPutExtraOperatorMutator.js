@@ -12,7 +12,9 @@ class InvalidValueIntentPutExtraOperatorMutator extends Mutator {
         this.mutationPoint = undefined;
         this.previousValue = undefined;
     }
-
+    isAndroidSpecific(){
+      return true;
+    }
     /*&&
             joinpoint.typeReference === "Intent" &&
             joinpoint.name === "<init>"

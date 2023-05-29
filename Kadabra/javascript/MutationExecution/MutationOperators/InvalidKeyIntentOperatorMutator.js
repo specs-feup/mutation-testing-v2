@@ -12,6 +12,9 @@ class InvalidKeyIntentOperatorMutator extends Mutator {
         this.mutationPoint = undefined;
         this.previousValue = undefined;
     }
+    isAndroidSpecific(){
+  return true;
+}
 
     /*&&
             joinpoint.typeReference === "Intent" &&
@@ -86,7 +89,7 @@ class InvalidKeyIntentOperatorMutator extends Mutator {
     }
 
     toString() {
-        return `Invalid Key Intent Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+        return `Invalid Key Intent Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
     }
 
     toJson() {

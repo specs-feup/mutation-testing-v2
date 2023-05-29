@@ -14,6 +14,9 @@ class ConstantMutator extends Mutator {
     this.previousValue = undefined;
   }
 
+  isAndroidSpecific(){
+    return false;
+  }
 
   addJp(joinpoint) {
     if (joinpoint.instanceOf("field") ||

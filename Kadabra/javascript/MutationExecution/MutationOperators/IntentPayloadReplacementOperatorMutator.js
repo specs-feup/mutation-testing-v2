@@ -14,6 +14,9 @@ class IntentPayloadReplacementOperatorMutator extends Mutator {
         this.dataTypeOfSecondParam = undefined;
     }
 
+    isAndroidSpecific(){
+      return true;
+    }
     /*&&
             joinpoint.typeReference === "Intent" &&
             joinpoint.name === "<init>"
@@ -107,7 +110,7 @@ class IntentPayloadReplacementOperatorMutator extends Mutator {
 
 
     toString() {
-        return `Intent Payload Replacement Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
+        return `Intent Payload Replacement Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
     }
 
     toJson() {

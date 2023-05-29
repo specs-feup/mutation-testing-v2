@@ -3,38 +3,26 @@ laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
 
-class RandomActionIntentDefinitionOperatorMutator extends Mutator {
+class BuggyGUIListenerOperatorMutator extends Mutator {
     constructor() {
-        super("RandomActionIntentDefinitionOperatorMutator");
+        super("BuggyGUIListenerOperatorMutator");
 
         this.mutationPoints = [];
         this.currentIndex = 0;
         this.mutationPoint = undefined;
         this.previousValue = undefined;
     }
-    
-    isAndroidSpecific(){
-      return true;
-    }
-    /*&&
-            joinpoint.typeReference === "Intent" &&
-            joinpoint.name === "<init>"
-            && joinpoint.type === "Executable"
-    /*** IMPLEMENTATION OF INSTANCE METHODS ***/
 
+  isAndroidSpecific(){
+  return true;
+}
     addJp(joinpoint) {
         if (
-            joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var')
+            joinpoint.type === "OnClickListener" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var')
         ) {
             this.mutationPoints.push(joinpoint);
-            debug(
-                "Adicionou um ponto de mutação " +
-                this.$expr +
-                " a " +
-                joinpoint +
-                " na linha " +
-                joinpoint.line
-            );
+        }
+        if (this.mutationPoints.length > 0) {
             return true;
         }
         return false;
@@ -57,17 +45,13 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
     }
 
     _mutatePrivate() {
-
-        let randomValue = (Math.random() + 1).toString(36).substring(7);
-
         this.mutationPoint = this.mutationPoints[this.currentIndex];
+
+
         this.currentIndex++;
 
-
-        this.previousValue = this.mutationPoint.copy();
-
-
-        this.mutationPoint = this.mutationPoint.insertReplace(randomValue);
+        this.previousValue = this.mutationPoint;
+        this.mutationPoint = this.mutationPoint.insertReplace("null");
 
 
         println("/*--------------------------------------*/");
@@ -76,19 +60,16 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
         println("/*--------------------------------------*/");
 
 
-        println(" this.mutationPoint" + this.mutationPoint);
     }
-
-
-
     _restorePrivate() {
+
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
         this.mutationPoint = undefined;
     }
 
     toString() {
-        return `Random Action Intent Definition Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
+        return `Buggy GUI Listener Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previoues value ${this.previousValue}`;
     }
 
     toJson() {

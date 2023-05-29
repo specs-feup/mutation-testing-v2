@@ -14,7 +14,9 @@ class UnaryDeletionOperatorMutator extends Mutator {
         this.previousValue = undefined;
     }
 
-
+    isAndroidSpecific(){
+      return false;
+    }
 
     /*** IMPLEMENTATION OF INSTANCE METHODS ***/
     addJp(joinpoint) {
