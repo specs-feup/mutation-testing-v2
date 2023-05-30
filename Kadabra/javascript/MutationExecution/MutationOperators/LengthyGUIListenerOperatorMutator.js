@@ -90,6 +90,7 @@ class LengthyGUIListenerOperatorMutator extends Mutator {
             mutationOperatorArgumentsList: []
             ,
             operator: this.name,
+            isAndroidSpecific: this.isAndroidSpecific(),
         };
     }
 }

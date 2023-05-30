@@ -80,6 +80,7 @@ class NullBluetoothAdapterOperatorMutator extends Mutator {
             mutationOperatorArgumentsList: []
             ,
             operator: this.name,
+            isAndroidSpecific: this.isAndroidSpecific(),
         };
     }
 }

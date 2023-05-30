@@ -121,6 +121,7 @@ class ForLoopReplacementOperatorMutator extends Mutator {
         return {
             mutationOperatorArgumentsList: [],
             operator: this.name,
+            isAndroidSpecific: this.isAndroidSpecific(),
         };
     }
 }

@@ -79,6 +79,7 @@ class FindViewByIdReturnsNullOperatorMutator extends Mutator {
             mutationOperatorArgumentsList: []
             ,
             operator: this.name,
+            isAndroidSpecific: this.isAndroidSpecific(),
         };
     }
 }

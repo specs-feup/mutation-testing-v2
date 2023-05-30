@@ -12,8 +12,8 @@ class NullValueIntentOperatorMutator extends Mutator {
         this.mutationPoint = undefined;
         this.previousValue = undefined;
     }
-    isAndroidSpecific(){
-      return true;
+    isAndroidSpecific() {
+        return true;
     }
     /*&&
             joinpoint.typeReference === "Intent" &&
@@ -95,6 +95,7 @@ class NullValueIntentOperatorMutator extends Mutator {
         return {
             mutationOperatorArgumentsList: [],
             operator: this.name,
+            isAndroidSpecific: this.isAndroidSpecific(),
         };
     }
 }

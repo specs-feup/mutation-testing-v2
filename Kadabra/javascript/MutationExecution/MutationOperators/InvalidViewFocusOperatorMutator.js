@@ -82,6 +82,7 @@ class InvalidViewFocusOperatorMutator extends Mutator {
             mutationOperatorArgumentsList: []
             ,
             operator: this.name,
+            isAndroidSpecific: this.isAndroidSpecific(),
         };
     }
 }

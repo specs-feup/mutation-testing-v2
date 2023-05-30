@@ -121,6 +121,7 @@ class BinaryMutator extends Mutator {
     return {
       mutationOperatorArgumentsList: [this.original, this.result],
       operator: this.name,
+      isAndroidSpecific: this.isAndroidSpecific(),
     };
   }
 }

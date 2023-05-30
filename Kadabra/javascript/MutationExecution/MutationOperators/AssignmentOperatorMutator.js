@@ -14,9 +14,9 @@ class AssignmentOperatorMutator extends Mutator {
         this.mutationPoint = undefined;
         this.previousValue = undefined;
     }
-isAndroidSpecific(){
-  return false;
-}
+    isAndroidSpecific() {
+        return false;
+    }
     /*** IMPLEMENTATION OF INSTANCE METHODS ***/
     addJp(joinpoint) {
         if (
@@ -82,6 +82,7 @@ isAndroidSpecific(){
         return {
             mutationOperatorArgumentsList: [this.original, this.expr],
             operator: this.name,
+            isAndroidSpecific: this.isAndroidSpecific(),
         };
     }
 }

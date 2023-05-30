@@ -120,6 +120,7 @@ class ConstantMutator extends Mutator {
     return {
       mutationOperatorArgumentsList: [this.expr],
       operator: this.name,
+      isAndroidSpecific: this.isAndroidSpecific(),
     };
   }
 

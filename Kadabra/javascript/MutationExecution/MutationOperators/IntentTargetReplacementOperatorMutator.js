@@ -122,6 +122,7 @@ class IntentTargetReplacementOperatorMutator extends Mutator {
         return {
             mutationOperatorArgumentsList: [],
             operator: this.name,
+            isAndroidSpecific: this.isAndroidSpecific(),
         };
     }
 

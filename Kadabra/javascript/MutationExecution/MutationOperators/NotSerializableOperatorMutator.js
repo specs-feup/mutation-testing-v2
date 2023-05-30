@@ -95,6 +95,7 @@ class NotSerializableOperatorMutator extends Mutator {
         return {
             mutationOperatorArgumentsList: [],
             operator: this.name,
+            isAndroidSpecific: this.isAndroidSpecific(),
         }
     }
 

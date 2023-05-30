@@ -71,6 +71,7 @@ class FindViewByIdDeletionMutator extends Mutator {
         return {
             mutationOperatorArgumentsList: [],
             operator: this.name,
+            isAndroidSpecific: this.isAndroidSpecific(),
         };
     }
 }
