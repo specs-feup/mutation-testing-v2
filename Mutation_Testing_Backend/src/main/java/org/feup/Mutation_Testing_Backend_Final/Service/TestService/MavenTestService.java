@@ -336,7 +336,6 @@ public class MavenTestService {
 
 
     private HashMap<String, HashMap<String, HashMap<String, TestUnit>>> getMavenTestResults(String path) throws MavenReportException {
-        System.out.println("Getting test results: " + path);
         File reports = new File(path);
         List<File> aux = new ArrayList<>();
         aux.add(reports);

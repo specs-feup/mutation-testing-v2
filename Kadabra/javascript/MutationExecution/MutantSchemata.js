@@ -42,6 +42,7 @@ function main() {
     output = runTreeAndApplyMetaMutant();
   }
 
+  print("Output" + output);
   Script.setOutput({ output });
 }
 
@@ -212,6 +213,7 @@ function runTreeAndApplyMetaMutantAndroid() {
     break;
   }
 
+  //Query.search(FIle)
   for (var $jp of Query.root().descendants) {
     var $call = $jp.ancestor("call");
 
@@ -319,6 +321,7 @@ function runTreeAndApplyMetaMutantAndroid() {
     Io.getSeparator() +
     relativePath.replace("/", Io.getSeparator());
 
+  //Query.search("File")
   Io.writeFile(aux, Query.root().srcCode);
 
   return JSON.stringify(mutantList);

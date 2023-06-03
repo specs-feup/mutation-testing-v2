@@ -98,7 +98,13 @@ class Arguments {
     strAux.push(this.workspaceFolder);
 
     //Incomplete classpath
-    strAux.push("-X");
+    //strAux.push("-X");
+
+    //class
+    strAux.push("-I");
+    strAux.push(
+      "/home/david/Desktop/Projects/java-jwt/lib/build/classes/java/main;/home/david/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.14.2/a7aae9525864930723e3453ab799521fdfd9d873/jackson-annotations-2.14.2.jar;/home/david/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.14.2/f804090e6399ce0cf78242db086017512dd71fcc/jackson-core-2.14.2.jar;/home/david/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.14.2/1e71fddbc80bb86f71a6345ac1e8ab8a00e7134/jackson-databind-2.14.2.jar"
+    );
 
     return strAux;
   }

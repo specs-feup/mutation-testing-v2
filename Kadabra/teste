@@ -9,13 +9,13 @@
       <string>workspace</string>
       <FileList>
         <fileList>
-          <file>../../Teste.java</file>
+          <file>../../Projects/java-jwt/lib/src/main/java/com/auth0/jwt/JWTVerifier.java</file>
         </fileList>
       </FileList>
     </entry>
     <entry>
       <string>write_code</string>
-      <boolean>false</boolean>
+      <boolean>true</boolean>
     </entry>
     <entry>
       <string>apkPackageFilter</string>
@@ -59,7 +59,7 @@
     </entry>
     <entry>
       <string>output</string>
-      <file></file>
+      <file>../../Kadabra Output</file>
     </entry>
     <entry>
       <string>java includes dir</string>

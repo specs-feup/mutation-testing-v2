@@ -1,7 +1,6 @@
 package org.feup.Mutation_Testing_Backend_Final.Service.TestService;
 
 
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.feup.Mutation_Testing_Backend_Final.Dto.SimpleResponse;
 import org.feup.Mutation_Testing_Backend_Final.Helper.Githelper;
 import org.feup.Mutation_Testing_Backend_Final.Helper.KadabraHelper;
@@ -26,7 +25,6 @@ import org.feup.Mutation_Testing_Backend_Final.Repository.Test.testUnitRepositor
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -37,7 +35,6 @@ import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.feup.Mutation_Testing_Backend_Final.Helper.OutputParsingHelper.extractTotalTimeGradle;
 import static org.feup.Mutation_Testing_Backend_Final.Helper.OutputParsingHelper.getGradleClassName;
@@ -58,12 +55,10 @@ public class GradleTestService {
     private final testUnitRepository testUnitRepository;
     private final mutationOperatorRepository mutationOperatorRepository;
     private final mutationOperatorArgumentsRepository mutationOperatorArgumentsRepository;
-    private final projectVersionRepository projectVersionRepository;
 
 
     @Autowired
-    public GradleTestService(projectVersionRepository projectVersionRepository,projectTestExecutionRepository projectTestExecutionRepository, testPackageRepository testPackageRepository, testClassRepository testClassRepository, testUnitRepository testUnitRepository, mutationOperatorRepository mutationOperatorRepository, mutationOperatorArgumentsRepository mutationOperatorArgumentsRepository) {
-        this.projectVersionRepository = projectVersionRepository;
+    public GradleTestService(projectTestExecutionRepository projectTestExecutionRepository, testPackageRepository testPackageRepository, testClassRepository testClassRepository, testUnitRepository testUnitRepository, mutationOperatorRepository mutationOperatorRepository, mutationOperatorArgumentsRepository mutationOperatorArgumentsRepository) {
         this.projectTestExecutionRepository = projectTestExecutionRepository;
         this.testPackageRepository = testPackageRepository;
         this.testClassRepository = testClassRepository;
@@ -88,12 +83,12 @@ public class GradleTestService {
             //Creates the tests in the database
             HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults;
             if(projectVersion.getProject().isAndroid()){
-                testResults = getGradeTestResults(projectsPath + projectVersion.getProject().getProjectPath() + File.separator +projectVersion.getProject().getAndroidBuildFolder() +File.separator +"build" + File.separator + "test-results"+ File.separator + "testDebugUnitTest");
+                testResults = getGradeTestResults(projectsPath + projectVersion.getProject().getProjectPath() +projectVersion.getProject().getAndroidBuildFolder() +File.separator +"build" + File.separator + "test-results"+ File.separator + "testDebugUnitTest");
 
                 Float totalElapsedTimeAndroidTests = executeGradleTests(projectsPath + projectVersion.getProject().getProjectPath(), "connectedAndroidTest");
                 totalElapsedTime += totalElapsedTimeAndroidTests;
 
-                testResults.putAll(getGradeTestResults(projectsPath + projectVersion.getProject().getProjectPath() + File.separator +projectVersion.getProject().getAndroidBuildFolder() +File.separator +"build" + File.separator + "outputs"+ File.separator + "androidTest-results" + File.separator + "connected"));
+                testResults.putAll(getGradeTestResults(projectsPath + projectVersion.getProject().getProjectPath() + projectVersion.getProject().getAndroidBuildFolder() +File.separator +"build" + File.separator + "outputs"+ File.separator + "androidTest-results" + File.separator + "connected"));
 
                 Float testRunTime = getTestTime(testResults);
                 boolean failedtest = saveTestResults(testResults, projectTestExecution);
@@ -107,7 +102,7 @@ public class GradleTestService {
                 sr.setAsSuccess();
                 sr.setData(projectTestExecution);
             }else{
-                testResults = getGradeTestResults(projectsPath + projectVersion.getProject().getProjectPath() + File.separator +"build" +File.separator +"test-results" + File.separator + "test");
+                testResults = getGradeTestResults(projectsPath + projectVersion.getProject().getProjectPath() +projectVersion.getProject().getAndroidBuildFolder() + File.separator +"build" +File.separator +"test-results" + File.separator + "test");
 
                 Float testRunTime = getTestTime(testResults);
                 boolean failedtest = saveTestResults(testResults, projectTestExecution);
@@ -193,12 +188,12 @@ public class GradleTestService {
 
                             HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults;
                             if(projectVersion.getProject().isAndroid()){
-                                testResults = getGradeTestResults(projectsPath + File.separator + projectExecutionName + File.separator +projectVersion.getProject().getAndroidBuildFolder() +File.separator +"build" + File.separator + "test-results"+ File.separator + "testDebugUnitTest");
+                                testResults = getGradeTestResults(projectsPath + File.separator + projectExecutionName + projectVersion.getProject().getAndroidBuildFolder() +File.separator +"build" + File.separator + "test-results"+ File.separator + "testDebugUnitTest");
 
                                 Float totalElapsedTimeAndroidTests = executeGradleTests(projectsPath + File.separator + projectExecutionName, "connectedAndroidTest");
                                 totalElapsedTime += totalElapsedTimeAndroidTests;
 
-                                testResults.putAll(getGradeTestResults(projectsPath + File.separator + projectExecutionName + File.separator + projectVersion.getProject().getAndroidBuildFolder() +File.separator +"build" + File.separator + "outputs"+ File.separator + "androidTest-results" + File.separator + "connected"));
+                                testResults.putAll(getGradeTestResults(projectsPath + File.separator + projectExecutionName + projectVersion.getProject().getAndroidBuildFolder() +File.separator +"build" + File.separator + "outputs"+ File.separator + "androidTest-results" + File.separator + "connected"));
 
                             }else{
                                 testResults = getGradeTestResults(projectsPath + File.separator + projectExecutionName + File.separator +"build" +File.separator +"test-results" + File.separator + "test");
@@ -520,19 +515,5 @@ public class GradleTestService {
     }
 
 
-    /*public void getDiferences() throws GitAPIException, IOException {
-        Optional<ProjectVersion> projectVersionOptional = projectVersionRepository.findById(63L);
-        Optional<ProjectVersion> projectVersionOptionalOlder = projectVersionRepository.findById(62L);
 
-        if (projectVersionOptional.isPresent() && projectVersionOptionalOlder.isPresent()){
-            ProjectVersion projectVersion = projectVersionOptional.get();
-            ProjectVersion projectVersionOlder = projectVersionOptionalOlder.get();
-
-            List<String> lista = Githelper.getChangedFiles(projectVersionOlder.getVersion(), projectVersion.getVersion(), projectsPath + projectVersion.getProject().getProjectPath(), projectVersionTo.getProject());
-
-            for (String fileName:lista) {
-                System.out.println(fileName);
-            }
-        }
-    }*/
 }
