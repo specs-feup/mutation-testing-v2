@@ -3,9 +3,9 @@ laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
 
-class ConstantMutator extends Mutator {
+class ConstantOperatorMutator extends Mutator {
   constructor(expr) {
-    super("ConstantMutator");
+    super("ConstantOperatorMutator");
 
     this.expr = expr;
     this.newValue = undefined;
@@ -14,7 +14,18 @@ class ConstantMutator extends Mutator {
     this.previousValue = undefined;
   }
 
-  isAndroidSpecific(){
+
+  constructor(expr) {
+    super("ConstantOperatorMutator");
+
+    this.expr = expr;
+    this.newValue = undefined;
+    this.mutationPoints = [];
+    this.currentIndex = 0;
+    this.previousValue = undefined;
+  }
+
+  isAndroidSpecific() {
     return false;
   }
 
@@ -24,20 +35,20 @@ class ConstantMutator extends Mutator {
     ) {
 
       if (joinpoint.init === undefined ||
-        !ConstantMutator._isCompatible(joinpoint.type, this.expr.type)
+        !ConstantOperatorMutator._isCompatible(joinpoint.type, this.expr.type)
       ) {
-        println("aqui")
+
         return false;
       }
 
       this.mutationPoints.push(joinpoint);
-      println("xxx" + joinpoint);
+
       return true;
     }
 
     if (joinpoint.instanceOf("assignment")) {
       if (
-        !ConstantMutator._isCompatible(joinpoint.type, this.expr.type)
+        !ConstantOperatorMutator._isCompatible(joinpoint.type, this.expr.type)
       ) {
         return false;
       }
@@ -51,8 +62,7 @@ class ConstantMutator extends Mutator {
   }
 
   static _isCompatible(type1, type2) {
-    println("type1: " + type1);
-    println("type2: " + type2);
+
     return true;
   }
 
@@ -114,11 +124,13 @@ class ConstantMutator extends Mutator {
   }
 
   toString() {
-    return `Constant Mutator from ${this.previousValue} to ${this.newValue}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
+    return `Constant Operator Mutator from ${this.previousValue} to ${this.newValue}, current mutation points ${this.mutationPoints}, current mutation point ${this.newValue} and previous value ${this.previousValue}`;
   }
   toJson() {
     return {
-      mutationOperatorArgumentsList: [this.expr],
+      mutationOperatorArgumentsList: {
+        mutationOperatorFirstArgument: this.expr,
+      },
       operator: this.name,
       isAndroidSpecific: this.isAndroidSpecific(),
     };

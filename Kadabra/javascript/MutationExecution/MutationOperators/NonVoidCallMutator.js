@@ -20,21 +20,19 @@ class NonVoidCallMutator extends Mutator {
 		// Instance variables
 		this.toMutate = [];
 		this.currentIndex = 0;
-
-		this.$originalCallNode = undefined;
-		this.$callNode = undefined;
+		this.originalCallNode = undefined;
+		this.callNode = undefined;
 
 	}
-  isAndroidSpecific(){
-    return false;
-  }
+	isAndroidSpecific() {
+		return false;
+	}
 
 	/*** IMPLEMENTATION OF INSTANCE METHODS ***/
 
 	// Analyze method calls available for Non Void Call mutation and store them
 	addJp(joinpoint) {
 
-		// Map method call type to the respective mutation value (if a type is not on the list, it's mapped to 'null' value)
 		let typeToValue = {
 			'boolean': 'false',
 			'Boolean': 'false',
@@ -57,13 +55,13 @@ class NonVoidCallMutator extends Mutator {
 			let descendants = (joinpoint.instanceOf('if') || joinpoint.instanceOf('loop')) ? joinpoint.cond.descendants : joinpoint.descendants;
 
 			for (let descendant of joinpoint.descendants) {
-				println("dentro1   " + descendant)
+
 				try {
 					if (descendant.instanceOf('call') && descendant.returnType !== 'void') {
 						// Store call for later modification
-						println("dentro2   " + descendant);
+
 						let mutationValue = typeList.includes(descendant.returnType) ? typeToValue[descendant.returnType] : 'null';
-						println("mutationValue  " + mutationValue);
+
 						this.toMutate.push([descendant, mutationValue]);
 						hasMutations = true;
 					}
@@ -79,56 +77,48 @@ class NonVoidCallMutator extends Mutator {
 		return this.currentIndex < this.toMutate.length;
 	}
 
-
 	_mutatePrivate() {
 		let mutationInfo = this.toMutate[this.currentIndex];
 
 		if (!mutationInfo == "undefined") {
-			this.$callNode = mutationInfo[0];
+			this.callNode = mutationInfo[0];
 			let mutationValue = mutationInfo[1];
 
-			this.$originalCode = this.$callNode.parent.srcCode;
+			this.originalCode = this.callNode.parent.srcCode;
 
 			/* Char and String mutation value is a null character, which generates a null node when using it directly with insertReplace.
 			   A KadabraNodes.literal is required to solve the problem */
-			if (this.$callNode.returnType === 'char' || this.$callNode.returnType === 'String') {
+			if (this.callNode.returnType === 'char' || this.callNode.returnType === 'String') {
 				try {
-					let mutatedNode = KadabraNodes.literal(mutationValue, this.$callNode.returnType);
+					let mutatedNode = KadabraNodes.literal(mutationValue, this.callNode.returnType);
 				} catch (e) { println("ERROR: " + e); }
 				println("Nope!!!!");
-				this.$callNode.insertReplace(mutatedNode);
+				this.callNode.insertReplace(mutatedNode);
 			} else {
 				println("Perhaps!!!!");
-				this.$callNode.insertReplace(mutationValue);
+				this.callNode.insertReplace(mutationValue);
 			}
 
 			this.isMutated = true;
 
 			println("/*--------------------------------------*/");
-			println("Mutating operator n." + this.currentIndex + ": " + this.$originalCallNode
-				+ " to " + this.$callNode);
+			println("Mutating operator n." + this.currentIndex + ": " + this.originalCallNode
+				+ " to " + this.callNode);
 			println("/*--------------------------------------*/");
 		}
 	}
 	_restorePrivate() {
 
-		//println("$callNode ->  " + this.$callNode);
-		//println("originalCallNode ->  " + this.$originalCode);
-		//println("Original parent -> " + this.$callNode.parent.srcCode);
-
 		try {
-			this.getMutationPoint().parent.insertReplace(this.$originalCode);
+			this.getMutationPoint().parent.insertReplace(this.originalCode);
 		} catch (e) {
 			println("ERROR!!! " + e);
-			//notImplemented("potato");
 		}
-
-		println("Parent restored -> " + this.getMutationPoint().parent.srcCode + "\n\n\n\n");
 
 		this.currentIndex++;
 		this.isMutated = false;
-		this.$originalCallNode = undefined;
-		this.$callNode = undefined;
+		this.originalCallNode = undefined;
+		this.callNode = undefined;
 	}
 
 
@@ -139,7 +129,6 @@ class NonVoidCallMutator extends Mutator {
 			return undefined;
 		}
 	}
-
 	toString() {
 		return `Non Void Call  Mutator from ${this.originalCallNode} to ${this.CallNode}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
 	}
