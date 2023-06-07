@@ -21,7 +21,7 @@ class BinaryMutator extends Mutator {
     this.assignmentOperators = ["=", "+=", "-=", "*=", "/=", "%="];
   }
 
-  isAndroidSpecific(){
+  isAndroidSpecific() {
     return false;
   }
   /*** IMPLEMENTATION OF INSTANCE METHODS ***/
@@ -63,6 +63,9 @@ class BinaryMutator extends Mutator {
         println("First Operator cannot be replaced with the Second one");
         //return false;
       }
+
+    }
+    if (this.mutationPoints.length > 0) {
       return true;
     }
     return false;
@@ -97,11 +100,11 @@ class BinaryMutator extends Mutator {
     println("/*--------------------------------------*/");
     println(
       "Mutating operator n." +
-        this.currentIndex +
-        ": " +
-        this.previousValue +
-        " to " +
-        this.mutationPoint
+      this.currentIndex +
+      ": " +
+      this.previousValue +
+      " to " +
+      this.mutationPoint
     );
     println("/*--------------------------------------*/");
   }
