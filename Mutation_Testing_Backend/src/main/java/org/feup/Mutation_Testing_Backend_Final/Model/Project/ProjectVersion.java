@@ -22,7 +22,7 @@ public class ProjectVersion {
     private Project project;
 
     @OneToMany(mappedBy = "projectVersion")
-    private List<ProjectTestExecution> projectTestExecutionList;
+    private List<ProjectMutantGeneration> projectMutantGenerations;
 
     public Long getId() {
         return id;
@@ -56,12 +56,12 @@ public class ProjectVersion {
         this.project = project;
     }
 
-    public List<ProjectTestExecution> getProjectTestExecutionList() {
-        return projectTestExecutionList;
+    public List<ProjectMutantGeneration> getProjectMutantGenerations() {
+        return projectMutantGenerations;
     }
 
-    public void setProjectTestExecutionList(List<ProjectTestExecution> projectTestExecutionList) {
-        this.projectTestExecutionList = projectTestExecutionList;
+    public void setProjectMutantGenerations(List<ProjectMutantGeneration> projectMutantGenerations) {
+        this.projectMutantGenerations = projectMutantGenerations;
     }
 
     @Override

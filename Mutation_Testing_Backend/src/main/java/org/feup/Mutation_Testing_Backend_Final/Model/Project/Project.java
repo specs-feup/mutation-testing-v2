@@ -28,7 +28,7 @@ public class Project {
     private String testFolder;
     private String androidTestFolder;
 
-    private String androidBuildFolder;
+    private String buildFolder;
 
     @OneToMany(mappedBy = "project")
     private List<ProjectVersion> projectVersions;
@@ -97,12 +97,12 @@ public class Project {
         this.testFolder = testFolder;
     }
 
-    public String getAndroidBuildFolder() {
-        return androidBuildFolder;
+    public String getBuildFolder() {
+        return buildFolder;
     }
 
-    public void setAndroidBuildFolder(String androidBuildFolder) {
-        this.androidBuildFolder = androidBuildFolder;
+    public void setBuildFolder(String buildFolder) {
+        this.buildFolder = buildFolder;
     }
 
     public String getAndroidTestFolder() {

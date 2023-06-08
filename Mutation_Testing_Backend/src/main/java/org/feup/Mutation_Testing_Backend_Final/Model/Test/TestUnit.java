@@ -8,8 +8,8 @@ import javax.persistence.*;
 @Table(name="TestUnit")
 public class TestUnit {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, insertable = false)
     private Long id;
 
     private boolean failed;
@@ -37,10 +37,6 @@ public class TestUnit {
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public boolean isFailed() {

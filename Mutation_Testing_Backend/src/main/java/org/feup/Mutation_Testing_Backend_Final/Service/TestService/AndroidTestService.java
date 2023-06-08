@@ -1,6 +1,5 @@
 package org.feup.Mutation_Testing_Backend_Final.Service.TestService;
 
-
 import org.feup.Mutation_Testing_Backend_Final.Dto.SimpleResponse;
 import org.feup.Mutation_Testing_Backend_Final.Helper.XMLParser.TestCase;
 import org.feup.Mutation_Testing_Backend_Final.Helper.XMLParser.TestSuite;
@@ -29,14 +28,13 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.HashMap;
 
 import static org.feup.Mutation_Testing_Backend_Final.Helper.OutputParsingHelper.extractTotalTimeGradle;
 import static org.feup.Mutation_Testing_Backend_Final.Helper.OutputParsingHelper.getGradleClassName;
 
 @Service
-public class GradleTestService {
-
+public class AndroidTestService {
     @Value("${pathToStoreProjects}")
     private String projectsPath;
     @Value("${pathToKadabraIncludes}")
@@ -52,7 +50,7 @@ public class GradleTestService {
     private Logger logger;
 
     @Autowired
-    public GradleTestService(projectTestExecutionRepository projectTestExecutionRepository, testPackageRepository testPackageRepository, testClassRepository testClassRepository, testUnitRepository testUnitRepository) {
+    public AndroidTestService(projectTestExecutionRepository projectTestExecutionRepository, testPackageRepository testPackageRepository, testClassRepository testClassRepository, testUnitRepository testUnitRepository) {
         this.projectTestExecutionRepository = projectTestExecutionRepository;
         this.testPackageRepository = testPackageRepository;
         this.testClassRepository = testClassRepository;
@@ -80,38 +78,76 @@ public class GradleTestService {
 
                     for (Object obj: array) {
                         JSONObject jsonObject = (JSONObject) obj;
-
-                        long startElapsedTime = System.currentTimeMillis();
+                        JSONObject jsonObjectAux = (JSONObject) jsonObject.get("mutantion");
 
                         HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults = null;
+
+                        long startElapsedTime = System.currentTimeMillis();
                         long endElapsedTime = 0;
-                        if ((projectMutantGeneration.getMutationGenerationType().equals(ProjectMutantGeneration.MutationGenerationType.MUTANTSCHEMATA))){
-                            executeGradleTests(projectExecutionName, " -DMUID=" + jsonObject.get("mutantId"));
-                            endElapsedTime = System.currentTimeMillis();
 
-                            testResults = getGradeTestResults(projectExecutionName + projectMutantGeneration.getProjectVersion().getProject().getBuildFolder() + File.separator  +"build" +File.separator +"test-results" + File.separator + "test");
+                        // Runs Java Specific Tests
+                        if (!(boolean) jsonObjectAux.get("isAndroidSpecific")){
+                            logger.debug("Running Java Specific");
+                            if ((projectMutantGeneration.getMutationGenerationType().equals(ProjectMutantGeneration.MutationGenerationType.MUTANTSCHEMATA))){
+                                executeJavaSpecificTests(projectExecutionName, " -DMUID=" + jsonObject.get("mutantId"));
+                                endElapsedTime = System.currentTimeMillis();
+
+                                testResults = getGradeTestResults(projectExecutionName + projectMutantGeneration.getProjectVersion().getProject().getBuildFolder() + File.separator  +"build" +File.separator +"test-results" + File.separator + "test");
+                            }else{
+                                executeJavaSpecificTests(projectExecutionName +  jsonObject.get("mutantId"), "");
+                                endElapsedTime = System.currentTimeMillis();
+
+                                testResults = getGradeTestResults(projectExecutionName + jsonObject.get("mutantId")+ projectMutantGeneration.getProjectVersion().getProject().getBuildFolder() + File.separator +"build" +File.separator +"test-results" + File.separator + "test");
+                            }
+
+                            Float testRunTime = getTestTime(testResults);
+                            totalTestTime+=testRunTime;
+                            ProjectTestExecution projectTestExecutionChild = new ProjectTestExecution(projectTestExecution, Integer.parseInt(String.valueOf(jsonObject.get("mutationLine"))), (String) jsonObject.get("filePath"), (String) jsonObject.get("mutantId"), testRunTime);
+                            projectTestExecutionRepository.save(projectTestExecutionChild);
+
+                            boolean failedtest = saveTestResults(testResults, projectTestExecutionChild);
+                            projectTestExecutionChild.setFailedTests(failedtest);
+                            projectTestExecutionChild.setFailedCompilation(false);
+
+                            projectTestExecutionChild.setElaspedTime((endElapsedTime - startElapsedTime)/1000f);
+                            projectTestExecutionChild.setTestRunTime(testRunTime);
+                            projectTestExecutionRepository.save(projectTestExecutionChild);
+
+                            if (!projectTestExecution.isFailedTests() && failedtest){
+                                projectTestExecution.setFailedTests(true);
+                            }
+
+                        // Runs Android Specific Tests
                         }else{
-                            executeGradleTests(projectExecutionName +  jsonObject.get("mutantId"), "");
-                            endElapsedTime = System.currentTimeMillis();
+                            logger.debug("Running Android Specific");
+                            if ((projectMutantGeneration.getMutationGenerationType().equals(ProjectMutantGeneration.MutationGenerationType.MUTANTSCHEMATA))){
+                                executeAndroidSpecificTests(projectExecutionName, (String) jsonObject.get("mutantId"));
+                                endElapsedTime = System.currentTimeMillis();
 
-                            testResults = getGradeTestResults(projectExecutionName + jsonObject.get("mutantId")+ projectMutantGeneration.getProjectVersion().getProject().getBuildFolder() + File.separator +"build" +File.separator +"test-results" + File.separator + "test");
-                        }
+                                testResults = getGradeTestResults(projectExecutionName + projectMutantGeneration.getProjectVersion().getProject().getBuildFolder() + File.separator  +"build" +File.separator +"test-results" + File.separator + "test");
+                            }else{
+                                executeAndroidSpecificTests(projectExecutionName +  jsonObject.get("mutantId"), "");
+                                endElapsedTime = System.currentTimeMillis();
 
-                        Float testRunTime = getTestTime(testResults);
-                        totalTestTime+=testRunTime;
-                        ProjectTestExecution projectTestExecutionChild = new ProjectTestExecution(projectTestExecution, Integer.parseInt(String.valueOf(jsonObject.get("mutationLine"))), (String) jsonObject.get("filePath"), (String) jsonObject.get("mutantId"), testRunTime);
-                        projectTestExecutionRepository.save(projectTestExecutionChild);
+                                testResults = getGradeTestResults(projectExecutionName + jsonObject.get("mutantId")+ projectMutantGeneration.getProjectVersion().getProject().getBuildFolder() + File.separator +"build" +File.separator +"test-results" + File.separator + "test");
+                            }
 
-                        boolean failedtest = saveTestResults(testResults, projectTestExecutionChild);
-                        projectTestExecutionChild.setFailedTests(failedtest);
-                        projectTestExecutionChild.setFailedCompilation(false);
+                            Float testRunTime = getTestTime(testResults);
+                            totalTestTime+=testRunTime;
+                            ProjectTestExecution projectTestExecutionChild = new ProjectTestExecution(projectTestExecution, Integer.parseInt(String.valueOf(jsonObject.get("mutationLine"))), (String) jsonObject.get("filePath"), (String) jsonObject.get("mutantId"), testRunTime);
+                            projectTestExecutionRepository.save(projectTestExecutionChild);
 
-                        projectTestExecutionChild.setElaspedTime((endElapsedTime - startElapsedTime)/1000f);
-                        projectTestExecutionChild.setTestRunTime(testRunTime);
-                        projectTestExecutionRepository.save(projectTestExecutionChild);
+                            boolean failedtest = saveTestResults(testResults, projectTestExecutionChild);
+                            projectTestExecutionChild.setFailedTests(failedtest);
+                            projectTestExecutionChild.setFailedCompilation(false);
 
-                        if (!projectTestExecution.isFailedTests() && failedtest){
-                            projectTestExecution.setFailedTests(true);
+                            projectTestExecutionChild.setElaspedTime((endElapsedTime - startElapsedTime)/1000f);
+                            projectTestExecutionChild.setTestRunTime(testRunTime);
+                            projectTestExecutionRepository.save(projectTestExecutionChild);
+
+                            if (!projectTestExecution.isFailedTests() && failedtest){
+                                projectTestExecution.setFailedTests(true);
+                            }
                         }
                     }
 
@@ -136,26 +172,15 @@ public class GradleTestService {
             }else {
                 sr.setAsError("Missing test execution implementation");
             }
-        } else if (testExecutionType == ProjectTestExecution.TestExecutionType.PARALLEL) {
-            logger.info("Parallel Test Execution");
-            if (projectMutantGeneration.getMutationGenerationType().equals(ProjectMutantGeneration.MutationGenerationType.MUTANTSCHEMATA)){
-                sr.setAsError("Can run parallel test in mutant schemata");
-
-
-            }else if (projectMutantGeneration.getMutationGenerationType().equals(ProjectMutantGeneration.MutationGenerationType.TRADITIONALMUTATION)){
-                logger.info("Traditional Mutant");
-
-
-            }else {
-                sr.setAsError("Missing test execution implementation");
-            }
+        } else {
+            sr.setAsError("Missing test execution implementation");
         }
 
         logger.info("Finished");
         return sr;
     }
 
-    private Float executeGradleTests(String projectsPath, String aditionalCommand) throws IOException {
+    private Float executeJavaSpecificTests(String projectsPath, String aditionalCommand) throws IOException {
         logger.debug("Executing Tests for path: " + projectsPath);
         String chmod = "chmod +x gradlew";
         Runtime.getRuntime().exec(chmod, null, new File(projectsPath));
@@ -175,6 +200,46 @@ public class GradleTestService {
             if (line.contains("BUILD") && line.contains("in")) {
                 totalTimeLine = line;
             }
+        }
+
+        long end = System.currentTimeMillis();
+
+        Float totalCompilationTime;
+        if (!totalTimeLine.equals("")){
+            try {
+                totalCompilationTime = extractTotalTimeGradle(totalTimeLine);
+            }catch (Exception e){
+                return (end - start) / 1000F;
+            }
+        }else{
+            return (end - start) / 1000F;
+        }
+
+        return totalCompilationTime;
+    }
+
+    private Float executeAndroidSpecificTests(String projectsPath, String aditionalCommand) throws IOException {
+        logger.debug("Executing Android Tests for path: " + projectsPath);
+        String chmod = "chmod +x gradlew";
+        Runtime.getRuntime().exec(chmod, null, new File(projectsPath));
+
+        long start = System.currentTimeMillis();
+        String command = "./gradlew connectedAndroidTest";
+
+        if (!aditionalCommand.isBlank()){
+            logger.debug("Setting ADB MUID: " + aditionalCommand);
+            String setProp = "adb shell setprop  MUID " + aditionalCommand;
+            Runtime.getRuntime().exec(setProp, null, new File(projectsPath));
+        }
+
+        Process process = Runtime.getRuntime().exec(command, null, new File(projectsPath));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line, totalTimeLine = "";
+        while ((line = reader.readLine()) != null) {
+            if (line.contains("BUILD") && line.contains("in")) {
+                totalTimeLine = line;
+            }
+            System.out.println(line);
         }
 
         long end = System.currentTimeMillis();
@@ -248,25 +313,25 @@ public class GradleTestService {
 
     private boolean saveTestResults(HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults, ProjectTestExecution projectTestExecution) {
         boolean failedtest = false;
-        for (String packageKey: testResults.keySet()){
-            //TestPackage testPackage = new TestPackage(packageKey, projectTestExecution);
-            //testPackageRepository.save(testPackage);
+        /*for (String packageKey: testResults.keySet()){
+            TestPackage testPackage = new TestPackage(packageKey, projectTestExecution);
+            testPackageRepository.save(testPackage);
 
             for (String classKey: testResults.get(packageKey).keySet()){
-                //TestClass testClass = new TestClass(classKey, testPackage);
-                //testClassRepository.save(testClass);
+                TestClass testClass = new TestClass(classKey, testPackage);
+                testClassRepository.save(testClass);
 
                 for (String testKey: testResults.get(packageKey).get(classKey).keySet()){
                     TestUnit testUnitAux = testResults.get(packageKey).get(classKey).get(testKey);
-                    //testUnitAux.setTestClass(testClass);
-                    //testUnitRepository.save(testUnitAux);
+                    testUnitAux.setTestClass(testClass);
+                    testUnitRepository.save(testUnitAux);
 
                     if (testUnitAux.isFailed()){
                         failedtest = true;
                     }
                 }
             }
-        }
+        }*/
 
         return failedtest;
     }

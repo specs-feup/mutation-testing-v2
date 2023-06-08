@@ -1,74 +1,57 @@
 package org.feup.Mutation_Testing_Backend_Final.Service.TestService;
 
-import org.apache.maven.plugin.surefire.log.api.NullConsoleLogger;
-import org.apache.maven.plugins.surefire.report.ReportTestCase;
-import org.apache.maven.plugins.surefire.report.ReportTestSuite;
-import org.apache.maven.plugins.surefire.report.SurefireReportParser;
-import org.apache.maven.reporting.MavenReportException;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.feup.Mutation_Testing_Backend_Final.Dto.SimpleResponse;
-import org.feup.Mutation_Testing_Backend_Final.Helper.Githelper;
-import org.feup.Mutation_Testing_Backend_Final.Helper.KadabraHelper;
-import org.feup.Mutation_Testing_Backend_Final.Helper.OperatorValidator;
-import org.feup.Mutation_Testing_Backend_Final.Helper.OutputParsingHelper;
-import org.feup.Mutation_Testing_Backend_Final.Model.MutationOperator.MutationOperator;
-import org.feup.Mutation_Testing_Backend_Final.Model.MutationOperator.MutationOperatorArguments;
+import org.feup.Mutation_Testing_Backend_Final.Model.Project.Project;
+import org.feup.Mutation_Testing_Backend_Final.Model.Project.ProjectMutantGeneration;
 import org.feup.Mutation_Testing_Backend_Final.Model.Project.ProjectTestExecution;
-import org.feup.Mutation_Testing_Backend_Final.Model.Project.ProjectTestExecution.TestExecutionType;
-import org.feup.Mutation_Testing_Backend_Final.Model.Project.ProjectVersion;
-import org.feup.Mutation_Testing_Backend_Final.Model.Test.TestClass;
-import org.feup.Mutation_Testing_Backend_Final.Model.Test.TestPackage;
-import org.feup.Mutation_Testing_Backend_Final.Model.Test.TestUnit;
-import org.feup.Mutation_Testing_Backend_Final.Repository.MutationOperator.mutationOperatorArgumentsRepository;
-import org.feup.Mutation_Testing_Backend_Final.Repository.Project.projectTestExecutionRepository;
-import org.feup.Mutation_Testing_Backend_Final.Repository.Test.testPackageRepository;
-import org.feup.Mutation_Testing_Backend_Final.Repository.MutationOperator.mutationOperatorRepository;
+import org.feup.Mutation_Testing_Backend_Final.Repository.Project.projectMutantGenerationRepository;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.feup.Mutation_Testing_Backend_Final.Repository.Project.projectVersionRepository;
-import org.feup.Mutation_Testing_Backend_Final.Repository.Test.*;
 
 
-import java.io.*;
-import java.math.BigDecimal;
 import java.util.*;
 
 @Service
 public class TestService {
 
-    private final projectVersionRepository projectVersionRepository;
+    private final projectMutantGenerationRepository projectMutantGenerationRepository;
     private final MavenTestService mavenTestService;
     private final GradleTestService gradleTestService;
+    private final AndroidTestService androidTestService;
 
     @Autowired
-    public TestService(projectVersionRepository projectVersionRepository, MavenTestService mavenTestService, GradleTestService gradleTestService) {
-        this.projectVersionRepository = projectVersionRepository;
+    public TestService(projectMutantGenerationRepository projectMutantGenerationRepository, MavenTestService mavenTestService, GradleTestService gradleTestService, AndroidTestService androidTestService) {
+        this.projectMutantGenerationRepository = projectMutantGenerationRepository;
         this.mavenTestService = mavenTestService;
         this.gradleTestService = gradleTestService;
+        this.androidTestService = androidTestService;
     }
 
-    public SimpleResponse executeAllTests(String projectVersionId, String testExecutionType, List<MutationOperator> operatorList) throws Exception {
+    public SimpleResponse executeAllTests(String projectMutantGenerationId, String testExecutionTypeStr) {
         SimpleResponse sr = new SimpleResponse();
-        Long i = Long.parseLong(projectVersionId);
-        TestExecutionType testExecutionTypeEnum = TestExecutionType.valueOf(testExecutionType.toUpperCase());
 
-        Optional<ProjectVersion> projectVersionOptional = projectVersionRepository.findById(i);
+        Long i = Long.parseLong(projectMutantGenerationId);
+        Optional<ProjectMutantGeneration> projectMutantGenerationOptional = projectMutantGenerationRepository.findById(i);
 
-        if (projectVersionOptional.isPresent()){
-            ProjectVersion projectVersion = projectVersionOptional.get();
+        ProjectTestExecution.TestExecutionType testExecutionType = ProjectTestExecution.TestExecutionType.valueOf(testExecutionTypeStr.toUpperCase());
+
+        if (projectMutantGenerationOptional.isPresent()){
+            ProjectMutantGeneration projectMutantGeneration = projectMutantGenerationOptional.get();
+            Project project = projectMutantGeneration.getProjectVersion().getProject();
 
             //Maven project
-            if (!projectVersion.getProject().isAndroid() && projectVersion.getProject().isMaven()){
-                return mavenTestService.ExecuteAllTestsMaven(projectVersion, testExecutionTypeEnum, operatorList);
+            if (!project.isAndroid() && project.isMaven()) {
+                return mavenTestService.ExecuteAllTests(testExecutionType, projectMutantGeneration);
+
             //Gradle Android App
+            }else if (project.isAndroid()  && !project.isMaven()){
+                return androidTestService.ExecuteAllTests(testExecutionType, projectMutantGeneration);
+
             //Gradle Project
-            }else if (!projectVersion.getProject().isMaven()) {
-                return gradleTestService.ExecuteAllTestsGradle(projectVersion, testExecutionTypeEnum, operatorList);
+            }else if (!project.isAndroid()  && !project.isMaven()) {
+                return gradleTestService.ExecuteAllTests(testExecutionType, projectMutantGeneration);
+
             }else{
                 sr.setAsError("No support for Android projects using Maven");
             }
@@ -79,7 +62,7 @@ public class TestService {
         return sr;
     }
 
-    public SimpleResponse executeAllTestsGitImprovement(String projectVersionFromStr, String projectVersionToStr, String testExecutionType, List<MutationOperator> operatorList) throws Exception {
+    /*public SimpleResponse executeAllTestsGitImprovement(String projectVersionFromStr, String projectVersionToStr, String testExecutionType, List<MutationOperator> operatorList) throws Exception {
         SimpleResponse sr = new SimpleResponse();
         Long from = Long.parseLong(projectVersionFromStr);
         Long to = Long.parseLong(projectVersionToStr);
@@ -108,6 +91,6 @@ public class TestService {
             sr.setAsError("Project Version Not Found");
         }
         return sr;
-    }
+    }*/
 
 }

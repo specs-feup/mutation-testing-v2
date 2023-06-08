@@ -1,7 +1,7 @@
 package org.feup.Mutation_Testing_Backend_Final.Model.MutationOperator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.feup.Mutation_Testing_Backend_Final.Model.Project.ProjectTestExecution;
+import org.feup.Mutation_Testing_Backend_Final.Model.Project.ProjectMutantGeneration;
 
 import javax.persistence.*;
 import java.util.List;
@@ -18,8 +18,8 @@ public class MutationOperator {
 
     @ManyToOne(cascade = CascadeType.DETACH)
     @JsonIgnore
-    @JoinColumn(name = "projectTestExecution_id")
-    private ProjectTestExecution projectTestExecution;
+    @JoinColumn(name = "projectMutantGeneration_id")
+    private ProjectMutantGeneration projectMutantGeneration;
 
     @OneToMany(mappedBy = "mutationOperator")
     private List<MutationOperatorArguments> mutationOperatorArgumentsList;
@@ -27,9 +27,9 @@ public class MutationOperator {
     public MutationOperator() {
     }
 
-    public MutationOperator(String operador, ProjectTestExecution projectTestExecution) {
+    public MutationOperator(String operador, ProjectMutantGeneration projectMutantGeneration) {
         Operador = operador;
-        this.projectTestExecution = projectTestExecution;
+        this.projectMutantGeneration = projectMutantGeneration;
     }
 
     public Long getId() {
@@ -48,12 +48,12 @@ public class MutationOperator {
         Operador = operador;
     }
 
-    public ProjectTestExecution getProjectTestExecution() {
-        return projectTestExecution;
+    public ProjectMutantGeneration getProjectMutantGeneration() {
+        return projectMutantGeneration;
     }
 
-    public void setProjectTestExecution(ProjectTestExecution projectTestExecution) {
-        this.projectTestExecution = projectTestExecution;
+    public void setProjectMutantGeneration(ProjectMutantGeneration projectMutantGeneration) {
+        this.projectMutantGeneration = projectMutantGeneration;
     }
 
     public List<MutationOperatorArguments> getMutationOperatorArgumentsList() {

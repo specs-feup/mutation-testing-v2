@@ -21,27 +21,21 @@ import java.util.List;
 public class TestController {
 
     private final TestService testService;
-    private final ProjectTestExecutionService projectTestExecutionService;
 
     @Autowired
-    public TestController(TestService testService, ProjectTestExecutionService projectTestExecutionService) {
+    public TestController(TestService testService) {
         this.testService = testService;
-        this.projectTestExecutionService = projectTestExecutionService;
     }
 
-    @PostMapping("{projectVersionId}/executeAllTests")
+    @PostMapping("{projectMutantGenerationId}/executeAllTests")
     @Operation(summary = "Execute All tests")
-    public ResponseEntity<SimpleResponse> executeAllTests(@PathVariable String projectVersionId, @RequestParam String testExecutionType, @RequestBody List<MutationOperator> operatorList) {
+    public ResponseEntity<SimpleResponse> executeAllTests(@PathVariable String projectMutantGenerationId, @RequestParam String testExecutionType) {
         SimpleResponse sr = new SimpleResponse();
 
         try{
-            sr = testService.executeAllTests(projectVersionId, testExecutionType, operatorList);
-            ProjectTestExecution aux = (ProjectTestExecution) sr.getData();
-
-            //sr.setData(projectTestExecutionService.getProjectTestExecution(aux.getId()));
+            sr = testService.executeAllTests(projectMutantGenerationId, testExecutionType);
 
             return ResponseEntity.status(HttpStatus.OK).body(sr);
-
         }catch (NumberFormatException e){
             sr.setAsError("Invalid Project Id");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sr);
@@ -54,7 +48,7 @@ public class TestController {
 
     }
 
-    @PostMapping("/executeAllTestsGitImprovement")
+    /*@PostMapping("/executeAllTestsGitImprovement")
     @Operation(summary = "Execute All tests")
     public ResponseEntity<SimpleResponse> executeAllTestsGitImprovement(@RequestParam String projectVersionIdFrom, @RequestParam String projectVersionIdTo, @RequestParam String testExecutionType, @RequestBody List<MutationOperator> operatorList) {
         SimpleResponse sr = new SimpleResponse();
@@ -73,6 +67,6 @@ public class TestController {
             throw new RuntimeException(e);
         }
 
-    }
+    }*/
 
 }

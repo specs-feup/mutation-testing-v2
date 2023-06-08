@@ -6,12 +6,9 @@ import org.apache.maven.plugins.surefire.report.ReportTestSuite;
 import org.apache.maven.plugins.surefire.report.SurefireReportParser;
 import org.apache.maven.reporting.MavenReportException;
 import org.feup.Mutation_Testing_Backend_Final.Dto.SimpleResponse;
-import org.feup.Mutation_Testing_Backend_Final.Helper.Githelper;
-import org.feup.Mutation_Testing_Backend_Final.Helper.KadabraHelper;
-import org.feup.Mutation_Testing_Backend_Final.Helper.OperatorValidator;
 import org.feup.Mutation_Testing_Backend_Final.Helper.OutputParsingHelper;
 import org.feup.Mutation_Testing_Backend_Final.Model.MutationOperator.MutationOperator;
-import org.feup.Mutation_Testing_Backend_Final.Model.MutationOperator.MutationOperatorArguments;
+import org.feup.Mutation_Testing_Backend_Final.Model.Project.ProjectMutantGeneration;
 import org.feup.Mutation_Testing_Backend_Final.Model.Project.ProjectTestExecution;
 import org.feup.Mutation_Testing_Backend_Final.Model.Project.ProjectVersion;
 import org.feup.Mutation_Testing_Backend_Final.Model.Test.TestClass;
@@ -20,19 +17,14 @@ import org.feup.Mutation_Testing_Backend_Final.Model.Test.TestUnit;
 import org.feup.Mutation_Testing_Backend_Final.Repository.MutationOperator.mutationOperatorArgumentsRepository;
 import org.feup.Mutation_Testing_Backend_Final.Repository.MutationOperator.mutationOperatorRepository;
 import org.feup.Mutation_Testing_Backend_Final.Repository.Project.projectTestExecutionRepository;
-import org.feup.Mutation_Testing_Backend_Final.Repository.Project.projectVersionRepository;
 import org.feup.Mutation_Testing_Backend_Final.Repository.Test.testClassRepository;
 import org.feup.Mutation_Testing_Backend_Final.Repository.Test.testPackageRepository;
 import org.feup.Mutation_Testing_Backend_Final.Repository.Test.testUnitRepository;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -67,7 +59,7 @@ public class MavenTestService {
         SimpleResponse sr = new SimpleResponse();
 
         // Changes the project version
-        Githelper.updateCurrentVersion(projectsPath + projectVersion.getProject().getProjectPath(), projectVersion.getVersion());
+        /*Githelper.updateCurrentVersion(projectsPath + projectVersion.getProject().getProjectPath(), projectVersion.getVersion());
 
         if (testExecutionTypeEnum == ProjectTestExecution.TestExecutionType.NOMUTATION){
             //Executes the tests
@@ -255,7 +247,7 @@ public class MavenTestService {
             }else{
                 sr.setAsError("Invalid Operators");
             }
-        }
+        }*/
         return sr;
     }
 
@@ -393,6 +385,7 @@ public class MavenTestService {
     public SimpleResponse ExecuteAllTestsMavenGit(ProjectVersion projectVersionFrom, ProjectVersion projectVersionTo, ProjectTestExecution.TestExecutionType testExecutionTypeEnum, List<MutationOperator> operatorList) throws Exception {
         SimpleResponse sr = new SimpleResponse();
 
+        /*
         // Changes the project version
         Githelper.updateCurrentVersion(projectsPath + projectVersionTo.getProject().getProjectPath(), projectVersionFrom.getVersion());
 
@@ -427,6 +420,30 @@ public class MavenTestService {
             }
             for (String i : fileList){
                 System.out.println("Ficheiro:" + i);
+            }
+        }*/
+
+        return sr;
+    }
+
+    public SimpleResponse ExecuteAllTests(ProjectTestExecution.TestExecutionType testExecutionType, ProjectMutantGeneration projectMutantGeneration) {
+        SimpleResponse sr = new SimpleResponse();
+
+        if (testExecutionType == ProjectTestExecution.TestExecutionType.NORMAL){
+            if (projectMutantGeneration.getMutationGenerationType().equals(ProjectMutantGeneration.MutationGenerationType.MUTANTSCHEMATA)){
+
+            }else if (projectMutantGeneration.getMutationGenerationType().equals(ProjectMutantGeneration.MutationGenerationType.TRADITIONALMUTATION)){
+
+            }else {
+                sr.setAsError("Missing test execution implementation");
+            }
+        } else if (testExecutionType == ProjectTestExecution.TestExecutionType.PARALLEL) {
+            if (projectMutantGeneration.getMutationGenerationType().equals(ProjectMutantGeneration.MutationGenerationType.MUTANTSCHEMATA)){
+                sr.setAsError("Can run parallel test in mutant schemata");
+            }else if (projectMutantGeneration.getMutationGenerationType().equals(ProjectMutantGeneration.MutationGenerationType.TRADITIONALMUTATION)){
+
+            }else {
+                sr.setAsError("Missing test execution implementation");
             }
         }
 

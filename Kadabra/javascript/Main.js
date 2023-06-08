@@ -14,6 +14,8 @@ const operatorArgumentList = laraArgs.operatorArgumentList;
 const projectExecutionName = laraArgs.projectExecutionName;
 const includesFolder = laraArgs.includesFolder;
 const isAndroid = laraArgs.isAndroid;
+const classpath = laraArgs.classpath;
+const useIncompleteClassPath = laraArgs.useIncompleteClassPath;
 
 main();
 
@@ -54,8 +56,11 @@ function main() {
       JSON.stringify(args),
       filesToUse[i],
       traditionalMutation,
-      includesFolder
+      includesFolder,
+      classpath,
+      useIncompleteClassPath
     ).getList();
+    println("Importante: " + args_kadabra);
 
     args_final.push(args_kadabra);
   }
@@ -73,9 +78,9 @@ function getFilesToUse() {
   //Checks what files to use
   let allJavaFiles = Io.getFiles(projectPath, "*.java", true);
   let javaFilesToRemove = Io.getFiles(folderToIgnore, "*.java", true);
-  println(projectPath);
+  println("Project Path: " + projectPath);
   println("AllJavaFiles: " + allJavaFiles);
-  println(folderToIgnore);
+  println("Folder yo Ignore: " + folderToIgnore);
   println("javaFilesToRemove: " + javaFilesToRemove);
 
   for (i in allJavaFiles) {

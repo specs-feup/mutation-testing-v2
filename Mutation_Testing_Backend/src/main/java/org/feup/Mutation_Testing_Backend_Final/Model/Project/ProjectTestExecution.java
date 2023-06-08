@@ -13,12 +13,10 @@ import java.util.List;
 @Table(name="ProjectTestExecution")
 public class ProjectTestExecution {
 
+
     public enum TestExecutionType{
-        TRADITIONALMUTATION,
-        MUTANTSCHEMATA,
-        NOMUTATION,
-        GITIMMPROVEMENTMUTANTSCHEMATA,
-        GITIMMPROVEMENTTRADITIONALMUTATION
+        NORMAL,
+        PARALLEL
     }
 
     @Id
@@ -27,19 +25,18 @@ public class ProjectTestExecution {
     private Long id;
 
     private TestExecutionType testExecutionType;
-    private Float compilationTime;
+    private Float elaspedTime;
     private Float testRunTime;
     private boolean failedCompilation;
     private boolean failedTests;
     private int mutationLine;
     private String mutationFilePath;
     private String mutantId;
-    private String projectExecutionName;
 
     @ManyToOne(cascade = CascadeType.DETACH)
     @JsonIgnore
-    @JoinColumn(name = "projectVersion_id")
-    private ProjectVersion projectVersion;
+    @JoinColumn(name = "projectMutantGeneration_id")
+    private ProjectMutantGeneration projectMutantGeneration;
 
     @OneToMany(mappedBy = "projectTestExecution", cascade = CascadeType.ALL)
     private List<ProjectTestExecution> ProjectTestExecutionSubExecutions = new ArrayList<>();
@@ -50,30 +47,43 @@ public class ProjectTestExecution {
     private ProjectTestExecution projectTestExecution;
 
     @OneToMany(mappedBy = "projectTestExecution")
-    private List<MutationOperator> mutationOperators;
-
-    @OneToMany(mappedBy = "projectTestExecution")
+    @JsonIgnore
     private List<TestPackage> testPackage;
 
     public ProjectTestExecution() {
     }
 
-    public ProjectTestExecution(TestExecutionType testExecutionType, ProjectVersion projectVersion) {
+    public ProjectTestExecution(TestExecutionType testExecutionType, ProjectMutantGeneration projectMutantGeneration) {
         this.testExecutionType = testExecutionType;
-        this.projectVersion = projectVersion;
+        this.projectMutantGeneration = projectMutantGeneration;
+        this.mutationLine = -1;
+        this.failedCompilation = false;
+
+    }
+
+    public ProjectTestExecution(ProjectTestExecution projectTestExecution, int mutationLine, String mutationFilePath, String mutantId, Float testRunTime) {
+        this.projectTestExecution = projectTestExecution;
+        this.mutationLine = mutationLine;
+        this.mutationFilePath = mutationFilePath;
+        this.mutantId = mutantId;
+        this.testRunTime = testRunTime;
+    }
+
+    /*public ProjectTestExecution(TestExecutionType testExecutionType, ProjectVersion projectVersion) {
+        this.testExecutionType = testExecutionType;
+        //this.projectVersion = projectVersion;
         this.failedCompilation = true;
     }
 
     public ProjectTestExecution(TestExecutionType testExecutionType, ProjectVersion projectVersion, String projectExecutionName) {
         this.testExecutionType = testExecutionType;
-        this.projectVersion = projectVersion;
-        this.projectExecutionName = projectExecutionName;
-        this.failedCompilation = true;
+        //this.projectVersion = projectVersion;
+        this.failedCompilation = false;
     }
 
     public ProjectTestExecution(TestExecutionType testExecutionType, ProjectVersion projectVersion, ProjectTestExecution projectTestExecution, int mutationLine, String mutationFilePath,  String mutantId) {
         this.testExecutionType = testExecutionType;
-        this.projectVersion = projectVersion;
+        //this.projectVersion = projectVersion;
         this.projectTestExecution = projectTestExecution;
         this.mutationLine = mutationLine;
         this.mutationFilePath =mutationFilePath;
@@ -85,7 +95,7 @@ public class ProjectTestExecution {
     public ProjectTestExecution(TestExecutionType testExecutionType, Float compilationTime, ProjectVersion projectVersion, Float testRunTime) {
         this.testExecutionType = testExecutionType;
         this.compilationTime = compilationTime;
-        this.projectVersion = projectVersion;
+        //this.projectVersion = projectVersion;
         this.testRunTime = testRunTime;
         this.failedCompilation = true;
     }
@@ -93,11 +103,11 @@ public class ProjectTestExecution {
     public ProjectTestExecution(TestExecutionType testExecutionType, Float compilationTime, ProjectVersion projectVersion, Float testRunTime, ProjectTestExecution projectTestExecution) {
         this.testExecutionType = testExecutionType;
         this.compilationTime = compilationTime;
-        this.projectVersion = projectVersion;
+        //this.projectVersion = projectVersion;
         this.testRunTime = testRunTime;
         this.projectTestExecution = projectTestExecution;
         this.failedCompilation = true;
-    }
+    }*/
 
     public Long getId() {
         return id;
@@ -115,12 +125,12 @@ public class ProjectTestExecution {
         this.testExecutionType = testExecutionType;
     }
 
-    public Float getCompilationTime() {
-        return compilationTime;
+    public Float getElaspedTime() {
+        return elaspedTime;
     }
 
-    public void setCompilationTime(Float compilationTime) {
-        this.compilationTime = compilationTime;
+    public void setElaspedTime(Float elaspedTime) {
+        this.elaspedTime = elaspedTime;
     }
 
     public Float getTestRunTime() {
@@ -131,12 +141,13 @@ public class ProjectTestExecution {
         this.testRunTime = testRunTime;
     }
 
-    public ProjectVersion getProjectVersion() {
-        return projectVersion;
+
+    public ProjectMutantGeneration getProjectMutantGeneration() {
+        return projectMutantGeneration;
     }
 
-    public void setProjectVersion(ProjectVersion projectVersion) {
-        this.projectVersion = projectVersion;
+    public void setProjectMutantGeneration(ProjectMutantGeneration projectMutantGeneration) {
+        this.projectMutantGeneration = projectMutantGeneration;
     }
 
     public List<ProjectTestExecution> getProjectTestExecutionSubExecutions() {
@@ -153,14 +164,6 @@ public class ProjectTestExecution {
 
     public void setProjectTestExecution(ProjectTestExecution projectTestExecution) {
         this.projectTestExecution = projectTestExecution;
-    }
-
-    public List<MutationOperator> getMutationOperators() {
-        return mutationOperators;
-    }
-
-    public void setMutationOperators(List<MutationOperator> mutationOperators) {
-        this.mutationOperators = mutationOperators;
     }
 
     public List<TestPackage> getTestPackage() {
@@ -211,31 +214,21 @@ public class ProjectTestExecution {
         this.mutantId = mutantId;
     }
 
-    public String getProjectExecutionName() {
-        return projectExecutionName;
-    }
-
-    public void setProjectExecutionName(String projectExecutionName) {
-        this.projectExecutionName = projectExecutionName;
-    }
 
     @Override
     public String toString() {
         return "ProjectTestExecution{" +
                 "id=" + id +
                 ", testExecutionType=" + testExecutionType +
-                ", compilationTime=" + compilationTime +
+                ", compilationTime=" + elaspedTime +
                 ", testRunTime=" + testRunTime +
                 ", failedCompilation=" + failedCompilation +
                 ", failedTests=" + failedTests +
                 ", mutationLine=" + mutationLine +
                 ", mutationFilePath='" + mutationFilePath + '\'' +
                 ", mutantId='" + mutantId + '\'' +
-                ", projectExecutionName='" + projectExecutionName + '\'' +
-                ", projectVersion=" + projectVersion +
                 ", ProjectTestExecutionSubExecutions=" + ProjectTestExecutionSubExecutions +
                 ", projectTestExecution=" + projectTestExecution +
-                ", mutationOperators=" + mutationOperators +
                 ", testPackage=" + testPackage +
                 '}';
     }

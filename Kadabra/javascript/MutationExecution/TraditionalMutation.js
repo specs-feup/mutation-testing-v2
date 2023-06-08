@@ -30,7 +30,7 @@ function main() {
     return;
   }
 
-  changeVarDeclarations();
+  //changeVarDeclarations();
   println("Traditional Mutation");
 
   let output = {};

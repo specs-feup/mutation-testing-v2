@@ -66,13 +66,19 @@ public class Githelper {
         return projectVersionList;
     }
 
-    public static void updateCurrentVersion(String localPath, String targetCommit) throws Exception {
-        Repository repository = Git.open(new File(localPath + "/.git")).getRepository();
-        String currentCommitId = repository.resolve("HEAD").getName();
+    public static boolean updateCurrentVersion(String localPath, String targetCommit) {
+        try {
+            Repository repository = Git.open(new File(localPath + "/.git")).getRepository();
+            String currentCommitId = repository.resolve("HEAD").getName();
 
-        if (!currentCommitId.equals(targetCommit)){
-            checkoutCommit(localPath, targetCommit);
+            if (!currentCommitId.equals(targetCommit)){
+                checkoutCommit(localPath, targetCommit);
+            }
+            return true;
+        }catch (Exception e){
+            System.out.println(e);
         }
+        return false;
     }
 
 

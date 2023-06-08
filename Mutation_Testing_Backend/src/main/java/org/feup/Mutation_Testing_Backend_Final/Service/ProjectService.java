@@ -2,15 +2,19 @@ package org.feup.Mutation_Testing_Backend_Final.Service;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.feup.Mutation_Testing_Backend_Final.Dto.Wrapper.ProjectVersionChange;
 import org.feup.Mutation_Testing_Backend_Final.Helper.Githelper;
 import org.feup.Mutation_Testing_Backend_Final.Model.Project.Project;
 import org.feup.Mutation_Testing_Backend_Final.Model.Project.ProjectVersion;
 import org.feup.Mutation_Testing_Backend_Final.Repository.Project.projectRepository;
 import org.feup.Mutation_Testing_Backend_Final.Repository.Project.projectVersionRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -26,17 +30,19 @@ public class ProjectService {
     //Value from application.properties
     @Value("${pathToStoreProjects}")
     private String projectsPath;
-
     @Value("${skdPath}")
     private String skdPath;
 
     private final projectRepository projectRepository;
     private final projectVersionRepository projectVersionRepository;
 
+    private Logger logger;
+
     @Autowired
     public ProjectService(projectRepository projectRepository, projectVersionRepository projectVersionRepository) {
         this.projectRepository = projectRepository;
         this.projectVersionRepository = projectVersionRepository;
+        logger = LoggerFactory.getLogger(ProjectService.class.getName());
     }
 
     public List<Project> getAllProjects() {
@@ -49,26 +55,41 @@ public class ProjectService {
 
 
     public Project addNewProject(Project newProject) throws GitAPIException, IOException {
+        logger.info("Getting project from Git");
+
         // Clone Repo
-        Git gitRepo = Githelper.cloneRepo(newProject.getProjectUrl(), projectsPath + newProject.getProjectPath());
+        try {
+            Git gitRepo = Githelper.cloneRepo(newProject.getProjectUrl(), projectsPath + newProject.getProjectPath());
 
-        // Get Repo Versions
-        List<ProjectVersion> projectVersionList = Githelper.getCommitsHistory(gitRepo, newProject);
 
-        // Save Repo and Repo Versions
-        newProject.setProjectVersions(projectVersionList);
-        Project savedProject = projectRepository.save(newProject);
-        projectVersionRepository.saveAll(projectVersionList);
+            logger.debug("Getting project versions");
 
-        if (newProject.isAndroid()){
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(projectsPath + newProject.getProjectPath() + File.separator + "local.properties"))) {
-                writer.write("sdk.dir="+skdPath);
-            } catch (IOException e) {
-                System.err.println("Error creating local.properties" + e.getMessage());
+            // Get Repo Versions
+            List<ProjectVersion> projectVersionList = Githelper.getCommitsHistory(gitRepo, newProject);
+
+            // Save Repo and Repo Versions
+            newProject.setProjectVersions(projectVersionList);
+            Project savedProject = projectRepository.save(newProject);
+            projectVersionRepository.saveAll(projectVersionList);
+
+            if (newProject.isAndroid()){
+                logger.debug("Adding local.properties file Android");
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(projectsPath + newProject.getProjectPath() + File.separator + "local.properties"))) {
+                    writer.write("sdk.dir="+skdPath);
+                } catch (IOException e) {
+                    System.err.println("Error creating local.properties" + e.getMessage());
+                }
             }
-        }
+            logger.info("Added Project Successfully");
 
-        return savedProject;
+            return savedProject;
+        } catch (JGitInternalException e){
+            logger.error("Destination path already exists and is not an empty directory");
+        }catch (Exception e){
+            logger.error(String.valueOf(e));
+            throw e;
+        }
+        return null;
     }
 
 

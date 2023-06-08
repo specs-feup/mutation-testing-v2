@@ -79,12 +79,17 @@ public class ProjectController {
         try {
             Project savedProject = projectService.addNewProject(newProject);
 
-            sr.setData(savedProject);
-            sr.setAsSuccess();
+            if(savedProject == null){
+                sr.setAsError("Error cloning: Destination path already exists and is not an empty directory");
+            }else{
+                sr.setData(savedProject);
+                sr.setAsSuccess();
+            }
+
             return ResponseEntity.status(HttpStatus.OK).body(sr);
         } catch (GitAPIException e) {
             sr.setAsError("Error cloning from git");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sr);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sr);
         } catch (IOException e) {
             sr.setAsError("Error");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sr);
