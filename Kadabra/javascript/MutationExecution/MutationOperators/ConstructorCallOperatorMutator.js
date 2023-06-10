@@ -44,6 +44,7 @@ class ConstructorCallOperatorMutator extends Mutator {
 		this.mutationPoint = this.mutationPoints[this.currentIndex++].parent;
 
 		this.previousValue = this.mutationPoint.copy();
+		this.mutationPoint.insertBefore(this.previousValue.toString() + ";");
 		this.mutationPoint = this.mutationPoint.insertReplace("null");
 
 		println("/*--------------------------------------*/");
