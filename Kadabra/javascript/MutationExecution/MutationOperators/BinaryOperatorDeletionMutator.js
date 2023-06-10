@@ -20,10 +20,10 @@ class BinaryOperatorDeletionMutator extends Mutator {
       return false;
     }
     addJp(joinpoint) {
-        if (joinpoint.instanceOf("binaryExpression")) {
-            this.mutationPoints.push(joinpoint);
-            return true;
-        }
+      if (joinpoint.instanceOf("binaryExpression") && joinpoint.parent.type === undefined && !joinpoint.parent.instanceOf("if")) {
+               this.mutationPoints.push(joinpoint);
+               return true;
+           }
         return false;
     }
 
