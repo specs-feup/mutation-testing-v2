@@ -11,10 +11,13 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
         this.currentIndex = 0;
         this.mutationPoint = undefined;
         this.previousValue = undefined;
+        this.package = undefined;
+        this.targetValues = ["new Intent(Intent.ACTION_VIEW)", "new Intent(Intent.ACTION_SEND", "new Intent(Intent.ACTION_VIEW, Uri.parse(\"https://www.example.com\");)"];
+
     }
-    
-    isAndroidSpecific(){
-      return true;
+
+    isAndroidSpecific() {
+        return true;
     }
     /*&&
             joinpoint.typeReference === "Intent" &&
@@ -23,18 +26,13 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
     /*** IMPLEMENTATION OF INSTANCE METHODS ***/
 
     addJp(joinpoint) {
+
         if (
-            joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var')
+            joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') && !joinpoint.parent.instanceOf('var')
         ) {
             this.mutationPoints.push(joinpoint);
-            debug(
-                "Adicionou um ponto de mutação " +
-                this.$expr +
-                " a " +
-                joinpoint +
-                " na linha " +
-                joinpoint.line
-            );
+        }
+        if (this.mutationPoints.length > 0) {
             return true;
         }
         return false;
@@ -58,16 +56,18 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
 
     _mutatePrivate() {
 
-        let randomValue = (Math.random() + 1).toString(36).substring(7);
+        let randomValue = Math.floor(Math.random() * this.targetValues.length);
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
         this.currentIndex++;
 
-
+        while (this.targetValues[randomValue] == this.mutationPoint) {
+            randomValue = Math.floor(Math.random() * this.targetValues.length);
+        }
         this.previousValue = this.mutationPoint.copy();
 
 
-        this.mutationPoint = this.mutationPoint.insertReplace(randomValue);
+        this.mutationPoint = this.mutationPoint.insertReplace(this.targetValues[randomValue]);
 
 
         println("/*--------------------------------------*/");
