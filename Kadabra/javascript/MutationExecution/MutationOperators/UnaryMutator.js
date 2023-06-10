@@ -12,6 +12,7 @@ class UnaryMutator extends Mutator {
         this.currentIndex = 0;
         this.mutationPoint = undefined;
         this.previousValue = undefined;
+        this.putSemicolon = "";
 
         this.leftHand = ["_++", "_--"];
         this.rightHand = ["++_", "--_", "-_", "+_"];
@@ -24,23 +25,22 @@ class UnaryMutator extends Mutator {
     /*** IMPLEMENTATION OF INSTANCE METHODS ***/
     addJp(joinpoint) {
 
-        if (
-            joinpoint.instanceOf("unaryExpression") && !(joinpoint.parent.type == "for") &&
-            joinpoint.operator == this.original) {
+      if (joinpoint.instanceOf("unaryExpression") && !(joinpoint.parent.type == "for") &&
+           joinpoint.operator == this.original) {
 
-            if (this.rightHand.contains(this.original) && this.rightHand.contains(this.result)) {
-                this.mutationPoints.push(joinpoint);
-            }
-            else if (this.leftHand.contains(this.original) && this.leftHand.contains(this.result)) {
+           if (this.rightHand.contains(this.original) && this.rightHand.contains(this.result)) {
+               if (joinpoint.parent.type == undefined) { this.putSemicolon = ";"; } else { this.putSemicolon = ""; }
+               this.mutationPoints.push(joinpoint);
+           }
+           else if (this.leftHand.contains(this.original) && this.leftHand.contains(this.result)) {
+               if (joinpoint.parent.type == undefined) { this.putSemicolon = ";"; } else { this.putSemicolon = ""; }
+               this.mutationPoints.push(joinpoint);
+           }else {
+               println("First Operator cannot be replaced with the Second one");
 
-                this.mutationPoints.push(joinpoint);
-            }
 
-            else {
-                println("First Operator cannot be replaced with the Second one");
-
-            }
-        }
+           }
+       }
 
 
         if (this.mutationPoints.length > 0) {
@@ -71,7 +71,7 @@ class UnaryMutator extends Mutator {
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
         this.previousValue = this.mutationPoint.toString().replace("Unary Expression:", "");
-
+pri
         let replaceFor = this.mutationPoint.toString().replace("Unary Expression:", "").replace(this.original.replace("_", ""), this.result.replace("_", ""));
 
         this.mutationPoint = this.mutationPoint.replaceWith(replaceFor);
@@ -88,7 +88,7 @@ class UnaryMutator extends Mutator {
 
     _restorePrivate() {
 
-        this.mutationPoint = this.mutationPoint.replaceWith(this.previousValue);
+        this.mutationPoint = this.mutationPoint.replaceWith(this.previousValue+ this.putSemicolon);
         this.previousValue = undefined;
     }
 
@@ -98,7 +98,7 @@ class UnaryMutator extends Mutator {
 
     toJson() {
         return {
-            mutationOperatorArgumentsList: [],
+            mutationOperatorArgumentsList: [this.original, this.result],
             operator: this.name,
             isAndroidSpecific: this.isAndroidSpecific(),
         };
