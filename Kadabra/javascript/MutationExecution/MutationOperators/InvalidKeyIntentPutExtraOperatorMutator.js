@@ -13,8 +13,8 @@ class InvalidKeyIntentPutExtraOperatorMutator extends Mutator {
         this.previousValue = undefined;
     }
 
-    isAndroidSpecific(){
-      return true;
+    isAndroidSpecific() {
+        return true;
     }
     /*&&
             joinpoint.typeReference === "Intent" &&
@@ -66,14 +66,14 @@ class InvalidKeyIntentPutExtraOperatorMutator extends Mutator {
     }
 
     _mutatePrivate() {
-        let randomValue = (Math.random() + 1).toString(36).substring(7);
+        let randomValue = (Math.random() + 1).toString(36).substring(2);
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
         this.currentIndex++;
 
         this.previousValue = this.mutationPoint.copy();
 
-        this.mutationPoint = this.mutationPoint.insertReplace(randomValue);
+        this.mutationPoint = this.mutationPoint.insertReplace("\"" + randomValue + "\"");
 
 
         println("/*--------------------------------------*/");
