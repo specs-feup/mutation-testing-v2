@@ -15,8 +15,8 @@ class InvalidMethodCallArgumentOperatorMutator extends Mutator {
     }
 
 
-    isAndroidSpecific(){
-      return false;
+    isAndroidSpecific() {
+        return false;
     }
     /*&&
             joinpoint.typeReference === "Intent" &&
@@ -69,7 +69,7 @@ class InvalidMethodCallArgumentOperatorMutator extends Mutator {
     }
 
     _mutatePrivate() {
-        let randomValue = (Math.random() + 1).toString(36).substring(7);
+        let randomValue = (Math.random() + 1).toString(36).substring(2);
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
         this.currentIndex++;
@@ -77,7 +77,7 @@ class InvalidMethodCallArgumentOperatorMutator extends Mutator {
         this.previousValue = this.mutationPoint.copy();
 
 
-        this.mutationPoint = this.mutationPoint.insertReplace(randomValue);
+        this.mutationPoint = this.mutationPoint.insertReplace("\"" + randomValue + "\"");
 
 
         println("/*--------------------------------------*/");
