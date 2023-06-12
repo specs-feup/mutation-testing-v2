@@ -12,7 +12,7 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
         this.mutationPoint = undefined;
         this.previousValue = undefined;
         this.package = undefined;
-        this.targetValues = ["new Intent(Intent.ACTION_VIEW)", "new Intent(Intent.ACTION_SEND)", "new Intent(Intent.ACTION_VIEW, Uri.parse(\"https://www.example.com\"))"];
+        this.targetValues = ["new Intent(Intent.ACTION_VIEW)", "new Intent(Intent.ACTION_SEND)"];
 
     }
 
