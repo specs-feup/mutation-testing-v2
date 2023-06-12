@@ -17,27 +17,39 @@ class ConditionalExpressionReplacementOperatorMutator extends Mutator {
         this.previousValue = undefined;
     }
 
-    isAndroidSpecific(){
-      return false;
+    isAndroidSpecific() {
+        return false;
     }
     addJp(joinpoint) {
 
 
         if (joinpoint.instanceOf('ternary')) {
-            for (let i = 0; i < joinpoint.numChildren; i++) {
 
+
+            for (let i = 0; i < joinpoint.numChildren; i++) {
                 if (joinpoint.children[i].instanceOf('var')) {
-                    println(joinpoint);
 
                     this.valuesToAssignExpression2OfConditionalExpression.push(joinpoint.children[i]);
 
+                } else {
+                    for (let j = 0; j < joinpoint.children[i].numChildren; j++) {
+                        if (joinpoint.children[i].children[j].instanceOf('var')) {
+                            let parent = joinpoint.children[i].children[j].parent.toString();
+
+                            if (joinpoint.children[i].children[j].parent.toString().substring(0, 17).equals("Unary Expression:")) {
+                                this.valuesToAssignExpression2OfConditionalExpression.push(joinpoint.children[i].children[j].parent.toString().replace("Unary Expression: ", ""));
+
+                            } else {
+
+                                this.valuesToAssignExpression2OfConditionalExpression.push(joinpoint.children[i].children[j].parent);
+                            }
+                        }
+                    }
                 }
-                println(this.valuesToAssignExpression2OfConditionalExpression[i]);
             }
-            if (joinpoint.numChildren > 0) {
+            if (joinpoint.numChildren > 0 && this.valuesToAssignExpression2OfConditionalExpression.length > 0) {
                 this.mutationPoints.push(joinpoint.children[(joinpoint.numChildren - 1)]);
             }
-
             if (this.mutationPoints.length > 0) {
                 this.mutationPoint = this.mutationPoints[this.currentIndex];
             }
@@ -69,7 +81,7 @@ class ConditionalExpressionReplacementOperatorMutator extends Mutator {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
         this.previousValue = this.mutationPoint
-        println(this.previousValue);
+        println("CC " + this.previousValue);
         while (this.previousValue == this.valuesToAssignExpression2OfConditionalExpression[randomIndex].toString()) {
             randomIndex = Math.floor(Math.random() * this.valuesToAssignExpression2OfConditionalExpression.length);
 
