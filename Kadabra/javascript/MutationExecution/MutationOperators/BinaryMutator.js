@@ -15,8 +15,10 @@ class BinaryMutator extends Mutator {
     this.previousValue = undefined;
 
     this.arithmeticOperators = ["+", "-", "*", "/", "%"];
-    this.bitwiseOperators = ["&", "|", "<<", ">>"];
-    this.comparisonOperators = ["==", "!=", ">", "<", ">=", "<="];
+    this.bitwiseOperators = ["&", "|"]
+    this.bitwiseOperators2 = ["<<", ">>"];
+    this.comparisonOperators = ["==", "!="];
+    this.comparisonOperators2 = [">", "<", ">=", "<="];
     this.logicalOperators = ["&&", "||"];
     this.assignmentOperators = ["=", "+=", "-=", "*=", "/=", "%="];
   }
@@ -27,7 +29,7 @@ class BinaryMutator extends Mutator {
   /*** IMPLEMENTATION OF INSTANCE METHODS ***/
   addJp(joinpoint) {
     if (
-      joinpoint.instanceOf("binaryExpression") && !joinpoint.parent.instanceOf("if") &&
+      joinpoint.instanceOf("binaryExpression") &&
       joinpoint.operator === this.original &&
       !(joinpoint.type === "String") &&
       !(joinpoint.type === "char") &&
@@ -44,9 +46,21 @@ class BinaryMutator extends Mutator {
         this.bitwiseOperators.contains(this.result)
       ) {
         this.mutationPoints.push(joinpoint);
+      }
+      else if (
+        this.bitwiseOperators2.contains(this.original) &&
+        this.bitwiseOperators2.contains(this.result)
+      ) {
+        this.mutationPoints.push(joinpoint);
       } else if (
         this.comparisonOperators.contains(this.original) &&
         this.comparisonOperators.contains(this.result)
+      ) {
+        this.mutationPoints.push(joinpoint);
+      }
+      else if (
+        this.comparisonOperators2.contains(this.original) &&
+        this.comparisonOperators2.contains(this.result)
       ) {
         this.mutationPoints.push(joinpoint);
       } else if (

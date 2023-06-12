@@ -24,7 +24,7 @@ class NullValueIntentOperatorMutator extends Mutator {
     addJp(joinpoint) {
 
 
-        if (joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var')
+        if (joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') &&!joinpoint.parent.instanceOf('var')
         ) {
             if (joinpoint.children[0].name === "<init>" && joinpoint.children[0].type === "Executable") {
 

@@ -12,9 +12,9 @@ class InvalidKeyIntentOperatorMutator extends Mutator {
         this.mutationPoint = undefined;
         this.previousValue = undefined;
     }
-    isAndroidSpecific(){
-  return true;
-}
+    isAndroidSpecific() {
+        return true;
+    }
 
     /*&&
             joinpoint.typeReference === "Intent" &&
@@ -25,7 +25,7 @@ class InvalidKeyIntentOperatorMutator extends Mutator {
     addJp(joinpoint) {
 
 
-        if (joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var')
+        if (joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') && !joinpoint.parent.instanceOf("if")
         ) {
             if (joinpoint.children[0].name === "<init>" && joinpoint.children[0].type === "Executable") {
 

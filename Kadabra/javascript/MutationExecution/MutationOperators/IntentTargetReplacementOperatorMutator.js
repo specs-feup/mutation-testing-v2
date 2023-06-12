@@ -15,8 +15,8 @@ class IntentTargetReplacementOperatorMutator extends Mutator {
         this.targetValues = [];
         this.allClassValues = [];
     }
-    isAndroidSpecific(){
-      return true;
+    isAndroidSpecific() {
+        return true;
     }
     addJp(joinpoint) {
 
@@ -24,7 +24,7 @@ class IntentTargetReplacementOperatorMutator extends Mutator {
             this.allClassValues.push(joinpoint.package + "-" + joinpoint.name + ".class");
         }
 
-        if (joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var')
+        if (joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') && !joinpoint.parent.instanceOf("if")
         ) {
             if (joinpoint.children[0].name === "<init>" && joinpoint.children[0].type === "Executable") {
                 this.mutationPoints.push(joinpoint.children[2]);

@@ -2,7 +2,6 @@ laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
-
 class NullIntentOperatorMutator extends Mutator {
     constructor() {
         super("NullIntentOperatorMutator");
@@ -12,12 +11,12 @@ class NullIntentOperatorMutator extends Mutator {
         this.mutationPoint = undefined;
         this.previousValue = undefined;
     }
-    isAndroidSpecific(){
-      return true;
+    isAndroidSpecific() {
+        return true;
     }
     addJp(joinpoint) {
         if (
-            joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var')
+            joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') && !joinpoint.parent.instanceOf('var')
         ) {
             this.mutationPoints.push(joinpoint);
 
