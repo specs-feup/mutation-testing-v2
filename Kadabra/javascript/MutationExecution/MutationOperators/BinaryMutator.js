@@ -27,7 +27,7 @@ class BinaryMutator extends Mutator {
   /*** IMPLEMENTATION OF INSTANCE METHODS ***/
   addJp(joinpoint) {
     if (
-      joinpoint.instanceOf("binaryExpression") &&
+      joinpoint.instanceOf("binaryExpression") && !joinpoint.parent.instanceOf("if") &&
       joinpoint.operator === this.original &&
       !(joinpoint.type === "String") &&
       !(joinpoint.type === "char") &&
