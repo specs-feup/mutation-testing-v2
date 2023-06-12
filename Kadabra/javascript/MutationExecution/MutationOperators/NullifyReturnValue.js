@@ -23,8 +23,11 @@ class NullifyReturnValue extends Mutator {
 		if (joinpoint.instanceOf('return')) {
 			if (!joinpoint.ancestor('method').returnRef.isPrimitive) {
 				this.mutationPoints.push(joinpoint);
-				return true;
+
 			}
+		}
+		if (this.mutationPoints.length > 0) {
+			return true;
 		}
 
 		return false;
@@ -50,10 +53,10 @@ class NullifyReturnValue extends Mutator {
 
 	_mutatePrivate() {
 
-		let mutationPoint = this.mutationPoints[this.currentIndex];
-		this.previousValue = mutationPoint.code;
-
-		this.mutationPoint = mutationPoint.insertReplace("return null");
+		this.mutationPoint = this.mutationPoints[this.currentIndex];
+		this.previousValue = this.mutationPoint.code;
+		println("Prev: " + this.mutationPoint);
+		this.mutationPoint = this.mutationPoint.insertReplace("return null");
 
 		this.currentIndex++;
 
@@ -67,7 +70,7 @@ class NullifyReturnValue extends Mutator {
 		// Restore operator
 		println("Restore  prev: " + this.previousValue);
 		println("Restore new: \n" + this.mutationPoint);
-		this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
+		this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue + ";");
 		this.mutationPoint = undefined;
 	}
 
