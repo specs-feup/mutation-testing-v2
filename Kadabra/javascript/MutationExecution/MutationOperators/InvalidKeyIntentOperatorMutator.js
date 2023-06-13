@@ -28,19 +28,14 @@ class InvalidKeyIntentOperatorMutator extends Mutator {
         if (joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') && !joinpoint.parent.instanceOf("if")
         ) {
             if (joinpoint.children[0].name === "<init>" && joinpoint.children[0].type === "Executable") {
-
-                this.mutationPoints.push(joinpoint.children[1]);
-
-                debug(
-                    "Adicionou um ponto de mutação " +
-                    this.$expr +
-                    " a " +
-                    joinpoint +
-                    " na linha " +
-                    joinpoint.line
-                );
-                return true;
+                if (joinpoint.children[1] != undefined) {
+                    this.mutationPoints.push(joinpoint.children[1]);
+                }
             }
+
+
+        } if (this.mutationPoints.length > 0) {
+            return true;
         }
         return false;
     }
@@ -66,9 +61,9 @@ class InvalidKeyIntentOperatorMutator extends Mutator {
 
         this.currentIndex++;
 
-        this.previousValue = this.mutationPoint.copy();
+        this.previousValue = this.mutationPoint;
 
-        this.mutationPoint = this.mutationPoint.insertReplace("null");
+        this.mutationPoint = this.mutationPoint.insertReplace("\"" + null + "\"");
 
 
         println("/*--------------------------------------*/");

@@ -11,9 +11,10 @@ class InvalidValueIntentPutExtraOperatorMutator extends Mutator {
         this.currentIndex = 0;
         this.mutationPoint = undefined;
         this.previousValue = undefined;
+        this.addImport = false;
     }
-    isAndroidSpecific(){
-      return true;
+    isAndroidSpecific() {
+        return true;
     }
     /*&&
             joinpoint.typeReference === "Intent" &&
@@ -24,6 +25,10 @@ class InvalidValueIntentPutExtraOperatorMutator extends Mutator {
     addJp(joinpoint) {
 
 
+        if (joinpoint.instanceOf("class") && this.addImport == false) {
+            joinpoint.insertBefore(" import android.os.Parcelable;\n ");
+            this.addImport = true;
+        }
         if (joinpoint.instanceOf('callStatement')) {
 
 

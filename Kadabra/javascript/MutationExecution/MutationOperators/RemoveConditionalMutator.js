@@ -14,8 +14,8 @@ class RemoveConditionalMutator extends Mutator {
 		this.mutationPoints = [];
 		this.currentIndex = 0;
 
-		this.originalConditionalClause = undefined;
-		this.conditionalClause = undefined;
+		this.previousValue = undefined;
+		this.mutationPoint = undefined;
 
 	}
 
@@ -28,8 +28,12 @@ class RemoveConditionalMutator extends Mutator {
 	addJp(joinpoint) {
 
 		// A conditional can be either an if or a ternary operator
-		if (joinpoint.instanceOf('if') || joinpoint.instanceOf('ternary') || joinpoint.instanceOf('loop')) {
+		if ((joinpoint.instanceOf('if') || joinpoint.instanceOf('ternary') || joinpoint.instanceOf('loop')) && joinpoint.cond.toString() != "true") {
+			println("Adding joinpoint " + joinpoint.children[0])
 			this.mutationPoints.push(joinpoint.cond);
+
+		}
+		if (this.mutationPoints.length > 0) {
 			return true;
 		}
 		return false;
@@ -38,33 +42,9 @@ class RemoveConditionalMutator extends Mutator {
 	hasMutations() {
 		return this.currentIndex < this.mutationPoints.length;
 	}
-
-
-	_mutatePrivate() {
-		this.conditionalClause = this.mutationPoints[this.currentIndex++];
-		this.originalConditionalClause = this.conditionalClause.copy();
-
-		let mutatedCondition = 'true';
-
-		this.conditionalClause = this.conditionalClause.insertReplace(mutatedCondition);
-
-		println("/*--------------------------------------*/");
-		println("Mutating operator n." + this.currentIndex + ": " + this.originalConditionalClause
-			+ " to " + this.conditionalClause);
-		println("/*--------------------------------------*/");
-
-	}
-
-	_restorePrivate() {
-		this.conditionalClause = this.conditionalClause.insertReplace(this.originalConditionalClause);
-
-		this.originalConditionalClause = undefined;
-		this.conditionalClause = undefined;
-	}
-
 	getMutationPoint() {
-		if (this.isMutated && this.conditionalClause !== null) {
-			return this.conditionalClause;
+		if (this.isMutated && this.mutationPoint !== null) {
+			return this.mutationPoint;
 		} else {
 			if (this.currentIndex < this.mutationPoints.length) {
 				return this.mutationPoints[this.currentIndex];
@@ -72,6 +52,27 @@ class RemoveConditionalMutator extends Mutator {
 				return undefined;
 			}
 		}
+	}
+
+
+	_mutatePrivate() {
+		this.mutationPoint = this.mutationPoints[this.currentIndex++];
+		println("cc" + this.mutationPoint);
+		this.previousValue = this.mutationPoint;
+
+		this.mutationPoint = this.mutationPoint.insertReplace("true");
+
+		println("/*--------------------------------------*/");
+		println("Mutating operator n." + this.currentIndex + ": " + this.previousValue
+			+ " to " + this.mutationPoint);
+		println("/*--------------------------------------*/");
+
+	}
+
+	_restorePrivate() {
+		this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
+
+		this.previousValue = undefined;
 	}
 
 
