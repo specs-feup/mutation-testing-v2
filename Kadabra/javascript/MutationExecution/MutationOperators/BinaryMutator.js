@@ -40,39 +40,60 @@ class BinaryMutator extends Mutator {
         this.arithmeticOperators.contains(this.original) &&
         this.arithmeticOperators.contains(this.result)
       ) {
-        this.mutationPoints.push(joinpoint);
+        if (joinpont != undefined) {
+          this.mutationPoints.push(joinpoint);
+        }
       } else if (
         this.bitwiseOperators.contains(this.original) &&
         this.bitwiseOperators.contains(this.result)
       ) {
-        this.mutationPoints.push(joinpoint);
+
+        if (joinpont != undefined) {
+          this.mutationPoints.push(joinpoint);
+        }
       }
       else if (
         this.bitwiseOperators2.contains(this.original) &&
         this.bitwiseOperators2.contains(this.result)
       ) {
-        this.mutationPoints.push(joinpoint);
+
+        if (joinpont != undefined) {
+          this.mutationPoints.push(joinpoint);
+        }
       } else if (
         this.comparisonOperators.contains(this.original) &&
         this.comparisonOperators.contains(this.result)
       ) {
-        this.mutationPoints.push(joinpoint);
+
+        if (joinpont != undefined) {
+          this.mutationPoints.push(joinpoint);
+        }
       }
       else if (
         this.comparisonOperators2.contains(this.original) &&
         this.comparisonOperators2.contains(this.result)
       ) {
-        this.mutationPoints.push(joinpoint);
+
+
+        if (joinpont != undefined) {
+          this.mutationPoints.push(joinpoint);
+        }
       } else if (
         this.logicalOperators.contains(this.original) &&
         this.logicalOperators.contains(this.result)
       ) {
-        this.mutationPoints.push(joinpoint);
+
+        if (joinpont != undefined) {
+          this.mutationPoints.push(joinpoint);
+        }
       } else if (
         this.assignmentOperators.contains(this.original) &&
         this.assignmentOperators.contains(this.result)
       ) {
-        this.mutationPoints.push(joinpoint);
+
+        if (joinpont != undefined) {
+          this.mutationPoints.push(joinpoint);
+        }
       } else {
         println("First Operator cannot be replaced with the Second one");
         //return false;
