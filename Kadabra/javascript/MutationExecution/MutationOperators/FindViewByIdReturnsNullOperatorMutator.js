@@ -1,4 +1,3 @@
-laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
@@ -12,9 +11,9 @@ class FindViewByIdReturnsNullOperatorMutator extends Mutator {
         this.mutationPoint = undefined;
         this.previousValue = undefined;
     }
-    isAndroidSpecific(){
-  return true;
-}
+    isAndroidSpecific() {
+        return true;
+    }
     addJp(joinpoint) {
 
         if (joinpoint.instanceOf('call')
