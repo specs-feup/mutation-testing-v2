@@ -12,19 +12,24 @@ class ViewComponentNotVisibleOperatorMutator extends Mutator {
         this.mutationPoint = undefined;
         this.previousValue = undefined;
     }
-    isAndroidSpecific(){
-      return true;
+    isAndroidSpecific() {
+        return true;
     }
     addJp(joinpoint) {
 
-        if (joinpoint.instanceOf('call')
-        ) {
-
+        if (joinpoint.instanceOf('call')) {
+            println("kks" + joinpoint.ast);
+            for (let i = 0; i < joinpoint.numChildren; i++) {
+                //
+                //  println(joinpoint.children[i])
+            }
             if (joinpoint.children[0] == 'findViewById - Executable') {
-
-                this.mutationPoints.push(joinpoint.parent);
+                if (joinpoint.parent != undefined) {
+                    this.mutationPoints.push(joinpoint.parent);
+                }
             }
         }
+
         if (this.mutationPoints.length > 0) {
             return true;
         }

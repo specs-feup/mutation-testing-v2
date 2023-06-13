@@ -25,7 +25,7 @@ class InvalidKeyIntentOperatorMutator extends Mutator {
     addJp(joinpoint) {
 
 
-        if (joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') && !joinpoint.parent.instanceOf("if")
+        if (joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') && !joinpoint.parent.instanceOf("if") && joinpoint.parent.type === undefined && joinpoint!=undefined
         ) {
             if (joinpoint.children[0].name === "<init>" && joinpoint.children[0].type === "Executable") {
                 if (joinpoint.children[1] != undefined) {

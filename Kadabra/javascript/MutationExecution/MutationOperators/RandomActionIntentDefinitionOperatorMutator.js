@@ -28,7 +28,7 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
     addJp(joinpoint) {
 
         if (
-            joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') && !joinpoint.parent.instanceOf('var')
+            joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') && !joinpoint.parent.instanceOf('var') && joinpoint.parent.type === undefined
         ) {
             this.mutationPoints.push(joinpoint);
         }
