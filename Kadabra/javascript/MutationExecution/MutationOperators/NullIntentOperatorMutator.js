@@ -15,7 +15,7 @@ class NullIntentOperatorMutator extends Mutator {
         return true;
     }
     addJp(joinpoint) {
-        if (
+        if (joinpoint.type != undefined &&
             joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') && !joinpoint.parent.instanceOf('var')
         ) {
             this.mutationPoints.push(joinpoint);
