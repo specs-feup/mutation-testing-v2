@@ -23,14 +23,15 @@ class XMLTextViewWidgetDeletionOperatorMutator extends Mutator {
         return true;
     }
     readAndCopyXmlFile(xmNameFile) {
-        const path = projectPath + "/main/res/layout/" + xmNameFile + ".xml";
+        const rootPath = projectPath + "/src/main/res/layout/";
+        const path = rootPath + xmNameFile + ".xml";
         this.nameOfFileMutated = xmNameFile + "_" + this.increment;
-        this.destinationPath = projectPath + "/main/res/layout/" + this.nameOfFileMutated + ".xml";
+        this.destinationPath = rootPath + this.nameOfFileMutated + ".xml";
 
         while (Io.isFile(this.destinationPath)) {
             this.increment++;
             this.nameOfFileMutated = xmNameFile + "_" + this.increment;
-            this.destinationPath = projectPath + "/main/res/layout/" + this.nameOfFileMutated + ".xml";
+            this.destinationPath = rootPath + this.nameOfFileMutated + ".xml";
 
         };
         Io.copyFile(path, this.destinationPath);
