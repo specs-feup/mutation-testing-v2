@@ -4,7 +4,7 @@ laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
 
 class XMLEditTextWidgetDeletionOperatorMutator extends Mutator {
-    constructor() {
+    constructor(rootPath) {
         super("XMLEditTextWidgetDeletionOperatorMutator");
 
         this.mutationPoints = [];
@@ -17,21 +17,22 @@ class XMLEditTextWidgetDeletionOperatorMutator extends Mutator {
         this.nameOfFileToMutate = undefined;
         this.increment = 1;
         this.destinationPath = undefined;
+        this.rootPath = rootPath;
     }
 
     isAndroidSpecific() {
         return true;
     }
     readAndCopyXmlFile(xmNameFile) {
-        const rootPath = projectPath + "/src/main/res/layout/";
-        const path = rootPath + xmNameFile + ".xml";
+
+        const path = this.rootPath + xmNameFile + ".xml";
         this.nameOfFileMutated = xmNameFile + "_" + this.increment;
-        this.destinationPath = rootPath + this.nameOfFileMutated + ".xml";
+        this.destinationPath = this.rootPath + this.nameOfFileMutated + ".xml";
 
         while (Io.isFile(this.destinationPath)) {
             this.increment++;
             this.nameOfFileMutated = xmNameFile + "_" + this.increment;
-            this.destinationPath = rootPath + this.nameOfFileMutated + ".xml";
+            this.destinationPath = this.rootPath + this.nameOfFileMutated + ".xml";
 
         };
         Io.copyFile(path, this.destinationPath);
