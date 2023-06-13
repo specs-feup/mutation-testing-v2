@@ -12,12 +12,12 @@ class ForLoopReplacementOperatorMutator extends Mutator {
         this.mutationPoint = undefined;
         this.previousValue = undefined;
         this.forStatement = undefined;
-        this.maxValue = -1;
+
         this.classTypeOfIDeclaration = undefined;
     }
 
-    isAndroidSpecific(){
-      return false;
+    isAndroidSpecific() {
+        return false;
     }
     addJp(joinpoint) {
 
@@ -27,18 +27,9 @@ class ForLoopReplacementOperatorMutator extends Mutator {
 
             this.forStatement = joinpoint.parent;
 
-            if (this.maxValue == -1) {
-                if (joinpoint.instanceOf('expression') && joinpoint.type == "boolean" && joinpoint.children[2].instanceOf('literal')) {
-                    this.maxValue = joinpoint.children[2];
-                    println("if1" + this.maxValue);
-
-                }
-
-            }
 
             if (joinpoint.instanceOf('statement') && joinpoint.instanceOf("localVariable")) {
 
-                println("if2: " + this.maxValue);
                 const iDeclaration = joinpoint.copy().toString();
                 this.classTypeOfIDeclaration = iDeclaration.split("=")[0];
                 if (joinpoint.children[1].instanceOf('literal')) {
@@ -74,20 +65,11 @@ class ForLoopReplacementOperatorMutator extends Mutator {
 
     _mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
-        const number = this.mutationPoint.toString().split("=")[1].trim();
 
-        if (this.maxValue == -1 && number == 0) {
-            this.maxValue = 1;
-        }
-
-        var randomNumber = Math.floor(Math.random() * (this.maxValue - 0 + 1)) + 0;
+        var randomNumber = Math.floor(Math.random() * (100)) + 1;
 
         this.previousValue = this.forStatement.toString();
 
-        if ((number.trim() === randomNumber.toString().trim())) {
-            randomNumber = Math.floor(Math.random() * this.maxValue);
-
-        };
 
         this.mutationPoint = this.mutationPoint.insertReplace(this.forStatement.toString().replace(this.mutationPoint.toString(), (this.classTypeOfIDeclaration + "= " + randomNumber.toString())));
 
