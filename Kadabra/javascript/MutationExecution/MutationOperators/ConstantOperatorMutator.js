@@ -14,17 +14,6 @@ class ConstantOperatorMutator extends Mutator {
     this.previousValue = undefined;
   }
 
-
-  constructor(expr) {
-    super("ConstantOperatorMutator");
-
-    this.expr = expr;
-    this.newValue = undefined;
-    this.mutationPoints = [];
-    this.currentIndex = 0;
-    this.previousValue = undefined;
-  }
-
   isAndroidSpecific() {
     return false;
   }
