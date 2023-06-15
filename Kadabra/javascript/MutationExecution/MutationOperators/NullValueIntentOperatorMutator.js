@@ -28,7 +28,7 @@ class NullValueIntentOperatorMutator extends Mutator {
             joinpoint.insertBefore(" import android.os.Parcelable;\n ");
             this.addImport = true;
         }
-        if (joinpoint.type != undefined && joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') && !joinpoint.parent.instanceOf('var')
+        if (joinpoint.type != undefined && joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') && !joinpoint.parent.instanceOf('var') && joinpoint.parent.type === undefined 
         ) {
             if (joinpoint.children[0].name === "<init>" && joinpoint.children[0].type === "Executable") {
 

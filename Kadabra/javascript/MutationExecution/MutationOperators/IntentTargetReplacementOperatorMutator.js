@@ -24,7 +24,7 @@ class IntentTargetReplacementOperatorMutator extends Mutator {
             this.allClassValues.push(joinpoint.package + "-" + joinpoint.name + ".class");
         }
 
-        if (joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') && !joinpoint.parent.instanceOf("if")
+        if (joinpoint != undefined && joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') && !joinpoint.parent.instanceOf("if") && joinpoint.parent.type === undefined
         ) {
             if (joinpoint.children[0].name === "<init>" && joinpoint.children[0].type === "Executable") {
                 this.mutationPoints.push(joinpoint.children[2]);

@@ -40,7 +40,7 @@ class BinaryMutator extends Mutator {
         this.arithmeticOperators.contains(this.original) &&
         this.arithmeticOperators.contains(this.result)
       ) {
-        if (joinpont != undefined) {
+        if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }
       } else if (
@@ -48,7 +48,7 @@ class BinaryMutator extends Mutator {
         this.bitwiseOperators.contains(this.result)
       ) {
 
-        if (joinpont != undefined) {
+        if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }
       }
@@ -57,7 +57,7 @@ class BinaryMutator extends Mutator {
         this.bitwiseOperators2.contains(this.result)
       ) {
 
-        if (joinpont != undefined) {
+        if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }
       } else if (
@@ -65,7 +65,7 @@ class BinaryMutator extends Mutator {
         this.comparisonOperators.contains(this.result)
       ) {
 
-        if (joinpont != undefined) {
+        if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }
       }
@@ -75,7 +75,7 @@ class BinaryMutator extends Mutator {
       ) {
 
 
-        if (joinpont != undefined) {
+        if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }
       } else if (
@@ -83,7 +83,7 @@ class BinaryMutator extends Mutator {
         this.logicalOperators.contains(this.result)
       ) {
 
-        if (joinpont != undefined) {
+        if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }
       } else if (
@@ -91,7 +91,7 @@ class BinaryMutator extends Mutator {
         this.assignmentOperators.contains(this.result)
       ) {
 
-        if (joinpont != undefined) {
+        if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }
       } else {

@@ -29,23 +29,18 @@ class InvalidMethodCallArgumentOperatorMutator extends Mutator {
         if (joinpoint.instanceOf('callStatement')) {
 
 
+            if (joinpoint.call.children[1] != undefined) {
+                if (joinpoint.call.children[1].instanceOf('var')) {
+                    this.mutationPoints.push(joinpoint.call.children[1]);
 
-            if (joinpoint.call.children[1].instanceOf('var')) {
-                this.mutationPoints.push(joinpoint.call.children[1]);
-
-
-                debug(
-                    "Adicionou um ponto de mutação " +
-                    this.$expr +
-                    " a " +
-                    joinpoint +
-                    " na linha " +
-                    joinpoint.line
-                );
-                return true;
+                }
             }
-        }
 
+
+        }
+        if (this.mutationPoints.length > 0) {
+            return true;
+        }
 
 
 
