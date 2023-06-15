@@ -6,7 +6,8 @@ class Arguments {
     traditionalMutation,
     includesFolder,
     classpath,
-    useIncompleteClassPath
+    useIncompleteClassPath,
+    isAndroid
   ) {
     this.writeCode = false;
     this.outputFolder = outputFolder;
@@ -20,13 +21,23 @@ class Arguments {
         "TraditionalMutation.js"
       ).trim();
     } else {
-      this.javascriptFile = (
-        includesFolder +
-        Io.getSeparator() +
-        "MutationExecution" +
-        Io.getSeparator() +
-        "MutantSchemata.js"
-      ).trim();
+      if (isAndroid) {
+        this.javascriptFile = (
+          includesFolder +
+          Io.getSeparator() +
+          "MutationExecution" +
+          Io.getSeparator() +
+          "MutantSchemataAndroid.js"
+        ).trim();
+      } else {
+        this.javascriptFile = (
+          includesFolder +
+          Io.getSeparator() +
+          "MutationExecution" +
+          Io.getSeparator() +
+          "MutantSchemata.js"
+        ).trim();
+      }
     }
 
     this.includesFolder = (
@@ -52,7 +63,6 @@ class Arguments {
     //Add entry point
     let strAux = [];
 
-    //strAux.push("clava ");
     strAux.push(this.javascriptFile);
 
     //Clava with stack strace
@@ -66,8 +76,8 @@ class Arguments {
     }
 
     //Adds the output path
-    strAux.push("-o");
-    strAux.push(this.outputFolder);
+    //strAux.push("-o");
+    //strAux.push(this.outputFolder);
 
     if (this.debugMode) {
       strAux.push("-d");

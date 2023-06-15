@@ -86,9 +86,9 @@ function applyTraditionalMutation() {
       });
     }
   }
-  for (i in auxOutputStr) {
+  /*for (i in auxOutputStr) {
     println(JSON.stringify(auxOutputStr[i]));
-  }
+  }*/
   //print(auxOutputStr);
   return JSON.stringify(auxOutputStr);
 }
@@ -106,14 +106,14 @@ function saveFile(mutatorName) {
 
   let newFolder = outputPath + Io.getSeparator() + projectExecutionName + aux;
 
-  Io.copyFolder(projectPath, newFolder, true);
+  //Io.copyFolder(projectPath, newFolder, true);
 
-  Io.writeFile(
+  /*Io.writeFile(
     newFolder +
       Io.getSeparator() +
       relativePath.replace("/", Io.getSeparator()),
     Query.root().code
-  );
+  );*/
 
   return aux;
 }

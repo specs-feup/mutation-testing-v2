@@ -13,6 +13,7 @@ public class ProjectMutantGeneration {
     public enum MutationGenerationType{
         TRADITIONALMUTATION,
         MUTANTSCHEMATA,
+        MUTANTSCHEMATA2,
         NOMUTATION,
         GITIMMPROVEMENTMUTANTSCHEMATA,
         GITIMMPROVEMENTTRADITIONALMUTATION

@@ -1,6 +1,7 @@
 package org.feup.Mutation_Testing_Backend_Final.Helper;
 
 import org.feup.Mutation_Testing_Backend_Final.Model.Project.Project;
+import org.feup.Mutation_Testing_Backend_Final.Model.Project.ProjectMutantGeneration;
 import org.json.simple.JSONObject;
 import org.lara.interpreter.joptions.config.interpreter.LaraiKeys;
 import org.lara.interpreter.joptions.config.interpreter.VerboseLevel;
@@ -57,11 +58,11 @@ public class KadabraHelper {
         return KadabraLauncher.execute(data);
     }
 
-    public static boolean callKadabra2(String projectPath, String projectFolderToIgnore, String includesFolder, String pathToKadabraEntryPoint, String outputPath, boolean traditionaMutation, List<String> operatorNameList, List<List<String>> operatorArgumentList, String projectExecutionName, String classpath, Boolean useIncompleteClassPath){
-        return callKadabra2(projectPath, projectFolderToIgnore, null, includesFolder, pathToKadabraEntryPoint,  outputPath,  traditionaMutation, operatorNameList,  operatorArgumentList, projectExecutionName, false, classpath, useIncompleteClassPath);
+    public static boolean callKadabra2(String projectPath, String projectFolderToIgnore, String includesFolder, String pathToKadabraEntryPoint, String outputPath, boolean traditionaMutation, List<String> operatorNameList, List<List<String>> operatorArgumentList, String projectExecutionName, String classpath, Boolean useIncompleteClassPath, ProjectMutantGeneration.MutationGenerationType mutationType){
+        return callKadabra2(projectPath, projectFolderToIgnore, null, includesFolder, pathToKadabraEntryPoint,  outputPath,  traditionaMutation, operatorNameList,  operatorArgumentList, projectExecutionName, false, classpath, useIncompleteClassPath, mutationType);
     }
 
-    public static boolean callKadabra2(String projectPath, String projectFolderToIgnore, String projectFolderToIgnoreAndroid, String includesFolder, String pathToKadabraEntryPoint, String outputPath, boolean traditionaMutation, List<String> operatorNameList, List<List<String>> operatorArgumentList, String projectExecutionName, boolean isAndroid, String classpath, Boolean useIncompleteClassPath){
+    public static boolean callKadabra2(String projectPath, String projectFolderToIgnore, String projectFolderToIgnoreAndroid, String includesFolder, String pathToKadabraEntryPoint, String outputPath, boolean traditionaMutation, List<String> operatorNameList, List<List<String>> operatorArgumentList, String projectExecutionName, boolean isAndroid, String classpath, Boolean useIncompleteClassPath, ProjectMutantGeneration.MutationGenerationType mutationType){
         DataStore data = DataStore.newInstance("Kadabra Options");
 
 
@@ -94,7 +95,7 @@ public class KadabraHelper {
         javascriptArguments.put("isAndroid", isAndroid);
         javascriptArguments.put("classpath", classpath);
         javascriptArguments.put("useIncompleteClassPath", useIncompleteClassPath);
-
+        javascriptArguments.put("mutationType", mutationType);
 
         data.put(LaraiKeys.ASPECT_ARGS, javascriptArguments.toJSONString());
 

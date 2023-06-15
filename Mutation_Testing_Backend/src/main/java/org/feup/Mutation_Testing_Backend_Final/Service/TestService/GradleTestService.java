@@ -79,6 +79,7 @@ public class GradleTestService {
                     JSONArray array = (JSONArray) parser.parse(new FileReader( projectExecutionName + File.separator + "MutationInfo.json"));
 
                     for (Object obj: array) {
+                        logger.debug("Mutant Number " + array.indexOf(obj) + " of " + array.size());
                         JSONObject jsonObject = (JSONObject) obj;
 
                         long startElapsedTime = System.currentTimeMillis();
@@ -94,12 +95,20 @@ public class GradleTestService {
                             executeGradleTests(projectExecutionName +  jsonObject.get("mutantId"), "");
                             endElapsedTime = System.currentTimeMillis();
 
-                            testResults = getGradeTestResults(projectExecutionName + jsonObject.get("mutantId")+ projectMutantGeneration.getProjectVersion().getProject().getBuildFolder() + File.separator +"build" +File.separator +"test-results" + File.separator + "test");
+                            testResults = getGradeTestResults(projectExecutionName + jsonObject.get("mutantId") + projectMutantGeneration.getProjectVersion().getProject().getBuildFolder() + File.separator +"build" +File.separator +"test-results" + File.separator + "test");
+                        }
+
+                        int line = -1;
+                        try {
+                            line = Integer.parseInt(String.valueOf(jsonObject.get("mutationLine")));
+                        }catch (NumberFormatException e){
+                            logger.error(String.valueOf(e));
+                            logger.error("Error getting the line for " + jsonObject.get("mutantId") );
                         }
 
                         Float testRunTime = getTestTime(testResults);
                         totalTestTime+=testRunTime;
-                        ProjectTestExecution projectTestExecutionChild = new ProjectTestExecution(projectTestExecution, Integer.parseInt(String.valueOf(jsonObject.get("mutationLine"))), (String) jsonObject.get("filePath"), (String) jsonObject.get("mutantId"), testRunTime);
+                        ProjectTestExecution projectTestExecutionChild = new ProjectTestExecution(projectTestExecution, line, (String) jsonObject.get("filePath"), (String) jsonObject.get("mutantId"), testRunTime);
                         projectTestExecutionRepository.save(projectTestExecutionChild);
 
                         boolean failedtest = saveTestResults(testResults, projectTestExecutionChild);
@@ -199,33 +208,40 @@ public class GradleTestService {
         HashMap<String, HashMap<String, HashMap<String, TestUnit>>> testResults = new HashMap<>();
         File reportFolder = new File(path);
 
-        for (File reportFile: reportFolder.listFiles()){
-            if (reportFile.isFile() && reportFile.getName().endsWith(".xml")){
-                try {
-                    JAXBContext jaxbContext = JAXBContext.newInstance(TestSuite.class);
-                    Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-                    TestSuite testSuite = (TestSuite) jaxbUnmarshaller.unmarshal(reportFile);
+        try {
+            for (File reportFile: reportFolder.listFiles()){
+                if (reportFile.isFile() && reportFile.getName().endsWith(".xml")){
+                    try {
+                        JAXBContext jaxbContext = JAXBContext.newInstance(TestSuite.class);
+                        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+                        TestSuite testSuite = (TestSuite) jaxbUnmarshaller.unmarshal(reportFile);
 
-                    String className = getGradleClassName(testSuite.getName());
-                    String packageName = testSuite.getName().replace("." + className, "");
+                        String className = getGradleClassName(testSuite.getName());
+                        String packageName = testSuite.getName().replace("." + className, "");
 
-                    HashMap<String, HashMap<String, TestUnit>> classList = testResults.computeIfAbsent(packageName, k -> new HashMap<>());
-                    HashMap<String, TestUnit> testList = classList.computeIfAbsent(className, k -> new HashMap<>());
+                        HashMap<String, HashMap<String, TestUnit>> classList = testResults.computeIfAbsent(packageName, k -> new HashMap<>());
+                        HashMap<String, TestUnit> testList = classList.computeIfAbsent(className, k -> new HashMap<>());
 
-                    for (TestCase testCase : testSuite.getTestCases()) {
-                        String testCaseName = testCase.getName().replace("(","").replace(")", "");
-                        boolean failed = testCase.getFailureMessage() != null;
-                        double time = testCase.getTime();
-                        boolean skipped = false;
+                        for (TestCase testCase : testSuite.getTestCases()) {
+                            String testCaseName = testCase.getName().replace("(","").replace(")", "");
+                            boolean failed = testCase.getFailureMessage() != null;
+                            double time = testCase.getTime();
+                            boolean skipped = false;
 
-                        testList.put(testCaseName, new TestUnit(failed, (float) time, skipped, testCaseName));
+                            testList.put(testCaseName, new TestUnit(failed, (float) time, skipped, testCaseName));
+                        }
+
+                    } catch (JAXBException e) {
+                        e.printStackTrace();
                     }
-
-                } catch (JAXBException e) {
-                    e.printStackTrace();
                 }
             }
+        }catch (NullPointerException e){
+            logger.error(String.valueOf(e));
+            logger.error("Error getting test results");
         }
+
+        logger.info("Finished getting Test Results For Path: " + path);
         return testResults;
     }
 

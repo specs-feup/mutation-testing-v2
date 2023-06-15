@@ -17,6 +17,7 @@ const fileName = filePath.substring(
 const operatorNameList = laraArgs.operatorNameList;
 const projectExecutionName = laraArgs.projectExecutionName;
 const isAndroid = laraArgs.isAndroid;
+const mutationType = laraArgs.mutationType;
 
 main();
 
@@ -33,20 +34,60 @@ function main() {
   }
 
   changeVarDeclarations();
-  println("Mutant Schemata");
+  println("Mutant Schemata Android");
 
   let output = runTreeAndApplyMetaMutant();
-  /*if (true) {
-    output = runTreeAndApplyMetaMutantAndroid();
-  } else {
-    output = runTreeAndApplyMetaMutant();
-  }*/
 
-  //print("Output" + output);
-  Script.setOutput({ output });
+  if (output.length > 0) {
+    //print("Output" + output);
+    Script.setOutput({ output });
+  } else {
+    Script.setOutput({});
+  }
 }
 
 function runTreeAndApplyMetaMutant() {
+  if (mutationType === "MUTANTSCHEMATA") {
+    const auxFunction = `
+    public static String getMUID(){ \
+    String propertyValue = null; \
+    try { \
+    Process process = Runtime.getRuntime().exec("getprop MUID"); \ 
+    InputStream inputStream = process.getInputStream(); \
+    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream)); \
+    propertyValue = reader.readLine();\
+    reader.close();\
+    inputStream.close();\
+    } catch (IOException e) {\
+    Log.e("ERROR", String.valueOf(e));\
+    }\
+    return propertyValue;\
+    }`;
+
+    const imports = `
+    import java.io.BufferedReader;\n 
+    import java.io.IOException;\n
+    import java.io.InputStream;\n
+    import java.io.InputStreamReader;\n
+    import android.util.Log;
+    `;
+
+    for (var $jp of Query.search("class")) {
+      $jp.insertBefore(imports);
+      $jp.insertMethod(auxFunction);
+      break;
+    }
+  } else if (isAndroid) {
+    const imports = `
+    import com.beemdevelopment.aegis.BuildConfig;\n 
+    `;
+
+    for (var $jp of Query.search("class")) {
+      $jp.insertBefore(imports);
+      break;
+    }
+  }
+
   var mutantList = [];
   for (var $jp of Query.root().descendants) {
     var $call = $jp.ancestor("call");
@@ -103,33 +144,42 @@ function runTreeAndApplyMetaMutant() {
             : mutator.getMutationPoint().ancestor("statement");
         }
 
-        //print(mutator.toJson());
+        if (mutator.isAndroidSpecific() && mutationType === "MUTANTSCHEMATA") {
+          if (needElseIf) {
+            if (mutationPoints > 1) {
+              if (firstTime) {
+                mutated.insertBefore(
+                  'if(getMUID().equals("' +
+                    mutantId +
+                    '")){\n' +
+                    mutated.srcCode +
+                    ";\n}"
+                );
 
-        if (needElseIf) {
-          if (mutationPoints > 1) {
-            if (firstTime) {
-              mutated.insertBefore(
-                'if(System.getProperty("MUID") != null && System.getProperty("MUID").equals("' +
-                  mutantId +
-                  '")){\n' +
-                  mutated.srcCode +
-                  ";\n}"
-              );
-
-              firstTime = false;
+                firstTime = false;
+              } else {
+                mutated.insertBefore(
+                  'else if(getMUID().equals("' +
+                    mutantId +
+                    '")){\n' +
+                    mutated.srcCode +
+                    ";\n}"
+                );
+              }
+              mutationPoints--;
             } else {
               mutated.insertBefore(
-                'else if(System.getProperty("MUID") != null && System.getProperty("MUID").equals("' +
+                'else if (getMUID().equals("' +
                   mutantId +
                   '")){\n' +
                   mutated.srcCode +
-                  ";\n}"
+                  ";\n}else{\n\t"
               );
+              mutated.insertAfter("}");
             }
-            mutationPoints--;
           } else {
             mutated.insertBefore(
-              'else if (System.getProperty("MUID") != null && System.getProperty("MUID").equals("' +
+              'if (getMUID().equals("' +
                 mutantId +
                 '")){\n' +
                 mutated.srcCode +
@@ -138,17 +188,52 @@ function runTreeAndApplyMetaMutant() {
             mutated.insertAfter("}");
           }
         } else {
-          mutated.insertBefore(
-            'if (System.getProperty("MUID") != null && System.getProperty("MUID").equals("' +
-              mutantId +
-              '")){\n' +
-              mutated.srcCode +
-              ";\n}else{\n\t"
-          );
-          mutated.insertAfter("}");
+          if (needElseIf) {
+            if (mutationPoints > 1) {
+              if (firstTime) {
+                mutated.insertBefore(
+                  'if(BuildConfig.MUID != null && BuildConfig.MUID.equals("' +
+                    mutantId +
+                    '")){\n' +
+                    mutated.srcCode +
+                    ";\n}"
+                );
+
+                firstTime = false;
+              } else {
+                mutated.insertBefore(
+                  'else if(BuildConfig.MUID != null && BuildConfig.MUID.equals("' +
+                    mutantId +
+                    '")){\n' +
+                    mutated.srcCode +
+                    ";\n}"
+                );
+              }
+              mutationPoints--;
+            } else {
+              mutated.insertBefore(
+                'else if (BuildConfig.MUID != null && BuildConfig.MUID.equals("' +
+                  mutantId +
+                  '")){\n' +
+                  mutated.srcCode +
+                  ";\n}else{\n\t"
+              );
+              mutated.insertAfter("}");
+            }
+          } else {
+            mutated.insertBefore(
+              'if (BuildConfig.MUID != null && BuildConfig.MUID.equals("' +
+                mutantId +
+                '")){\n' +
+                mutated.srcCode +
+                ";\n}else{\n\t"
+            );
+            mutated.insertAfter("}");
+          }
         }
-        mutator.restore();
       }
+
+      mutator.restore();
     }
   }
 
@@ -167,7 +252,7 @@ function runTreeAndApplyMetaMutant() {
   return JSON.stringify(mutantList);
 }
 
-function runTreeAndApplyMetaMutantAndroid() {
+/*function runTreeAndApplyMetaMutantAndroid() {
   var mutantList = [];
   for (var $jp of Query.root().descendants) {
     var $call = $jp.ancestor("call");
@@ -226,48 +311,6 @@ function runTreeAndApplyMetaMutantAndroid() {
 
         //print(mutator.toJson());
 
-        if (needElseIf) {
-          if (mutationPoints > 1) {
-            if (firstTime) {
-              mutated.insertBefore(
-                'if(BuildConfig.MUID != null && BuildConfig.MUID.equals("' +
-                  mutantId +
-                  '")){\n' +
-                  mutated.srcCode +
-                  ";\n}"
-              );
-
-              firstTime = false;
-            } else {
-              mutated.insertBefore(
-                'else if(BuildConfig.MUID != null && BuildConfig.MUID.equals("' +
-                  mutantId +
-                  '")){\n' +
-                  mutated.srcCode +
-                  ";\n}"
-              );
-            }
-            mutationPoints--;
-          } else {
-            mutated.insertBefore(
-              'else if (BuildConfig.MUID != null && BuildConfig.MUID.equals("' +
-                mutantId +
-                '")){\n' +
-                mutated.srcCode +
-                ";\n}else{\n\t"
-            );
-            mutated.insertAfter("}");
-          }
-        } else {
-          mutated.insertBefore(
-            'if (BuildConfig.MUID != null && BuildConfig.MUID.equals("' +
-              mutantId +
-              '")){\n' +
-              mutated.srcCode +
-              ";\n}else{\n\t"
-          );
-          mutated.insertAfter("}");
-        }
         mutator.restore();
       }
     }
@@ -451,4 +494,5 @@ function runTreeAndApplyMetaMutantAndroid() {
   Io.writeFile(aux, Query.root().srcCode);
 
   return JSON.stringify(mutantList);
-}*/
+}
+*/

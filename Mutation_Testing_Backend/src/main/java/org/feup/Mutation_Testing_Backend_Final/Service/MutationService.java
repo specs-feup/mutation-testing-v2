@@ -116,7 +116,8 @@ public class MutationService {
                                 projectExecutionName,
                                 true,
                                 createMutantWrapper.getClassPath(),
-                                createMutantWrapper.getUseIncompleteClassPath()
+                                createMutantWrapper.getUseIncompleteClassPath(),
+                                projectMutationGenerationType
                         );
 
                     }else {
@@ -131,7 +132,8 @@ public class MutationService {
                                 operatorArgumentList,
                                 projectExecutionName,
                                 createMutantWrapper.getClassPath(),
-                                createMutantWrapper.getUseIncompleteClassPath()
+                                createMutantWrapper.getUseIncompleteClassPath(),
+                                projectMutationGenerationType
                         );
                     }
 

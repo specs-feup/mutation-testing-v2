@@ -16,6 +16,7 @@ const includesFolder = laraArgs.includesFolder;
 const isAndroid = laraArgs.isAndroid;
 const classpath = laraArgs.classpath;
 const useIncompleteClassPath = laraArgs.useIncompleteClassPath;
+const mutationType = laraArgs.mutationType;
 
 main();
 
@@ -49,6 +50,8 @@ function main() {
       operatorNameList: operatorNameList,
       operatorArgumentList: operatorArgumentList,
       projectExecutionName: projectExecutionName,
+      isAndroid: laraArgs.isAndroid,
+      mutationType: laraArgs.mutationType,
     };
 
     let args_kadabra = new Arguments(
@@ -58,7 +61,8 @@ function main() {
       traditionalMutation,
       includesFolder,
       classpath,
-      useIncompleteClassPath
+      useIncompleteClassPath,
+      isAndroid
     ).getList();
 
     args_final.push(args_kadabra);
@@ -91,7 +95,7 @@ function getFilesToUse() {
         if (allJavaFiles[i].equals(javaFilesToRemove[j])) {
           break;
         }
-        if (j == javaFilesToRemove.length - 1) {
+        if (j == javaFilesToRemove.length - 1 && !j.includes("build")) {
           filesToUse.push(allJavaFiles[i]);
         }
       }
@@ -109,7 +113,7 @@ function getFilesToUse() {
         if (filesToUse[i].equals(javaFilesToRemove[j])) {
           break;
         }
-        if (j == javaFilesToRemove.length - 1) {
+        if (j == javaFilesToRemove.length - 1 && !j.includes("build")) {
           filesToUseFinal.push(filesToUse[i]);
         }
       }
