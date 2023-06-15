@@ -60,7 +60,6 @@ function main() {
       classpath,
       useIncompleteClassPath
     ).getList();
-    println("Importante: " + args_kadabra);
 
     args_final.push(args_kadabra);
   }
@@ -78,20 +77,27 @@ function getFilesToUse() {
   //Checks what files to use
   let allJavaFiles = Io.getFiles(projectPath, "*.java", true);
   let javaFilesToRemove = Io.getFiles(folderToIgnore, "*.java", true);
-  println("Project Path: " + projectPath);
   println("AllJavaFiles: " + allJavaFiles);
   println("Folder yo Ignore: " + folderToIgnore);
   println("javaFilesToRemove: " + javaFilesToRemove);
 
-  for (i in allJavaFiles) {
-    for (j in javaFilesToRemove) {
-      if (allJavaFiles[i].equals(javaFilesToRemove[j])) {
-        break;
-      }
-      if (j == javaFilesToRemove.length - 1) {
-        filesToUse.push(allJavaFiles[i]);
+  if (
+    folderToIgnore != null &&
+    folderToIgnore != "" &&
+    folderToIgnore.replace(projectPath, "") != ""
+  ) {
+    for (i in allJavaFiles) {
+      for (j in javaFilesToRemove) {
+        if (allJavaFiles[i].equals(javaFilesToRemove[j])) {
+          break;
+        }
+        if (j == javaFilesToRemove.length - 1) {
+          filesToUse.push(allJavaFiles[i]);
+        }
       }
     }
+  } else {
+    filesToUse = allJavaFiles;
   }
 
   if (folderToIgnoreAndroid != null && folderToIgnoreAndroid != "") {
