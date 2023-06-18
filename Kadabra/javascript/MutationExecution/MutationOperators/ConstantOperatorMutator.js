@@ -8,7 +8,7 @@ class ConstantOperatorMutator extends Mutator {
     super("ConstantOperatorMutator");
 
     this.expr = expr;
-    this.newValue = undefined;
+    this.mutationPoint = undefined;
     this.mutationPoints = [];
     this.currentIndex = 0;
     this.previousValue = undefined;
@@ -20,34 +20,23 @@ class ConstantOperatorMutator extends Mutator {
 
   addJp(joinpoint) {
     if (joinpoint.instanceOf("field") ||
-      joinpoint.instanceOf("localVariable")
+      joinpoint.instanceOf("localVariable") || joinpoint.instanceOf("assignment")
     ) {
 
-      if (joinpoint.init === undefined ||
-        !ConstantOperatorMutator._isCompatible(joinpoint.type, this.expr.type)
+      if (joinpoint != undefined && this.expr != undefined && joinpoint.init === undefined ||
+
+        ConstantOperatorMutator._isCompatible(joinpoint.type, this.expr.type)
       ) {
+        if (joinpoint != undefined && joinpoint.init != undefined || joinpoint.rhs != undefined) {
+          this.mutationPoints.push(joinpoint);
+        }
 
-        return false;
       }
+      if (this.mutationPoints.length > 0) { return true; }
+      return false;
 
-      this.mutationPoints.push(joinpoint);
 
-      return true;
     }
-
-    if (joinpoint.instanceOf("assignment")) {
-      if (
-        !ConstantOperatorMutator._isCompatible(joinpoint.type, this.expr.type)
-      ) {
-        return false;
-      }
-
-      this.mutationPoints.push(joinpoint);
-
-      return true;
-    }
-
-    return false;
   }
 
   static _isCompatible(type1, type2) {
@@ -62,7 +51,7 @@ class ConstantOperatorMutator extends Mutator {
 
   getMutationPoint() {
     if (this.isMutated) {
-      return this.newValue;
+      return this.mutationPoint;
     } else {
       if (this.currentIndex < this.mutationPoints.length) {
         return this.mutationPoints[this.currentIndex];
@@ -75,23 +64,25 @@ class ConstantOperatorMutator extends Mutator {
   _mutatePrivate() {
     var mutationPoint = this.mutationPoints[this.currentIndex];
 
-    if (
+    if ( 
       mutationPoint.instanceOf("field") ||
       mutationPoint.instanceOf("localVariable")
     ) {
       this.previousValue = mutationPoint.init;
-    } else if (mutationPoint.instanceOf("assignment")) {
+    } else if (mutationPoint.instanceOf("assignment") && mutationPoint.rhs != undefined) {
+
       this.previousValue = mutationPoint.rhs;
     }
 
-    this.currentIndex++;
-
-    if (isFunction(this.expr)) {
-      var tem = this.expr(this.previousValue);
-      this.newValue = this.previousValue.insertReplace(tem);
-    } else {
-      this.newValue = this.previousValue.insertReplace(this.expr);
+    if (this.previousValue != undefined) {
+      if (isFunction(this.expr)) {
+        var tem = this.expr(this.previousValue);
+        this.mutationPoint = this.previousValue.insertReplace(tem);
+      } else {
+        this.mutationPoint = this.previousValue.insertReplace(this.expr);
+      }
     }
+    this.currentIndex++;
 
     println("/*--------------------------------------*/");
     println(
@@ -100,20 +91,19 @@ class ConstantOperatorMutator extends Mutator {
       ": " +
       this.previousValue +
       " to " +
-      this.newValue
+      this.mutationPoint
     );
     println("/*--------------------------------------*/");
   }
 
   _restorePrivate() {
-    // Restore operator
-    this.newValue.insertReplace(this.previousValue);
+     this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
     this.previousValue = undefined;
-    this.newValue = undefined;
+    this.mutationPoint = undefined;
   }
 
   toString() {
-    return `Constant Operator Mutator from ${this.previousValue} to ${this.newValue}, current mutation points ${this.mutationPoints}, current mutation point ${this.newValue} and previous value ${this.previousValue}`;
+    return `Constant Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
   }
   toJson() {
     return {
