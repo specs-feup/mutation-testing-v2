@@ -46,7 +46,7 @@ class XMLButtonWidgetChangeAppearanceOperatorMutator extends Mutator {
 
     addJp(joinpoint) {
 
-        if (joinpoint.instanceOf("callStatement") && joinpoint.call.instanceOf("expression")) {
+        if (joinpoint != undefined && joinpoint.call != undefined && joinpoint.instanceOf("callStatement") && joinpoint.call.instanceOf("expression")) {
             for (var point of joinpoint.call.descendants) {
                 if (this.parentPoint == undefined) {
                     if (point.instanceOf("reference") && point == "setContentView - Executable") {
@@ -173,7 +173,7 @@ class XMLButtonWidgetChangeAppearanceOperatorMutator extends Mutator {
 
     toJson() {
         return {
-            mutationOperatorArgumentsList: [],
+            mutationOperatorArgumentsList: [this.rootPath],
             operator: this.name,
             isAndroidSpecific: this.isAndroidSpecific(),
         };

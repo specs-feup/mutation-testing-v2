@@ -164,7 +164,7 @@ class XMLViewGroupWidgetInvisibleOperatorMutator extends Mutator {
 
     toJson() {
         return {
-            mutationOperatorArgumentsList: [],
+            mutationOperatorArgumentsList: [this.rootPath],
             operator: this.name,
             isAndroidSpecific: this.isAndroidSpecific(),
         };
