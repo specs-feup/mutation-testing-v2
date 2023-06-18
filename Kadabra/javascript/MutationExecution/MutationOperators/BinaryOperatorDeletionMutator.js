@@ -16,14 +16,17 @@ class BinaryOperatorDeletionMutator extends Mutator {
         this.isFirst = false;
     }
 
-    isAndroidSpecific(){
-      return false;
+    isAndroidSpecific() {
+        return false;
     }
     addJp(joinpoint) {
-      if (joinpoint.instanceOf("binaryExpression") && joinpoint.parent.type === undefined && !joinpoint.parent.instanceOf("if")) {
-               this.mutationPoints.push(joinpoint);
-               return true;
-           }
+        if (joinpoint.instanceOf("binaryExpression") && joinpoint.parent != undefined && joinpoint.parent.type === undefined && !joinpoint.parent.instanceOf("if")) {
+            this.mutationPoints.push(joinpoint);
+
+        }
+        if (this.mutationPoints.length > 0) {
+            return true;
+        }
         return false;
     }
 
@@ -85,7 +88,7 @@ class BinaryOperatorDeletionMutator extends Mutator {
         return {
             mutationOperatorArgumentsList: [],
             operator: this.name,
-             isAndroidSpecific: this.isAndroidSpecific(),
+            isAndroidSpecific: this.isAndroidSpecific(),
         };
     }
 }
