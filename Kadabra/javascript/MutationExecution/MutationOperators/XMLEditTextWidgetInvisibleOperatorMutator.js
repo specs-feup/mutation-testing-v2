@@ -32,7 +32,7 @@ class XMLEditTextWidgetInvisibleOperatorMutator extends Mutator {
         while (Io.isFile(this.destinationPath)) {
             this.increment++;
             this.nameOfFileMutated = xmNameFile + "_" + this.increment;
-            this.destinationPath = this.this.rootPath + this.nameOfFileMutated + ".xml";
+            this.destinationPath = this.rootPath + this.nameOfFileMutated + ".xml";
 
         };
         Io.copyFile(path, this.destinationPath);
