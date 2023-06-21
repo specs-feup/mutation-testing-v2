@@ -6,47 +6,43 @@ laraImport("weaver.Weaver");
 class StringArgumentReplacementOperatorMutator extends Mutator {
     constructor() {
         super("StringArgumentReplacementOperatorMutator");
-
         this.mutationPoints = [];
         this.currentIndex = 0;
         this.mutationPoint = undefined;
         this.previousValue = undefined;
     }
 
-    isAndroidSpecific(){
-      return false;
+    isAndroidSpecific() {
+        return false;
     }
 
     addJp(joinpoint) {
 
 
-        if (joinpoint.instanceOf('literal') && joinpoint.type == 'String' && joinpoint.parent.type != undefined) {
-
-            println("Parent:  " + joinpoint);
-            println("Type: " + joinpoint.parent.type + ", isUndefined: " + (joinpoint.parent.type === undefined));
+        if (joinpoint != undefined && joinpoint.instanceOf('literal') && joinpoint.type == 'String' && joinpoint.parent != undefined && joinpoint.parent.type != undefined) {
 
             this.mutationPoints.push(joinpoint);
 
-        } else
+        } else {
+            if (joinpoint != undefined && joinpoint.instanceOf('callStatement')) {
+                if (joinpoint.call != undefined && joinpoint.call.children != undefined) {
+                    for (const element of joinpoint.call.children) {
 
-            if (joinpoint.instanceOf('callStatement')) {
+                        if (element.type == 'String' && !element.instanceOf('var')) {
 
-                for (const element of joinpoint.call.children) {
+                            for (let j = 0; j < element.numChildren; j++) {
 
-                    if (element.type == 'String' && !element.instanceOf('var')) {
+                                if (element.children[j] != undefined && element.children[j].type == 'String') {
 
-                        for (let j = 0; j < element.children.length; j++) {
+                                    this.mutationPoints.push(element.children[j]);
 
-                            if (element.children[j].type == 'String') {
-
-                                this.mutationPoints.push(element.children[j]);
-
+                                }
                             }
                         }
                     }
-
                 }
             }
+        }
 
         if (this.mutationPoints.length > 0) {
             return true;
@@ -73,9 +69,10 @@ class StringArgumentReplacementOperatorMutator extends Mutator {
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
-        this.currentIndex++;
 
-        this.previousValue = this.mutationPoint.copy();
+
+        this.previousValue = this.mutationPoint;
+
 
         this.mutationPoint = this.mutationPoint.insertReplace("\"\"");
 
@@ -85,7 +82,7 @@ class StringArgumentReplacementOperatorMutator extends Mutator {
             + " to " + this.mutationPoint);
         println("/*--------------------------------------*/");
 
-
+        this.currentIndex++;
     }
 
     _restorePrivate() {

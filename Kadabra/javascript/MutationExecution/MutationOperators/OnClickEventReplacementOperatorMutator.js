@@ -12,22 +12,25 @@ class OnClickEventReplacementOperatorMutator extends Mutator {
         this.mutationPoint = undefined;
         this.previousValue = undefined;
     }
-    isAndroidSpecific(){
-      return true;
+    isAndroidSpecific() {
+        return true;
     }
 
     addJp(joinpoint) {
 
-        if (
-            joinpoint.type === "OnClickListener"
+        if (joinpoint != undefined && joinpoint.type === "OnClickListener"
         ) {
             for (let i = 0; i < joinpoint.numChildren; i++) {
-                for (let j = 0; j < joinpoint.children[i].numChildren; j++) {
-                    if (joinpoint.children[i].children[j].instanceOf('method')) {
-                        for (let k = 0; k < joinpoint.children[i].children[j].numChildren; k++) {
-                            if (joinpoint.children[i].children[j].children[k].instanceOf('body')) {
-                                let numChildren = joinpoint.children[i].children[j].children[k].numChildren;
-                                this.mutationPoints.push(joinpoint.children[i].children[j].children[k].children[numChildren - 1]);
+                if (joinpoint.children[i] != undefined) {
+                    for (let j = 0; j < joinpoint.children[i].numChildren; j++) {
+                        if (joinpoint.children[i].children[j] != undefined && joinpoint.children[i].children[j].instanceOf('method')) {
+                            for (let k = 0; k < joinpoint.children[i].children[j].numChildren; k++) {
+                                if (joinpoint.children[i].children[j].children[k] != undefined && joinpoint.children[i].children[j].children[k].instanceOf('body')) {
+                                    let numChildren = joinpoint.children[i].children[j].children[k].numChildren;
+                                    if (joinpoint.children[i].children[j].children[k].children[numChildren - 1] != undefined) {
+                                        this.mutationPoints.push(joinpoint.children[i].children[j].children[k].children[numChildren - 1]);
+                                    }
+                                }
                             }
                         }
                     }
@@ -60,7 +63,6 @@ class OnClickEventReplacementOperatorMutator extends Mutator {
 
     _mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
-        println("this.mutationPoint: " + this.mutationPoint);
         let codeSnippet = "try { Thread.sleep(10000); } catch (InterruptedException e) { e.printStackTrace(); }";
 
         this.previousValue = this.mutationPoint;
@@ -76,8 +78,8 @@ class OnClickEventReplacementOperatorMutator extends Mutator {
 
     }
     _restorePrivate() {
-
-        this.mutationPoint = this.mutationPoint.replaceWith("");
+        let replace = "";
+        this.mutationPoint = this.mutationPoint.replaceWith(replace);
         this.previousValue = undefined;
         this.mutationPoint = undefined;
     }

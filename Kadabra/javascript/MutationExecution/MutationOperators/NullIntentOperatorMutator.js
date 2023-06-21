@@ -15,13 +15,21 @@ class NullIntentOperatorMutator extends Mutator {
         return true;
     }
     addJp(joinpoint) {
-        if (joinpoint.type != undefined &&
-            joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') && !joinpoint.parent.instanceOf('var') && joinpoint.parent.type === undefined
-        ) {
-            this.mutationPoints.push(joinpoint);
 
+        if (joinpoint != undefined) {
+
+            if (joinpoint.type != undefined) {
+                if (joinpoint.type == "Intent" && joinpoint.children[0] != undefined && joinpoint.children[0].name != undefined && joinpoint.children[0].name === "<init>" && joinpoint.children[0].type != undefined && joinpoint.children[0].type === "Executable" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') && joinpoint.parent != undefined && !joinpoint.parent.instanceOf('var') && !joinpoint.instanceOf('LocalVariable') && joinpoint.type != "Package" && joinpoint.parent != undefined && joinpoint.parent.type === undefined
+                ) {
+                    this.mutationPoints.push(joinpoint);
+
+                }
+            }
+        }
+        if (this.mutationPoints.length > 0) {
             return true;
         }
+
         return false;
     }
 
@@ -44,9 +52,6 @@ class NullIntentOperatorMutator extends Mutator {
     _mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
-
-        this.currentIndex++;
-
         this.previousValue = this.mutationPoint;
         this.mutationPoint = this.mutationPoint.insertReplace("null");
 
@@ -56,6 +61,7 @@ class NullIntentOperatorMutator extends Mutator {
             + " to " + this.mutationPoint);
         println("/*--------------------------------------*/");
 
+        this.currentIndex++;
 
     }
     _restorePrivate() {
@@ -66,7 +72,8 @@ class NullIntentOperatorMutator extends Mutator {
     }
 
     toString() {
-        return `Null Intent Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
+        return `Null Intent Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, 
+        current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
     }
     toJson() {
         return {

@@ -3,36 +3,32 @@ laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Query");
 
-class NullifyReturnValue extends Mutator {
+class NullifyInputVariable extends Mutator {
 	constructor() {
 		//Parent constructor
-		super("NullifyReturnValue");
+		super("NullifyInputVariable");
 
-		this.mutationPoint = undefined;
+		this.newValue = undefined;
 		this.mutationPoints = [];
-
 		this.currentIndex = 0;
 		this.previousValue = undefined;
+		this.mutationPoint = undefined;
 
 	}
 
-	isAndroidSpecific() {
-		return false;
-	}
+
+
 	addJp(joinpoint) {
-		if (joinpoint != undefined && joinpoint.instanceOf('return')) {
-
-			this.mutationPoints.push(joinpoint);
-
-
+		if (joinpoint != undefined && joinpoint.instanceOf('method')) {
+			for (var param of joinpoint.params) {
+				if (!param.isPrimitive) {
+					this.mutationPoints.push(joinpoint);
+					return true;
+				}
+			}
 		}
-		if (this.mutationPoints.length > 0) {
-			return true;
-		}
-
 		return false;
 	}
-
 
 	/*** IMPLEMENTATION OF INSTANCE METHODS ***/
 	hasMutations() {
@@ -50,31 +46,34 @@ class NullifyReturnValue extends Mutator {
 			}
 		}
 	}
-
 	_mutatePrivate() {
 
 		this.mutationPoint = this.mutationPoints[this.currentIndex];
+
+
 		this.previousValue = this.mutationPoint;
-		this.mutationPoint = this.mutationPoint.insertReplace("return null");
 
+		for (var param of this.mutationPoint.params) {
+			if (!param.isPrimitive && this.mutationPoint.body != undefined) {
+				this.mutationPoint.body.insertBegin(" { [[param.name]] = null } ");
+			}
+		}
 		this.currentIndex++;
-
 		println("/*--------------------------------------*/");
-		println("Mutating operator n." + this.currentIndex + ": " + this.previousValue
+		println("Mutating operator n." + this.currentIndex + ": "
 			+ " to " + this.mutationPoint);
 		println("/*--------------------------------------*/");
-
 	}
+
+
 	_restorePrivate() {
-		// Restore operator
-		println("Restore  prev: " + this.previousValue);
-		println("Restore new: \n" + this.mutationPoint);
-		this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue + ";");
+		this.mutationPoint.insertReplace(this.previousValue);
 		this.mutationPoint = undefined;
+
 	}
 
 	toString() {
-		return `Nullify Return Value  Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
+		return `Nullify input Value Intent Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
 	}
 
 	toJson() {

@@ -28,8 +28,7 @@ class RemoveConditionalMutator extends Mutator {
 	addJp(joinpoint) {
 
 		// A conditional can be either an if or a ternary operator
-		if ((joinpoint.instanceOf('if') || joinpoint.instanceOf('ternary') || joinpoint.instanceOf('loop')) && joinpoint.cond.toString() != "true") {
-			println("Adding joinpoint " + joinpoint.children[0])
+		if ((joinpoint != undefined && joinpoint.instanceOf('if') || joinpoint.instanceOf('ternary') || joinpoint.instanceOf('loop')) && joinpoint.cond != undefined && joinpoint.cond.toString() != "true") {
 			this.mutationPoints.push(joinpoint.cond);
 
 		}
@@ -57,7 +56,7 @@ class RemoveConditionalMutator extends Mutator {
 
 	_mutatePrivate() {
 		this.mutationPoint = this.mutationPoints[this.currentIndex++];
-		println("cc" + this.mutationPoint);
+
 		this.previousValue = this.mutationPoint;
 
 		this.mutationPoint = this.mutationPoint.insertReplace("true");

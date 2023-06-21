@@ -18,12 +18,8 @@ class ViewComponentNotVisibleOperatorMutator extends Mutator {
     addJp(joinpoint) {
 
         if (joinpoint.instanceOf('call')) {
-            println("kks" + joinpoint.ast);
-            for (let i = 0; i < joinpoint.numChildren; i++) {
-                //
-                //  println(joinpoint.children[i])
-            }
-            if (joinpoint.children[0] == 'findViewById - Executable') {
+
+            if (joinpoint.children[0] != undefined && joinpoint.children[0] == 'findViewById - Executable') {
                 if (joinpoint.parent != undefined) {
                     this.mutationPoints.push(joinpoint.parent);
                 }

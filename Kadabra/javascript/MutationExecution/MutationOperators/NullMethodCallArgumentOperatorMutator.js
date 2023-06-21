@@ -20,7 +20,7 @@ class NullMethodCallArgumentOperatorMutator extends Mutator {
 
     addJp(joinpoint) {
 
-        if (joinpoint.instanceOf('callStatement')) {
+        if (joinpoint.instanceOf('callStatement') && joinpoint.call != undefined) {
 
             if (joinpoint.call.children[1] != undefined && joinpoint.call.children[1].instanceOf('var')) {
                 this.mutationPoints.push(joinpoint.call.children[1]);
@@ -52,9 +52,9 @@ class NullMethodCallArgumentOperatorMutator extends Mutator {
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
-        this.currentIndex++;
 
-        this.previousValue = this.mutationPoint.copy();
+
+        this.previousValue = this.mutationPoint;
 
 
         this.mutationPoint = this.mutationPoint.insertReplace("null");
@@ -64,7 +64,7 @@ class NullMethodCallArgumentOperatorMutator extends Mutator {
         println("Mutating operator n." + this.currentIndex + ": " + this.previousValue
             + " to " + this.mutationPoint);
         println("/*--------------------------------------*/");
-
+        this.currentIndex++;
 
     }
 

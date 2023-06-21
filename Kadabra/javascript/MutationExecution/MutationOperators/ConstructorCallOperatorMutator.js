@@ -21,20 +21,20 @@ class ConstructorCallOperatorMutator extends Mutator {
 
 	addJp(joinpoint) {
 
-			if (joinpoint.instanceOf("return") && joinpoint.children[0].instanceOf("new")) {
+		if (joinpoint != undefined && joinpoint.instanceOf("return") && joinpoint.children[0] != undefined && joinpoint.children[0].instanceOf("new")) {
 
-				if (joinpoint.children[0].children[0].instanceOf("reference") && joinpoint.children[0].children[0].name === "<init>" && joinpoint.children[0].children[0].type === "Executable" && joinpoint.children[0].children[0].parent.srcCode !== "super()") {
+			if (joinpoint.children[0].children[0] != undefined && joinpoint.children[0].children[0].instanceOf("reference") && joinpoint.children[0].children[0].name === "<init>" && joinpoint.children[0].children[0].type === "Executable" && joinpoint.children[0].children[0].parent.srcCode !== "super()") {
 
-					this.mutationPoints.push(joinpoint.children[0]);
-				}
+				this.mutationPoints.push(joinpoint.children[0]);
 			}
-			if (this.mutationPoints.length > 0) {
-				return true;
-			}
-
-
-			return false;
 		}
+		if (this.mutationPoints.length > 0) {
+			return true;
+		}
+
+
+		return false;
+	}
 
 
 
@@ -46,17 +46,17 @@ class ConstructorCallOperatorMutator extends Mutator {
 
 	_mutatePrivate() {
 		this.mutationPoint = this.mutationPoints[this.currentIndex++];
-			this.previousValue = this.mutationPoint.copy();
-			this.mutationPoint.insertBefore(this.previousValue.toString() + ";");
-			this.mutationPoint = this.mutationPoint.insertReplace("null");
+		this.previousValue = this.mutationPoint.copy();
+		this.mutationPoint.insertBefore(this.previousValue.toString() + ";");
+		this.mutationPoint = this.mutationPoint.insertReplace("null");
 
 
-			println("/*--------------------------------------*/");
-			println("Mutating operator n." + this.currentIndex + ": " + this.previousValue
-				+ " to " + this.mutationPoint);
-			println("/*--------------------------------------*/");
+		println("/*--------------------------------------*/");
+		println("Mutating operator n." + this.currentIndex + ": " + this.previousValue
+			+ " to " + this.mutationPoint);
+		println("/*--------------------------------------*/");
 
-		}
+	}
 
 	_restorePrivate() {
 		this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);

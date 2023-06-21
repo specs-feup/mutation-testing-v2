@@ -13,8 +13,8 @@ class InvalidDateOperatorMutator extends Mutator {
         this.previousValue = undefined;
     }
 
-    isAndroidSpecific(){
-      return false;
+    isAndroidSpecific() {
+        return false;
     }
     /*&&
             joinpoint.typeReference === "Intent" &&
@@ -24,10 +24,10 @@ class InvalidDateOperatorMutator extends Mutator {
 
     addJp(joinpoint) {
 
-        if (joinpoint.type === "Date" && joinpoint.instanceOf('localVariable') && !joinpoint.instanceOf('var')
+        if (joinpoint != undefined && joinpoint.type === "Date" && joinpoint.instanceOf('localVariable') && !joinpoint.instanceOf('var')
         ) {
 
-            if (joinpoint.children[0].name === "Date" && joinpoint.children[1].instanceOf('new')) {
+            if (joinpoint.children[0] != undefined && joinpoint.children[1] != undefined && joinpoint.children[0].name === "Date" && joinpoint.children[1].instanceOf('new')) {
 
 
                 this.mutationPoints.push(joinpoint.children[1]);

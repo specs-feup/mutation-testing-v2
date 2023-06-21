@@ -15,25 +15,28 @@ class FailOnNullOperatorMutator extends Mutator {
 		this.previousValue = undefined;
 	}
 
-	isAndroidSpecific(){
-	  return false;
+	isAndroidSpecific() {
+		return false;
 	}
 	addJp(joinpoint) {
 
-		if (joinpoint.instanceOf('loop')) {
+		if (joinpoint != undefined && joinpoint.instanceOf('loop')) {
 
-			if (joinpoint.children[0].instanceOf('localVariable') && joinpoint.children[1].instanceOf('var')) {
+			if (joinpoint.children[0] != undefined && joinpoint.children[1] != undefined && joinpoint.children[0].instanceOf('localVariable') && joinpoint.children[1].instanceOf('var')) {
 				this.mutationPoints.push(joinpoint.children[1]);
 			}
 		} else {
-			if (joinpoint.instanceOf('assignment') && joinpoint.children[0].children[0].type == 'LocalVariable') {
+			if (joinpoint.instanceOf('assignment') && joinpoint != undefined && joinpoint.children[0] != undefined && joinpoint.children[0].children[0] != undefined && joinpoint.children[0].children[0].type == 'LocalVariable') {
 
-				if (joinpoint.instanceOf('assignment') && joinpoint.children[0].children[0].type == 'LocalVariable' && joinpoint.children[1].children[0].type == 'LocalVariable') {
+				if (joinpoint.instanceOf('assignment') && joinpoint.children[0].children[0].type == 'LocalVariable' && joinpoint.children[1].children[0] != undefined && joinpoint.children[1] != undefined && joinpoint.children[1].children[0].type == 'LocalVariable') {
 					this.mutationPoints.push(joinpoint.children[1]);
 				}
 			}
 
 		}
+		if (this.mutationPoints.length > 0) {
+			return true;
+		} return false;
 
 	};
 

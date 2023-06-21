@@ -17,8 +17,8 @@ class StringCallReplacementOperatorMutator extends Mutator {
         this.methodsOfJavaLang1arguments = ["charAt", "startsWith", "endsWith", "contains"];
 
     }
-    isAndroidSpecific(){
-      return false;
+    isAndroidSpecific() {
+        return false;
     }
     /*
            Information From chatGpt
@@ -33,12 +33,12 @@ class StringCallReplacementOperatorMutator extends Mutator {
 
     addJp(joinpoint) {
 
-        if (joinpoint.instanceOf('callStatement')) {
+        if (joinpoint.instanceOf('callStatement') && joinpoint.call != undefined) {
 
 
-            for (let i = 0; i < joinpoint.call.children.length; i++) {
+            for (let i = 0; i < joinpoint.call.numChildren; i++) {
 
-                if (joinpoint.call.children[i].instanceOf('reference') && joinpoint.call.children[i].type === "Executable") {
+                if (joinpoint.call.children[i] != undefined && joinpoint.call.children[i].instanceOf('reference') && joinpoint.call.children[i].type === "Executable") {
                     if (this.nameOfmethodsOfJavaLang.contains(joinpoint.call.children[i].name)) {
                         if (joinpoint.call.numChildren == 2) {
                             //joinpoint
@@ -57,7 +57,9 @@ class StringCallReplacementOperatorMutator extends Mutator {
                             //joinpoint
                             this.mutationPoints.push(joinpoint.call);
                             //string
-                            this.mutationPointsTypeString.push(joinpoint.call + ";" + joinpoint.call.children[i].name + ";" + joinpoint.call.children[i + 1] + ";" + joinpoint.call.children[i + 2]);
+                            if (joinpoint.call.children[i + 1] != undefined && joinpoint.call.children[i + 2] != undefined) {
+                                this.mutationPointsTypeString.push(joinpoint.call + ";" + joinpoint.call.children[i].name + ";" + joinpoint.call.children[i + 1] + ";" + joinpoint.call.children[i + 2]);
+                            }
                         }
 
                     }

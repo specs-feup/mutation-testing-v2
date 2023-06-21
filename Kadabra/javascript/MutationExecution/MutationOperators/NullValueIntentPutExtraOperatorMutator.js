@@ -3,19 +3,16 @@ laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
 
-class RandomActionIntentDefinitionOperatorMutator extends Mutator {
+class NullValueIntentPutExtraOperatorMutator extends Mutator {
     constructor() {
-        super("RandomActionIntentDefinitionOperatorMutator");
+        super("NullValueIntentPutExtraOperatorMutator");
 
         this.mutationPoints = [];
         this.currentIndex = 0;
         this.mutationPoint = undefined;
         this.previousValue = undefined;
-        this.package = undefined;
-        this.targetValues = ["new Intent(Intent.ACTION_VIEW)", "new Intent(Intent.ACTION_SEND)"];
-
+        this.addImport = false;
     }
-
     isAndroidSpecific() {
         return true;
     }
@@ -27,10 +24,24 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
 
     addJp(joinpoint) {
 
-        if (joinpoint != undefined && joinpoint.parent != undefined &&
-            joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') && joinpoint.parent != undefined && !joinpoint.parent.instanceOf('var') && joinpoint.parent.type === undefined
-        ) {
-            this.mutationPoints.push(joinpoint);
+
+        if (joinpoint.instanceOf("class") && this.addImport == false) {
+            joinpoint.insertBefore(" import android.os.Parcelable;\n ");
+            this.addImport = true;
+        }
+        if (joinpoint.instanceOf('callStatement') && joinpoint.call != undefined) {
+
+
+            for (let i = 0; i < joinpoint.call.numChildren; i++) {
+
+
+                if (joinpoint.call.children[i] != undefined && joinpoint.call.children[i].instanceOf('reference') && joinpoint.call.children[i].name != undefined && joinpoint.call.children[i].name === "putExtra") {
+                    if (joinpoint.call.children[i + 2] != undefined) {
+                        this.mutationPoints.push(joinpoint.call.children[i + 2]);
+
+                    }
+                }
+            }
         }
         if (this.mutationPoints.length > 0) {
             return true;
@@ -56,19 +67,14 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
 
     _mutatePrivate() {
 
-        let randomValue = Math.floor(Math.random() * this.targetValues.length);
-
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
+        this.currentIndex++;
 
-        while (this.targetValues[randomValue] == this.mutationPoint) {
-            randomValue = Math.floor(Math.random() * this.targetValues.length);
-        }
         this.previousValue = this.mutationPoint;
 
+        this.mutationPoint = this.mutationPoint.insertReplace("new Parcelable[0]");
 
-        this.mutationPoint = this.mutationPoint.insertReplace(this.targetValues[randomValue]);
-        this.currentIndex++;
 
         println("/*--------------------------------------*/");
         println("Mutating operator n." + this.currentIndex + ": " + this.previousValue
@@ -76,7 +82,6 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
         println("/*--------------------------------------*/");
 
 
-        println(" this.mutationPoint" + this.mutationPoint);
     }
 
 
@@ -88,13 +93,14 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
     }
 
     toString() {
-        return `Random Action Intent Definition Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
+        return `Null Value Intent Put Extra Operator Mutator from ${this.previousValue} to ${this.mutationPoint}, current mutation points ${this.mutationPoints}, current mutation point ${this.mutationPoint} and previous value ${this.previousValue}`;
     }
 
     toJson() {
         return {
             mutationOperatorArgumentsList: [],
             operator: this.name,
+            isAndroidSpecific: this.isAndroidSpecific(),
         };
     }
 }

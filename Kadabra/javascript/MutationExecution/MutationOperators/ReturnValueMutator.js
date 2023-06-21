@@ -30,7 +30,7 @@ class ReturnValueMutator extends Mutator {
 		let methodZeroTypes = ['int', 'short', 'long', 'char', 'float', 'double']; // Types whose return value will changed to 0.
 		let methodTrueTypes = ['boolean', 'Boolean']; // Types whose return value will changed to true.
 
-		if (joinpoint.instanceOf('method')) {
+		if (joinpoint != undefined && joinpoint.instanceOf('method')) {
 			// Check it is a method capable of being mutated
 			let mutationValue;
 			if (methodZeroTypes.contains(joinpoint.returnType)) {
@@ -43,7 +43,12 @@ class ReturnValueMutator extends Mutator {
 
 			// Store return statement for later modification
 			let methodReturn = WeaverJps.searchFrom(joinpoint, 'return').first();
-			this.mutationPoints.push([methodReturn, mutationValue]);
+			if (methodReturn != undefined || methodReturn != null) {
+				this.mutationPoints.push([methodReturn, mutationValue]);
+			}
+
+		}
+		if (this.mutationPoints.length > 0) {
 			return true;
 		}
 		return false;
@@ -62,7 +67,7 @@ class ReturnValueMutator extends Mutator {
 
 		this.originalReturnExpression = this.returnExpression.copy();
 
-		let mutatedReturn = 'return ' + mutationValue ;
+		let mutatedReturn = 'return ' + mutationValue;
 		this.returnExpression = this.returnExpression.insertReplace(mutatedReturn);
 
 		println("/*--------------------------------------*/");

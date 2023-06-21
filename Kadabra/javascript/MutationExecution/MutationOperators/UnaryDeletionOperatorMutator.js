@@ -4,35 +4,40 @@ laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
 
 class UnaryDeletionOperatorMutator extends Mutator {
-    constructor(operator) {
+    constructor(targetConstant) {
         //Parent constructor
         super("UnaryDeletionOperatorMutator");
-
-        this.operator = operator;
+        this.targetConstant = [targetConstant, '(' + targetConstant + ')'];
         this.mutationPoints = [];
         this.currentIndex = 0;
         this.previousValue = undefined;
     }
 
-    isAndroidSpecific(){
-      return false;
+    isAndroidSpecific() {
+        return false;
     }
 
     /*** IMPLEMENTATION OF INSTANCE METHODS ***/
     addJp(joinpoint) {
 
-        if (
-            !joinpoint.instanceOf("unaryExpression") || joinpoint.typeReference.isBoolean
-        ) {
-            return false;
-        } else {
+        if (joinpoint.instanceOf('binaryExpression')) {
 
+            var lhs = joinpoint.lhs;
+            var rhs = joinpoint.rhs;
+            if (((this.targetConstant.contains(lhs.srcCode) && lhs.isFinal)
+                || (this.targetConstant.contains(rhs.srcCode) && rhs.isFinal))
+                && joinpoint.type !== 'boolean') {
 
-            this.mutationPoints.push(joinpoint);
-            println("Adicionou um ponto de mutação " + joinpoint + " na linha " + joinpoint.line);
+                this.toMutate.push(joinpoint);
+            }
+        }
+        if (this.mutationPoints.length > 0) {
             return true;
         }
+        return false;
     }
+
+
 
     hasMutations() {
         return this.currentIndex < this.mutationPoints.length;
@@ -53,31 +58,15 @@ class UnaryDeletionOperatorMutator extends Mutator {
 
     _mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
-        println(this.mutationPoint);
         this.currentIndex++;
 
         this.previousValue = this.mutationPoint;
-        console.log(this.mutationPoint);
-        this.mutationPoint = KadabraNodes.snippetExpr(this.mutationPoint.descendants.code)
 
-        //this.mutationPoint.insertReplace(this.$conditional.cond.operand.copy());
-
-        this.previousValue.replaceWith(this.mutationPoint);
-
-
-
-        this.$node = this.toMutate[this.currentIndex++];
-
-        this.$originalNode = this.$node.copy();
-
-        if (this.targetConstant.contains(this.$node.lhs.srcCode)) {
-            this.$node = this.$node.insertReplace(this.$node.rhs);
-        } else if (this.targetConstant.contains(this.$node.rhs.srcCode)) {
-            this.$node = this.$node.insertReplace(this.$node.lhs);
+        if (this.targetConstant.contains(this.mutationPoint.lhs.srcCode)) {
+            this.mutationPoint = this.mutationPoint.insertReplace(this.mutationPoint.rhs);
+        } else if (this.targetConstant.contains(this.mutationPoint.rhs.srcCode)) {
+            this.mutationPoint = this.mutationPoint.insertReplace(this.mutationPoint.lhs);
         }
-
-
-
 
         println("/*--------------------------------------*/");
         println(
@@ -92,11 +81,8 @@ class UnaryDeletionOperatorMutator extends Mutator {
     }
 
     _restorePrivate() {
-        // Restore operator
-        println("Restoring " + this.previousValue + " from " + this.mutationPoint);
 
-        this.mutationPoint.replaceWith(this.previousValue);
-
+        this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
         this.mutationPoint = undefined;
     }
@@ -105,8 +91,16 @@ class UnaryDeletionOperatorMutator extends Mutator {
     }
     toJson() {
         return {
-            mutationOperatorArgumentsList: [this.operator],
+            mutationOperatorArgumentsList: [this.targetConstant],
             operator: this.name,
         };
     }
 }
+
+
+
+
+
+
+
+
