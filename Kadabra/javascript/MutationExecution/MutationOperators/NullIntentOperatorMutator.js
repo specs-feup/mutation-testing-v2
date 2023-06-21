@@ -17,10 +17,10 @@ class NullIntentOperatorMutator extends Mutator {
     addJp(joinpoint) {
 
         if (joinpoint != undefined) {
-
             if (joinpoint.type != undefined) {
-                if (joinpoint.type == "Intent" && joinpoint.children[0] != undefined && joinpoint.children[0].name != undefined && joinpoint.children[0].name === "<init>" && joinpoint.children[0].type != undefined && joinpoint.children[0].type === "Executable" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') && joinpoint.parent != undefined && !joinpoint.parent.instanceOf('var') && !joinpoint.instanceOf('LocalVariable') && joinpoint.type != "Package" && joinpoint.parent != undefined && joinpoint.parent.type === undefined
+                if (joinpoint.type == "Intent" && joinpoint.children[0] != undefined && joinpoint.children[0].name != undefined && joinpoint.children[0].name === "<init>" && joinpoint.children[0].type != undefined && joinpoint.children[0].type === "Executable" && joinpoint.parent != undefined && !joinpoint.parent.instanceOf('var') && joinpoint.type != "Package" && joinpoint.parent != undefined
                 ) {
+
                     this.mutationPoints.push(joinpoint);
 
                 }
