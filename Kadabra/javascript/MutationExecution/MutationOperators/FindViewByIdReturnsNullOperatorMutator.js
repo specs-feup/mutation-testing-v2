@@ -1,7 +1,7 @@
+laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
-
 class FindViewByIdReturnsNullOperatorMutator extends Mutator {
     constructor() {
         super("FindViewByIdReturnsNullOperatorMutator");

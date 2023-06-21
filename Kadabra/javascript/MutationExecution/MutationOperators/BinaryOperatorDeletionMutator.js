@@ -1,14 +1,13 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
-
 laraImport("weaver.Weaver");
 
 class BinaryOperatorDeletionMutator extends Mutator {
     //Parent constructor
-    constructor() {
+    constructor(operator) {
         super("BinaryOperatorDeletionMutator");
-
+        this.operator = operator;
         this.newValue = undefined;
         this.mutationPoints = [];
         this.currentIndex = 0;
@@ -20,7 +19,7 @@ class BinaryOperatorDeletionMutator extends Mutator {
         return false;
     }
     addJp(joinpoint) {
-        if (joinpoint.instanceOf("binaryExpression") && joinpoint.parent != undefined && joinpoint.parent.type === undefined && !joinpoint.parent.instanceOf("if")) {
+        if (joinpoint.instanceOf("binaryExpression") && joinpoint.parent != undefined && joinpoint.parent.type === undefined && !joinpoint.parent.instanceOf("if") && joinpoint.operator === this.operator) {
             this.mutationPoints.push(joinpoint);
 
         }

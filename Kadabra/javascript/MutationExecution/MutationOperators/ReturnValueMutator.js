@@ -1,5 +1,7 @@
 laraImport("lara.mutation.Mutator");
-
+laraImport("kadabra.KadabraNodes");
+laraImport("weaver.WeaverJps");
+laraImport("weaver.Weaver");
 /**
  *  @param {joinpoint} joinpoint - Joinpoint used as starting point to search for methods whose return value will be mutated.
  *  Return value mutations:

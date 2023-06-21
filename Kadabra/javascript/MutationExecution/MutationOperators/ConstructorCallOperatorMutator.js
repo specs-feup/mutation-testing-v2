@@ -1,5 +1,7 @@
 laraImport("lara.mutation.Mutator");
-
+laraImport("kadabra.KadabraNodes");
+laraImport("weaver.WeaverJps");
+laraImport("weaver.Weaver");
 /**
  *  @param {$joinPoint} $joinPoint - A join point to use as startpoint to search for constructor calls to replace with null.
  */
@@ -23,7 +25,7 @@ class ConstructorCallOperatorMutator extends Mutator {
 
 		if (joinpoint != undefined && joinpoint.instanceOf("return") && joinpoint.children[0] != undefined && joinpoint.children[0].instanceOf("new")) {
 
-			if (joinpoint.children[0].children[0] != undefined && joinpoint.children[0].children[0].instanceOf("reference") && joinpoint.children[0].children[0].name === "<init>" && joinpoint.children[0].children[0].type === "Executable" && joinpoint.children[0].children[0].parent.srcCode !== "super()") {
+			if (joinpoint.children[0].children[0] != undefined && joinpoint.children[0].children[0].instanceOf("reference") && joinpoint.children[0].children[0].name === "<init>" && joinpoint.children[0].children[0].type === "Executable") {
 
 				this.mutationPoints.push(joinpoint.children[0]);
 			}
