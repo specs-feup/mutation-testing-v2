@@ -60,41 +60,41 @@ class XMLInvalidColorOperatorMutator extends Mutator {
                             if (this.parentPoint.instanceOf("expression")) {
                                 this.nameOfFileToMutate = this.parentPoint.children[1];
 
-                            }
-                            if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
-                                this.mutationPoints.push(this.nameOfFileToMutate);
+                            } if (this.nameOfFileToMutate.toString().includes(".") || this.nameOfFileToMutate.toString().includes("()")) { } else {
+                                if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
+                                    this.mutationPoints.push(this.nameOfFileToMutate);
 
-                                let randomIndex = 0;
-                                if (this.nameOfFileToMutate != undefined) {
-                                    var xmlFileContent = this.readAndCopyXmlFile(this.nameOfFileToMutate);
-                                    var root = KadabraNodes.xmlNode(xmlFileContent);
+                                    let randomIndex = 0;
+                                    if (this.nameOfFileToMutate != undefined) {
+                                        var xmlFileContent = this.readAndCopyXmlFile(this.nameOfFileToMutate);
+                                        var root = KadabraNodes.xmlNode(xmlFileContent);
 
-                                    //XML PART
-                                    for (let textColor of Query.searchFrom(root, "xmlElement")) {
-                                        if (textColor.attribute("android:textColor") != "" && !this.colors.contains(textColor.attribute("android:textColor"))) {
-                                            this.colors.push(textColor.attribute("android:textColor"));
-                                            this.colors.push("#FF0000");
-                                            this.colors.push("#FF00FF");
-                                            this.colors.push("#00FF00");
-                                            this.colors.push("#FFA500");
-                                            this.colors.push("#0000FF");
-                                        }
-                                    }
-                                    if (this.colors.length > 0) {
-                                        randomIndex = Math.floor(Math.random() * this.colors.length);
+                                        //XML PART
                                         for (let textColor of Query.searchFrom(root, "xmlElement")) {
-                                            if (textColor.attribute("android:textColor")) {
-                                                while (textColor.attribute("android:textColor") == this.colors[randomIndex]) {
-                                                    randomIndex = Math.floor(Math.random() * this.colors.length);
+                                            if (textColor.attribute("android:textColor") != "" && !this.colors.contains(textColor.attribute("android:textColor"))) {
+                                                this.colors.push(textColor.attribute("android:textColor"));
+                                                this.colors.push("#FF0000");
+                                                this.colors.push("#FF00FF");
+                                                this.colors.push("#00FF00");
+                                                this.colors.push("#FFA500");
+                                                this.colors.push("#0000FF");
+                                            }
+                                        }
+                                        if (this.colors.length > 0) {
+                                            randomIndex = Math.floor(Math.random() * this.colors.length);
+                                            for (let textColor of Query.searchFrom(root, "xmlElement")) {
+                                                if (textColor.attribute("android:textColor")) {
+                                                    while (textColor.attribute("android:textColor") == this.colors[randomIndex]) {
+                                                        randomIndex = Math.floor(Math.random() * this.colors.length);
+                                                    }
+                                                    textColor.setAttribute("android:textColor", this.colors[randomIndex]);
+                                                    Io.writeFile(this.destinationPath, root.srcCode);
+                                                    return true;
                                                 }
-                                                textColor.setAttribute("android:textColor", this.colors[randomIndex]);
-                                                Io.writeFile(this.destinationPath, root.srcCode);
-                                                return true;
                                             }
                                         }
                                     }
                                 }
-
                             }
                         }
 

@@ -61,45 +61,46 @@ class XMLButtonWidgetDeletionOperatorMutator extends Mutator {
                                 this.nameOfFileToMutate = this.parentPoint.children[1];
 
                             }
-                            if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
-                                this.mutationPoints.push(this.nameOfFileToMutate);
+                            if (this.nameOfFileToMutate.toString().includes(".") || this.nameOfFileToMutate.toString().includes("()")) { } else {
+                                if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
+                                    this.mutationPoints.push(this.nameOfFileToMutate);
 
-                                let randomIndex = 0;
-                                let mutated = false;
-                                if (this.nameOfFileToMutate != undefined) {
+                                    let randomIndex = 0;
+                                    let mutated = false;
+                                    if (this.nameOfFileToMutate != undefined) {
 
-                                    var xmlFileContent = this.readAndCopyXmlFile(this.nameOfFileToMutate);
-                                    var root = KadabraNodes.xmlNode(xmlFileContent);
+                                        var xmlFileContent = this.readAndCopyXmlFile(this.nameOfFileToMutate);
+                                        var root = KadabraNodes.xmlNode(xmlFileContent);
 
-                                    //XML PART
-                                    for (let button of Query.searchFrom(root, "xmlElement")) {
-                                        let src = root.srcCode;
-                                        if (button.name == "Button") {
+                                        //XML PART
+                                        for (let button of Query.searchFrom(root, "xmlElement")) {
+                                            let src = root.srcCode;
+                                            if (button.name == "Button") {
 
-                                            if (button.attribute("android:visibility") != "" && button.attribute("android:visibility") != "gone") {
-                                                button.setAttribute("android:visibility", "gone");
-                                                src = root.srcCode;
-                                                mutated = true;
-                                            } else if (button.attribute("android:visibility") == "gone") { }
-                                            else {
-                                                let id = button.attribute("android:id");
-                                                let buttonString = "android:id=\"" + id + "\"";
-                                                src = src.replace(buttonString, buttonString + "\n" + " android:visibility=\"gone\"");
-                                                mutated = true;
+                                                if (button.attribute("android:visibility") != "" && button.attribute("android:visibility") != "gone") {
+                                                    button.setAttribute("android:visibility", "gone");
+                                                    src = root.srcCode;
+                                                    mutated = true;
+                                                } else if (button.attribute("android:visibility") == "gone") { }
+                                                else {
+                                                    let id = button.attribute("android:id");
+                                                    let buttonString = "android:id=\"" + id + "\"";
+                                                    src = src.replace(buttonString, buttonString + "\n" + " android:visibility=\"gone\"");
+                                                    mutated = true;
+                                                }
                                             }
+                                            Io.writeFile(this.destinationPath, src);
+                                            if (mutated) {
+                                                return true;
+                                            }
+
                                         }
-                                        Io.writeFile(this.destinationPath, src);
                                         if (mutated) {
                                             return true;
                                         }
+                                    }
 
-                                    }
-                                    if (mutated) {
-                                        return true;
-                                    }
                                 }
-
-
 
                             }
                         }

@@ -24,6 +24,7 @@ class XMLTextViewWidgetDeletionOperatorMutator extends Mutator {
         return true;
     }
     readAndCopyXmlFile(xmNameFile) {
+
         const path = this.rootPath + xmNameFile + ".xml";
         this.nameOfFileMutated = xmNameFile + "_" + this.increment;
         this.destinationPath = this.rootPath + this.nameOfFileMutated + ".xml";
@@ -60,44 +61,45 @@ class XMLTextViewWidgetDeletionOperatorMutator extends Mutator {
                             if (this.parentPoint.instanceOf("expression")) {
                                 this.nameOfFileToMutate = this.parentPoint.children[1];
 
-                            }
-                            if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
-                                this.mutationPoints.push(this.nameOfFileToMutate);
+                            } if (this.nameOfFileToMutate.toString().includes(".") || this.nameOfFileToMutate.toString().includes("()")) { } else {
+                                if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
+                                    this.mutationPoints.push(this.nameOfFileToMutate);
 
-                                let mutated = false;
-                                if (this.nameOfFileToMutate != undefined) {
+                                    let randomIndex = 0;
+                                    let mutated = false;
+                                    if (this.nameOfFileToMutate != undefined) {
 
-                                    var xmlFileContent = this.readAndCopyXmlFile(this.nameOfFileToMutate);
-                                    var root = KadabraNodes.xmlNode(xmlFileContent);
+                                        var xmlFileContent = this.readAndCopyXmlFile(this.nameOfFileToMutate);
+                                        var root = KadabraNodes.xmlNode(xmlFileContent);
 
-                                    //XML PART
-                                    for (let textView of Query.searchFrom(root, "xmlElement")) {
-                                        let src = root.srcCode;
-                                        if (textView.name == "TextView") {
+                                        //XML PART
+                                        for (let textview of Query.searchFrom(root, "xmlElement")) {
+                                            let src = root.srcCode;
+                                            if (textview.name == "TextView") {
 
-                                            if (textView.attribute("android:visibility") != "" && textView.attribute("android:visibility") != "gone") {
-                                                textView.setAttribute("android:visibility", "gone");
-                                                src = root.srcCode;
-                                                mutated = true;
-                                            } else if (textView.attribute("android:visibility") == "gone") { }
-                                            else {
-                                                let id = textView.attribute("android:id");
-                                                let textViewString = "android:id=\"" + id + "\"";
-                                                src = src.replace(textViewString, textViewString + "\n" + " android:visibility=\"gone\"");
-                                                mutated = true;
+                                                if (textview.attribute("android:visibility") != "" && textview.attribute("android:visibility") != "gone") {
+                                                    textview.setAttribute("android:visibility", "gone");
+                                                    src = root.srcCode;
+                                                    mutated = true;
+                                                } else if (textview.attribute("android:visibility") == "gone") { }
+                                                else {
+                                                    let id = textview.attribute("android:id");
+                                                    let textviewString = "android:id=\"" + id + "\"";
+                                                    src = src.replace(textviewString, textviewString + "\n" + " android:visibility=\"gone\"");
+                                                    mutated = true;
+                                                }
                                             }
+                                            Io.writeFile(this.destinationPath, src);
+                                            if (mutated) {
+                                                return true;
+                                            }
+
                                         }
-                                        Io.writeFile(this.destinationPath, src);
                                         if (mutated) {
                                             return true;
                                         }
-
-                                    }
-                                    if (mutated) {
-                                        return true;
                                     }
                                 }
-
 
 
                             }

@@ -62,49 +62,50 @@ class XMLButtonWidgetChangeAppearanceOperatorMutator extends Mutator {
                                 this.nameOfFileToMutate = this.parentPoint.children[1];
 
                             }
-                            if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
-                                this.mutationPoints.push(this.nameOfFileToMutate);
+                            if (this.nameOfFileToMutate.toString().includes(".") || this.nameOfFileToMutate.toString().includes("()")) { } else {
+                                if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
+                                    this.mutationPoints.push(this.nameOfFileToMutate);
 
-                                let randomIndex = 0;
-                                let mutated = false;
-                                if (this.nameOfFileToMutate != undefined) {
+                                    let randomIndex = 0;
+                                    let mutated = false;
+                                    if (this.nameOfFileToMutate != undefined) {
 
-                                    var xmlFileContent = this.readAndCopyXmlFile(this.nameOfFileToMutate);
-                                    var root = KadabraNodes.xmlNode(xmlFileContent);
+                                        var xmlFileContent = this.readAndCopyXmlFile(this.nameOfFileToMutate);
+                                        var root = KadabraNodes.xmlNode(xmlFileContent);
 
-                                    //XML PART
-                                    for (let button of Query.searchFrom(root, "xmlElement")) {
-                                        let src = root.srcCode;
-                                        if (button.name == "Button") {
+                                        //XML PART
+                                        for (let button of Query.searchFrom(root, "xmlElement")) {
+                                            let src = root.srcCode;
+                                            if (button.name == "Button") {
 
-                                            if (button.attribute("android:textSize") != "" && button.attribute("android:textSize") != "30sp") {
-                                                button.setAttribute("android:textSize", "30sp");
-                                                src = root.srcCode;
-                                                mutated = true;
-                                            } else if (button.attribute("android:textSize") == "30sp") {
-                                                button.setAttribute("android:textSize", "15sp");
-                                                src = root.srcCode;
-                                                mutated = true;
+                                                if (button.attribute("android:textSize") != "" && button.attribute("android:textSize") != "30sp") {
+                                                    button.setAttribute("android:textSize", "30sp");
+                                                    src = root.srcCode;
+                                                    mutated = true;
+                                                } else if (button.attribute("android:textSize") == "30sp") {
+                                                    button.setAttribute("android:textSize", "15sp");
+                                                    src = root.srcCode;
+                                                    mutated = true;
+                                                }
+                                                else {
+                                                    let id = button.attribute("android:id");
+                                                    let buttonString = "android:id=\"" + id + "\"";
+                                                    src = src.replace(buttonString, buttonString + "\n" + " android:textSize=\"30sp\"");
+                                                    mutated = true;
+                                                }
                                             }
-                                            else {
-                                                let id = button.attribute("android:id");
-                                                let buttonString = "android:id=\"" + id + "\"";
-                                                src = src.replace(buttonString, buttonString + "\n" + " android:textSize=\"30sp\"");
-                                                mutated = true;
+                                            Io.writeFile(this.destinationPath, src);
+                                            if (mutated) {
+                                                return true;
                                             }
+                                            println(src.length);
+
                                         }
-                                        Io.writeFile(this.destinationPath, src);
                                         if (mutated) {
                                             return true;
                                         }
-                                        println(src.length);
-
-                                    }
-                                    if (mutated) {
-                                        return true;
                                     }
                                 }
-
 
 
                             }

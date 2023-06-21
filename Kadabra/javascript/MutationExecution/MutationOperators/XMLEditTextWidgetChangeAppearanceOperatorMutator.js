@@ -62,51 +62,52 @@ class XMLEditTextWidgetChangeAppearanceOperatorMutator extends Mutator {
                             if (this.parentPoint.instanceOf("expression")) {
                                 this.nameOfFileToMutate = this.parentPoint.children[1];
 
-                            }
-                            if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
-                                this.mutationPoints.push(this.nameOfFileToMutate);
+                            } if (this.nameOfFileToMutate.toString().includes(".") || this.nameOfFileToMutate.toString().includes("()")) { } else {
+                                if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
+                                    this.mutationPoints.push(this.nameOfFileToMutate);
 
-                                let randomIndex = 0;
-                                let mutated = false;
-                                if (this.nameOfFileToMutate != undefined) {
+                                    let randomIndex = 0;
+                                    let mutated = false;
+                                    if (this.nameOfFileToMutate != undefined) {
 
-                                    var xmlFileContent = this.readAndCopyXmlFile(this.nameOfFileToMutate);
-                                    var root = KadabraNodes.xmlNode(xmlFileContent);
+                                        var xmlFileContent = this.readAndCopyXmlFile(this.nameOfFileToMutate);
+                                        var root = KadabraNodes.xmlNode(xmlFileContent);
 
-                                    //XML PART
-                                    for (let editText of Query.searchFrom(root, "xmlElement")) {
-                                        let src = root.srcCode;
-                                        if (editText.name == "EditText") {
+                                        //XML PART
+                                        for (let editText of Query.searchFrom(root, "xmlElement")) {
+                                            let src = root.srcCode;
+                                            if (editText.name == "EditText") {
 
-                                            if (editText.attribute("android:textSize") != "" && editText.attribute("android:textSize") != "30sp") {
-                                                editText.setAttribute("android:textSize", "30sp");
-                                                src = root.srcCode;
-                                                mutated = true;
-                                            } else if (editText.attribute("android:textSize") == "30sp") {
-                                                editText.setAttribute("android:textSize", "15sp");
-                                                src = root.srcCode;
-                                                mutated = true;
+                                                if (editText.attribute("android:textSize") != "" && editText.attribute("android:textSize") != "30sp") {
+                                                    editText.setAttribute("android:textSize", "30sp");
+                                                    src = root.srcCode;
+                                                    mutated = true;
+                                                } else if (editText.attribute("android:textSize") == "30sp") {
+                                                    editText.setAttribute("android:textSize", "15sp");
+                                                    src = root.srcCode;
+                                                    mutated = true;
+                                                }
+                                                else {
+                                                    let id = editText.attribute("android:id");
+                                                    let editTextString = "android:id=\"" + id + "\"";
+                                                    src = src.replace(editTextString, editTextString + "\n" + " android:textSize=\"30sp\"");
+                                                    mutated = true;
+                                                }
                                             }
-                                            else {
-                                                let id = editText.attribute("android:id");
-                                                let editTextString = "android:id=\"" + id + "\"";
-                                                src = src.replace(editTextString, editTextString + "\n" + " android:textSize=\"30sp\"");
-                                                mutated = true;
+                                            Io.writeFile(this.destinationPath, src);
+                                            if (mutated) {
+                                                return true;
                                             }
+
                                         }
-                                        Io.writeFile(this.destinationPath, src);
                                         if (mutated) {
                                             return true;
                                         }
+                                    }
 
-                                    }
-                                    if (mutated) {
-                                        return true;
-                                    }
+
+
                                 }
-
-
-
                             }
                         }
 

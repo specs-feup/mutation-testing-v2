@@ -61,39 +61,40 @@ class XMLViewGroupWidgetChangeTypeOperatorMutator extends Mutator {
                                 this.nameOfFileToMutate = this.parentPoint.children[1];
 
                             }
-                            if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
-                                this.mutationPoints.push(this.nameOfFileToMutate);
+                            if (this.nameOfFileToMutate.toString().includes(".") || this.nameOfFileToMutate.toString().includes("()")) { } else {
+                                if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
+                                    this.mutationPoints.push(this.nameOfFileToMutate);
 
-                                let mutated = false;
-                                if (this.nameOfFileToMutate != undefined) {
+                                    let mutated = false;
+                                    if (this.nameOfFileToMutate != undefined) {
 
-                                    var xmlFileContent = this.readAndCopyXmlFile(this.nameOfFileToMutate);
-                                    var root = KadabraNodes.xmlNode(xmlFileContent);
+                                        var xmlFileContent = this.readAndCopyXmlFile(this.nameOfFileToMutate);
+                                        var root = KadabraNodes.xmlNode(xmlFileContent);
 
-                                    //XML PART
+                                        //XML PART
 
-                                    let randomIndex = Math.floor(Math.random() * this.viewGroupTypes.length);
+                                        let randomIndex = Math.floor(Math.random() * this.viewGroupTypes.length);
 
-                                    for (let viewGroup of Query.searchFrom(root, "xmlElement")) {
-                                        let src = root.srcCode;
-                                        if (viewGroup.name == "LinearLayout" || viewGroup.name == "RelativeLayout" || viewGroup.name == "FrameLayout" || viewGroup.name == "androidx.constraintlayout.widget.ConstraintLayout" || viewGroup.name == "TableLayout" || viewGroup.name == "androidx.gridlayout.widget.GridLayout" || viewGroup.name == "androidx.coordinatorlayout.widget.CoordinatorLayout" || viewGroup.name == "androidx.core.widget.NestedScrollView") {
-                                            while (viewGroup.name === this.viewGroupTypes[randomIndex]) {
-                                                randomIndex = Math.floor(Math.random() * this.viewGroupTypes.length);
+                                        for (let viewGroup of Query.searchFrom(root, "xmlElement")) {
+                                            let src = root.srcCode;
+                                            if (viewGroup.name == "LinearLayout" || viewGroup.name == "RelativeLayout" || viewGroup.name == "FrameLayout" || viewGroup.name == "androidx.constraintlayout.widget.ConstraintLayout" || viewGroup.name == "TableLayout" || viewGroup.name == "androidx.gridlayout.widget.GridLayout" || viewGroup.name == "androidx.coordinatorlayout.widget.CoordinatorLayout" || viewGroup.name == "androidx.core.widget.NestedScrollView") {
+                                                while (viewGroup.name === this.viewGroupTypes[randomIndex]) {
+                                                    randomIndex = Math.floor(Math.random() * this.viewGroupTypes.length);
+                                                }
+                                                println("viewGroup.name: " + viewGroup.name + "  kkkkk " + this.viewGroupTypes[randomIndex]);
+                                                src = src.replace(viewGroup.name, this.viewGroupTypes[randomIndex]);
+
+                                                mutated = true;
                                             }
-                                            println("viewGroup.name: " + viewGroup.name + "  kkkkk " + this.viewGroupTypes[randomIndex]);
-                                            src = src.replace(viewGroup.name, this.viewGroupTypes[randomIndex]);
 
-                                            mutated = true;
+                                            Io.writeFile(this.destinationPath, src);
+                                            if (mutated) {
+                                                return true;
+                                            }
                                         }
 
-                                        Io.writeFile(this.destinationPath, src);
-                                        if (mutated) {
-                                            return true;
-                                        }
                                     }
-
                                 }
-
                             }
                         }
                     }

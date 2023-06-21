@@ -61,41 +61,42 @@ class XMLViewGroupWidgetInvisibleOperatorMutator extends Mutator {
                                 this.nameOfFileToMutate = this.parentPoint.children[1];
 
                             }
-                            if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
-                                this.mutationPoints.push(this.nameOfFileToMutate);
+                            if (this.nameOfFileToMutate.toString().includes(".") || this.nameOfFileToMutate.toString().includes("()")) { } else {
+                                if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
+                                    this.mutationPoints.push(this.nameOfFileToMutate);
 
-                                let mutated = false;
-                                if (this.nameOfFileToMutate != undefined) {
+                                    let mutated = false;
+                                    if (this.nameOfFileToMutate != undefined) {
 
-                                    var xmlFileContent = this.readAndCopyXmlFile(this.nameOfFileToMutate);
-                                    var root = KadabraNodes.xmlNode(xmlFileContent);
+                                        var xmlFileContent = this.readAndCopyXmlFile(this.nameOfFileToMutate);
+                                        var root = KadabraNodes.xmlNode(xmlFileContent);
 
-                                    //XML PART
-                                    for (let viewGroup of Query.searchFrom(root, "xmlElement")) {
-                                        let src = root.srcCode;
+                                        //XML PART
+                                        for (let viewGroup of Query.searchFrom(root, "xmlElement")) {
+                                            let src = root.srcCode;
 
-                                        if (viewGroup.name == "LinearLayout" || viewGroup.name == "RelativeLayout" || viewGroup.name == "FrameLayout" || viewGroup.name == "androidx.constraintlayout.widget.ConstraintLayout" || viewGroup.name == "TableLayout" || viewGroup.name == "androidx.gridlayout.widget.GridLayout" || viewGroup.name == "CoordinatorLayout" || viewGroup.name == "androidx.core.widget.NestedScrollView") {
-                                            if (viewGroup.attribute("android:visibility") != "" && viewGroup.attribute("android:visibility") != "invisible") {
-                                                viewGroup.setAttribute("android:visibility", "invisible");
-                                                src = root.srcCode;
-                                                mutated = true;
-                                            } else if (viewGroup.attribute("android:visibility") == "invisible") { }
-                                            else {
-                                                src = src.replace(viewGroup.name, viewGroup.name + "\n" + " android:visibility=\"invisible\"");
-                                                mutated = true;
+                                            if (viewGroup.name == "LinearLayout" || viewGroup.name == "RelativeLayout" || viewGroup.name == "FrameLayout" || viewGroup.name == "androidx.constraintlayout.widget.ConstraintLayout" || viewGroup.name == "TableLayout" || viewGroup.name == "androidx.gridlayout.widget.GridLayout" || viewGroup.name == "CoordinatorLayout" || viewGroup.name == "androidx.core.widget.NestedScrollView") {
+                                                if (viewGroup.attribute("android:visibility") != "" && viewGroup.attribute("android:visibility") != "invisible") {
+                                                    viewGroup.setAttribute("android:visibility", "invisible");
+                                                    src = root.srcCode;
+                                                    mutated = true;
+                                                } else if (viewGroup.attribute("android:visibility") == "invisible") { }
+                                                else {
+                                                    src = src.replace(viewGroup.name, viewGroup.name + "\n" + " android:visibility=\"invisible\"");
+                                                    mutated = true;
+                                                }
                                             }
+                                            Io.writeFile(this.destinationPath, src);
+                                            if (mutated) {
+                                                return true;
+                                            }
+
                                         }
-                                        Io.writeFile(this.destinationPath, src);
                                         if (mutated) {
                                             return true;
                                         }
-
-                                    }
-                                    if (mutated) {
-                                        return true;
                                     }
                                 }
-
 
 
                             }

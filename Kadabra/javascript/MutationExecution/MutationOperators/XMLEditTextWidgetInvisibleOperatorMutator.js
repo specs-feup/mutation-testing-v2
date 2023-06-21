@@ -1,3 +1,4 @@
+
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
@@ -24,22 +25,27 @@ class XMLEditTextWidgetInvisibleOperatorMutator extends Mutator {
         return true;
     }
     readAndCopyXmlFile(xmNameFile) {
+        if (xmNameFile != undefined) {
 
-        const path = this.rootPath + xmNameFile + ".xml";
-        this.nameOfFileMutated = xmNameFile + "_" + this.increment;
-        this.destinationPath = this.rootPath + this.nameOfFileMutated + ".xml";
-
-        while (Io.isFile(this.destinationPath)) {
-            this.increment++;
+            const path = this.rootPath + xmNameFile + ".xml";
             this.nameOfFileMutated = xmNameFile + "_" + this.increment;
             this.destinationPath = this.rootPath + this.nameOfFileMutated + ".xml";
+            if (Io.isFile(this.destinationPath) == false) {
+                return undefined;
+            }
+            while (Io.isFile(this.destinationPath)) {
+                this.increment++;
+                this.nameOfFileMutated = xmNameFile + "_" + this.increment;
+                this.destinationPath = this.rootPath + this.nameOfFileMutated + ".xml";
 
-        };
-        Io.copyFile(path, this.destinationPath);
-        const xmlFileContent = Io.readFile(this.destinationPath);
+            };
+            Io.copyFile(path, this.destinationPath);
+            const xmlFileContent = Io.readFile(this.destinationPath);
 
-        this.increment++;
-        return xmlFileContent;
+            this.increment++;
+            return xmlFileContent;
+        }
+        return undefined;
     }
 
 
@@ -62,44 +68,47 @@ class XMLEditTextWidgetInvisibleOperatorMutator extends Mutator {
                                 this.nameOfFileToMutate = this.parentPoint.children[1];
 
                             }
-                            if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
-                                this.mutationPoints.push(this.nameOfFileToMutate);
-
-                                let randomIndex = 0;
-                                let mutated = false;
-                                if (this.nameOfFileToMutate != undefined) {
+                            if (this.nameOfFileToMutate.toString().includes(".") || this.nameOfFileToMutate.toString().includes("()")) { } else {
+                                if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
+                                    this.mutationPoints.push(this.nameOfFileToMutate);
+                                    let randomIndex = 0;
+                                    let mutated = false;
 
                                     var xmlFileContent = this.readAndCopyXmlFile(this.nameOfFileToMutate);
-                                    var root = KadabraNodes.xmlNode(xmlFileContent);
 
-                                    //XML PART
-                                    for (let editText of Query.searchFrom(root, "xmlElement")) {
-                                        let src = root.srcCode;
-                                        if (editText.name == "EditText") {
+                                    if (xmlFileContent != undefined) {
 
-                                            if (editText.attribute("android:visibility") != "" && editText.attribute("android:visibility") != "invisible" && editText.attribute("android:visibility") != "invisible") {
-                                                editText.setAttribute("android:visibility", "invisible");
-                                                src = root.srcCode;
-                                                mutated = true;
-                                            } else if (editText.attribute("android:visibility") == "invisible") { }
-                                            else {
-                                                let id = editText.attribute("android:id");
-                                                let editTextString = "android:id=\"" + id + "\"";
-                                                src = src.replace(editTextString, editTextString + "\n" + " android:visibility=\"invisible\"");
-                                                mutated = true;
+                                        var root = KadabraNodes.xmlNode(xmlFileContent);
+
+                                        //XML PART
+                                        for (let editText of Query.searchFrom(root, "xmlElement")) {
+                                            let src = root.srcCode;
+                                            if (editText.name == "EditText") {
+
+                                                if (editText.attribute("android:visibility") != "" && editText.attribute("android:visibility") != "invisible" && editText.attribute("android:visibility") != "invisible") {
+                                                    editText.setAttribute("android:visibility", "invisible");
+                                                    src = root.srcCode;
+                                                    mutated = true;
+                                                } else if (editText.attribute("android:visibility") == "invisible") { }
+                                                else {
+                                                    let id = editText.attribute("android:id");
+                                                    let editTextString = "android:id=\"" + id + "\"";
+                                                    src = src.replace(editTextString, editTextString + "\n" + " android:visibility=\"invisible\"");
+                                                    mutated = true;
+                                                }
                                             }
+                                            Io.writeFile(this.destinationPath, src);
+                                            if (mutated) {
+                                                return true;
+                                            }
+
                                         }
-                                        Io.writeFile(this.destinationPath, src);
                                         if (mutated) {
                                             return true;
                                         }
 
                                     }
-                                    if (mutated) {
-                                        return true;
-                                    }
                                 }
-
 
 
                             }
@@ -107,6 +116,7 @@ class XMLEditTextWidgetInvisibleOperatorMutator extends Mutator {
 
                     }
                 }
+
             }
 
 
@@ -137,10 +147,10 @@ class XMLEditTextWidgetInvisibleOperatorMutator extends Mutator {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
         this.previousValue = this.mutationPoint;
+        if (this.mutationPoint != undefined) {
+            this.mutationPoint = this.mutationPoint.insertReplace(this.nameOfFileMutated);
 
-        this.mutationPoint = this.mutationPoint.insertReplace(this.nameOfFileMutated);
-
-
+        }
 
 
 
@@ -174,3 +184,4 @@ class XMLEditTextWidgetInvisibleOperatorMutator extends Mutator {
         };
     }
 }
+
