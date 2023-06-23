@@ -12,14 +12,13 @@ class InvalidIDFindViewOperatorMutator extends Mutator {
         this.mutationPoint = undefined;
         this.previousValue = undefined;
     }
-    isAndroidSpecific(){
-  return true;
-}
+    isAndroidSpecific() {
+        return true;
+    }
     addJp(joinpoint) {
 
         if (joinpoint.instanceOf('call')
         ) {
-            println("kks" + joinpoint.ast);
             if (joinpoint.children[0] == 'findViewById - Executable') {
 
                 this.mutationPoints.push(joinpoint.children[1]);
