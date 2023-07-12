@@ -53,11 +53,6 @@ function runTreeAndGetMutantsTraditionaly() {
     // Ignore nodes that are children of $call with the name <init>
     if ($call !== undefined && $call.name === "<init>") continue;
 
-    // Ignore nodes inside variable declarations
-    //if ($jp.ancestor("localVariable") !== undefined) {
-    //  continue;
-    //}
-
     for (mutator of mutatorList) {
       if (mutator.addJp($jp)) {
         debug(mutator);
@@ -86,10 +81,7 @@ function applyTraditionalMutation() {
       });
     }
   }
-  /*for (i in auxOutputStr) {
-    println(JSON.stringify(auxOutputStr[i]));
-  }*/
-  //print(auxOutputStr);
+
   return JSON.stringify(auxOutputStr);
 }
 
@@ -106,14 +98,14 @@ function saveFile(mutatorName) {
 
   let newFolder = outputPath + Io.getSeparator() + projectExecutionName + aux;
 
-  //Io.copyFolder(projectPath, newFolder, true);
+  Io.copyFolder(projectPath, newFolder, true);
 
-  /*Io.writeFile(
+  Io.writeFile(
     newFolder +
       Io.getSeparator() +
       relativePath.replace("/", Io.getSeparator()),
     Query.root().code
-  );*/
+  );
 
   return aux;
 }
