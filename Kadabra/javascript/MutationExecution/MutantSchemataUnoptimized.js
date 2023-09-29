@@ -44,11 +44,6 @@ function main() {
 function runTreeAndApplyMetaMutant() {
   var mutantList = [];
   for (var $jp of Query.root().descendants) {
-    // Add MUID_STATIC variable to all files
-    if ($jp.instanceOf("file")) {
-      this.addMuidStatic($jp);
-    }
-
     var $call = $jp.ancestor("call");
 
     // Ignore nodes that are children of $call with the name <init>
@@ -104,9 +99,9 @@ function runTreeAndApplyMetaMutant() {
           if (mutationPoints > 1) {
             if (firstTime) {
               mutated.insertBefore(
-                'if("' +
+                'if(System.getProperty("MUID") != null && System.getProperty("MUID").equals("' +
                   mutantId +
-                  '".equals(MUID_STATIC)){\n' +
+                  '")){\n' +
                   mutated.srcCode +
                   ";\n}"
               );
@@ -114,9 +109,9 @@ function runTreeAndApplyMetaMutant() {
               firstTime = false;
             } else {
               mutated.insertBefore(
-                'else if("' +
+                'else if(System.getProperty("MUID") != null && System.getProperty("MUID").equals("' +
                   mutantId +
-                  '".equals(MUID_STATIC)){\n' +
+                  '")){\n' +
                   mutated.srcCode +
                   ";\n}"
               );
@@ -124,9 +119,9 @@ function runTreeAndApplyMetaMutant() {
             mutationPoints--;
           } else {
             mutated.insertBefore(
-              'else if("' +
+              'else if (System.getProperty("MUID") != null && System.getProperty("MUID").equals("' +
                 mutantId +
-                '".equals(MUID_STATIC)){\n' +
+                '")){\n' +
                 mutated.srcCode +
                 ";\n}else{\n\t"
             );
@@ -134,9 +129,9 @@ function runTreeAndApplyMetaMutant() {
           }
         } else {
           mutated.insertBefore(
-            'if("' +
+            'if (System.getProperty("MUID") != null && System.getProperty("MUID").equals("' +
               mutantId +
-              '".equals(MUID_STATIC)){\n' +
+              '")){\n' +
               mutated.srcCode +
               ";\n}else{\n\t"
           );
@@ -160,23 +155,4 @@ function runTreeAndApplyMetaMutant() {
   Io.writeFile(aux, Query.root().srcCode);
 
   return JSON.stringify(mutantList);
-}
-
-function addMuidStatic($file) {
-  println("Adding MUID_STATIC to file " + $file);
-  const mainClass = $file.mainClass;
-  //println("Main class: " + mainClass);
-
-  const children = mainClass.children;
-  if (children.length === 0) {
-    println("Could not find any element inside class " + mainClass);
-    return;
-  }
-
-  const insertPoint = children[0];
-
-  // Declare MUID_STATIC
-  insertPoint.insertBefore(
-    'private static final String MUID_STATIC = System.getProperty("MUID");'
-  );
 }

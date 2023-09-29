@@ -9,7 +9,7 @@
       <string>workspace</string>
       <FileList>
         <fileList>
-          <file>../../Projects/java-jwt/lib/src/main/java/com/auth0/jwt/JWTVerifier.java</file>
+          <file>..\..\Projects\java-jwt\lib\src\main\java\com\auth0\jwt\JWTVerifier.java</file>
         </fileList>
       </FileList>
     </entry>
@@ -44,7 +44,7 @@
     </entry>
     <entry>
       <string>argv</string>
-      <string></string>
+      <string>{&quot;useIncompleteClassPath&quot;:true,&quot;classpath&quot;:&quot;./&quot;,&quot;debugMessages&quot;:false,&quot;projectPath&quot;:&quot;C:/Users/JBispo/Work/Repos/Lab/Mutation Testing/mutation-testing_RitaVeiga/TestProject/src/main/java&quot;,&quot;outputPath&quot;:&quot;C:/Users/JBispo/Work/Repos/Lab/mutation-testing-v2/output&quot;,&quot;operatorNameList&quot;:[&quot;BinaryMutator&quot;],&quot;operatorArgumentList&quot;:[[&quot;+&quot;,&quot;-&quot;]],&quot;isAndroid&quot;:false,&quot;projectExecutionName&quot;:&quot;test_project&quot;,&quot;mutationType&quot;:&quot;MUTANTSCHEMATA&quot;,&quot;includesFolder&quot;:&quot;C:/Users/JBispo/Work/Repos/Lab/mutation-testing-v2/Kadabra/javascript&quot;}</string>
     </entry>
     <entry>
       <string>tools</string>
@@ -59,7 +59,7 @@
     </entry>
     <entry>
       <string>output</string>
-      <file>../../Kadabra Output</file>
+      <file>..\..\Kadabra Output</file>
     </entry>
     <entry>
       <string>java includes dir</string>
@@ -77,7 +77,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>javascript/Main.js</file>
+      <file>javascript\Main.js</file>
     </entry>
     <entry>
       <string>stack trace</string>
