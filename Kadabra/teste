@@ -44,7 +44,7 @@
     </entry>
     <entry>
       <string>argv</string>
-      <string>{&quot;useIncompleteClassPath&quot;:true,&quot;classpath&quot;:&quot;./&quot;,&quot;debugMessages&quot;:false,&quot;projectPath&quot;:&quot;C:/Users/JBispo/Work/Repos/Lab/Mutation Testing/mutation-testing_RitaVeiga/TestProject/src/main/java&quot;,&quot;outputPath&quot;:&quot;C:/Users/JBispo/Work/Repos/Lab/mutation-testing-v2/output&quot;,&quot;operatorNameList&quot;:[&quot;BinaryMutator&quot;],&quot;operatorArgumentList&quot;:[[&quot;+&quot;,&quot;-&quot;]],&quot;isAndroid&quot;:false,&quot;projectExecutionName&quot;:&quot;test_project&quot;,&quot;mutationType&quot;:&quot;MUTANTSCHEMATA&quot;,&quot;includesFolder&quot;:&quot;C:/Users/JBispo/Work/Repos/Lab/mutation-testing-v2/Kadabra/javascript&quot;}</string>
+      <string>{&quot;useIncompleteClassPath&quot;:true,&quot;classpath&quot;:&quot;./&quot;,&quot;debugMessages&quot;:false,&quot;projectPath&quot;:&quot;../TestProject/src/main/java&quot;,&quot;outputPath&quot;:&quot;../output&quot;,&quot;operatorNameList&quot;:[&quot;BinaryMutator&quot;],&quot;operatorArgumentList&quot;:[[&quot;+&quot;,&quot;-&quot;]],&quot;isAndroid&quot;:false,&quot;projectExecutionName&quot;:&quot;test_project&quot;,&quot;mutationType&quot;:&quot;MUTANTSCHEMATA&quot;,&quot;includesFolder&quot;:&quot;./javascript&quot;}</string>
     </entry>
     <entry>
       <string>tools</string>
