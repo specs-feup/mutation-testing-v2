@@ -43,11 +43,19 @@ function main() {
 
 function runTreeAndApplyMetaMutant() {
   var mutantList = [];
+
+  // Add MUID_STATIC variable to all files
+  for (var $jp of Query.search("file")) {
+    //println("FILE: " + $jp.name);
+    //println("PATH: " + $jp.path);
+    this.addMuidStatic($jp);
+  }
+
   for (var $jp of Query.root().descendants) {
     // Add MUID_STATIC variable to all files
-    if ($jp.instanceOf("file")) {
-      this.addMuidStatic($jp);
-    }
+    //if ($jp.instanceOf("file")) {
+    //  this.addMuidStatic($jp);
+    //}
 
     var $call = $jp.ancestor("call");
 
@@ -142,9 +150,12 @@ function runTreeAndApplyMetaMutant() {
           );
           mutated.insertAfter("}");
         }
+
         mutator.restore();
       }
     }
+
+    //println("APPLIED ALL MUTATIONS");
   }
 
   //Saves the file
@@ -165,6 +176,12 @@ function runTreeAndApplyMetaMutant() {
 function addMuidStatic($file) {
   println("Adding MUID_STATIC to file " + $file);
   const mainClass = $file.mainClass;
+
+  if (mainClass === undefined) {
+    println("Could not find main class, could not add MUID_STATIC");
+    return;
+  }
+
   //println("Main class: " + mainClass);
 
   const children = mainClass.children;
@@ -173,7 +190,26 @@ function addMuidStatic($file) {
     return;
   }
 
-  const insertPoint = children[0];
+  let insertPoint = undefined;
+  const types = [];
+  for (const child of children) {
+    types.push(child.joinPointType);
+    if (
+      child.instanceOf("declaration") ||
+      child.instanceOf("type") ||
+      child.instanceOf("executable")
+    ) {
+      insertPoint = child;
+      break;
+    }
+  }
+
+  if (insertPoint === undefined) {
+    println(
+      "Could not find an insertion point for MUID, found types: " + types
+    );
+    return;
+  }
 
   // Declare MUID_STATIC
   insertPoint.insertBefore(
