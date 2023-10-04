@@ -1,18 +1,25 @@
 laraImport("lara.Io");
 laraImport("lara.Strings");
 laraImport("weaver.Query");
+laraImport("weaver.WeaverOptions");
 laraImport("Arguments");
 
-const outputPath = laraArgs.outputPath;
+
+var contextFolder = WeaverOptions.getData().getContextFolder();
+
+
+// Support for paths relative to the configuration file 
+const projectPath = Io.getPath(contextFolder, laraArgs.projectPath).getAbsolutePath();
+const outputPath = Io.getPath(contextFolder, laraArgs.outputPath).getAbsolutePath();
+const includesFolder = Io.getPath(contextFolder, laraArgs.includesFolder).getAbsolutePath();
+
 const traditionalMutation = laraArgs.traditionalMutation;
-const projectPath = laraArgs.projectPath;
 const debugMessages = laraArgs.debugMessages;
 const folderToIgnore = laraArgs.folderToIgnore;
 const folderToIgnoreAndroid = laraArgs.folderToIgnoreAndroid;
 const operatorNameList = laraArgs.operatorNameList;
 const operatorArgumentList = laraArgs.operatorArgumentList;
 const projectExecutionName = laraArgs.projectExecutionName;
-const includesFolder = laraArgs.includesFolder;
 const isAndroid = laraArgs.isAndroid;
 const classpath = laraArgs.classpath;
 const useIncompleteClassPath = laraArgs.useIncompleteClassPath;
