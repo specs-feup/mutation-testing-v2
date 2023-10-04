@@ -82,7 +82,7 @@ function getFilesToUse() {
   let allJavaFiles = Io.getFiles(projectPath, "*.java", true);
   let javaFilesToRemove = Io.getFiles(folderToIgnore, "*.java", true);
   println("AllJavaFiles: " + allJavaFiles);
-  println("Folder yo Ignore: " + folderToIgnore);
+  println("Folder to Ignore: " + folderToIgnore);
   println("javaFilesToRemove: " + javaFilesToRemove);
 
   if (
