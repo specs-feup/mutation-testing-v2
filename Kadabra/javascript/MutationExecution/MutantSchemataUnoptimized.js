@@ -33,7 +33,7 @@ function main() {
   }
 
   changeVarDeclarations();
-  println("Mutant Schemata");
+  //println("Mutant Schemata");
 
   let output = runTreeAndApplyMetaMutant();
 

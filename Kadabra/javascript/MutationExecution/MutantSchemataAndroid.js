@@ -34,7 +34,7 @@ function main() {
   }
 
   changeVarDeclarations();
-  println("Mutant Schemata Android");
+  //println("Mutant Schemata Android");
 
   let output = runTreeAndApplyMetaMutant();
 

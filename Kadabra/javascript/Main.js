@@ -143,8 +143,11 @@ function writeExecutionInfo(result) {
           fileData.push(listaAux[j]);
         }
       } catch (error) {
-        println(result[i]);
-        println(error);
+        println("Exception while parsing output result with index " + i + ": " + error);
+        //println('Contents of result[i]["output"]:');
+        //printlnObject(result[i]["output"]);
+
+        fileData.push({"error": error.message});
       }
     }
   }
