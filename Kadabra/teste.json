@@ -1,0 +1,20 @@
+{
+    "useIncompleteClassPath":true,
+    "classpath":"./",
+    "debugMessages":false,
+    "projectPath":"../TestProject/src/main/java",
+    "outputPath":"../output",
+    "operatorNameList":[
+       "BinaryMutator"
+    ],
+    "operatorArgumentList":[
+       [
+          "+",
+          "-"
+       ]
+    ],
+    "isAndroid":false,
+    "projectExecutionName":"test_project",
+    "mutationType":"MUTANTSCHEMATA",
+    "includesFolder":"./javascript"
+ }

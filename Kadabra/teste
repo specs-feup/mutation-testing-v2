@@ -44,7 +44,7 @@
     </entry>
     <entry>
       <string>argv</string>
-      <string>{&quot;useIncompleteClassPath&quot;:true,&quot;classpath&quot;:&quot;./&quot;,&quot;debugMessages&quot;:false,&quot;projectPath&quot;:&quot;../TestProject/src/main/java&quot;,&quot;outputPath&quot;:&quot;../output&quot;,&quot;operatorNameList&quot;:[&quot;BinaryMutator&quot;],&quot;operatorArgumentList&quot;:[[&quot;+&quot;,&quot;-&quot;]],&quot;isAndroid&quot;:false,&quot;projectExecutionName&quot;:&quot;test_project&quot;,&quot;mutationType&quot;:&quot;MUTANTSCHEMATA&quot;,&quot;includesFolder&quot;:&quot;./javascript&quot;}</string>
+      <string>teste.json</string>
     </entry>
     <entry>
       <string>tools</string>
