@@ -18,3 +18,7 @@ function changeVarDeclarations() {
     }
   }
 }
+
+// To avoid a warning, and follow the convention that a JS file of a given name exposes a variable with the same name
+const Decomposition = {};
+Decomposition.changeVarDeclarations = changeVarDeclarations;
