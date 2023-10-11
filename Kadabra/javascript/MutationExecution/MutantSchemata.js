@@ -182,10 +182,48 @@ function addMuidStatic($file) {
     return;
   }
 
+
+//    println(Query.root().ast);
+
   //println("Main class: " + mainClass);
 
   // Declare MUID_STATIC
-  mainClass.insertCode(
+  // Does not work, because inserts at the end of the class, and this is a problem if
+  // used inside static blocks
+  //mainClass.insertCode(
+  //  'static final String MUID_STATIC = System.getProperty("MUID");'
+  //);
+
+
+  const children = mainClass.children;
+  if (children.length === 0) {
+    println("Could not find any element inside class " + mainClass.name);
+    return;
+  }
+
+  let insertPoint = undefined;
+  const types = [];
+  for (const child of children) {
+    types.push(child.joinPointType);
+    if (
+      child.instanceOf("declaration") ||
+      //child.instanceOf("type") ||
+      child.instanceOf("executable")
+    ) {
+      insertPoint = child;
+      break;
+    }
+  }
+
+  if (insertPoint === undefined) {
+    println(
+      "Could not find an insertion point for MUID in class "+mainClass.name+", found types: " + types
+    );
+    return;
+  }
+
+  // Declare MUID_STATIC
+  insertPoint.insertBefore(
     'static final String MUID_STATIC = System.getProperty("MUID");'
   );
 
