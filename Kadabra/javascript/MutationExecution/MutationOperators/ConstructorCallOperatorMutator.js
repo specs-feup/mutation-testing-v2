@@ -62,7 +62,8 @@ class ConstructorCallOperatorMutator extends Mutator {
 		// Get type of mutation point
 		let cast = "";
 		if(inInCall && !isInChainCall) {
-			let cast = this.mutationPoint.code.trim();
+			//println("Creating cast for " + this.mutationPoint.code)
+			cast = this.mutationPoint.code.trim();
 			
 			if(cast.startsWith("new")) {
 				cast = cast.substring("new".length).trim();
@@ -76,11 +77,17 @@ class ConstructorCallOperatorMutator extends Mutator {
 			if(cast.length !== 0) {
 				cast = "(" + cast + ") ";
 			}
-		}
 
+			//println("CAST: " + cast);
+		}
+		//println("CAST OUTSIDE: " + cast);
+
+		const newCode = cast + "null";
+
+		//println("Inserting '"+newCode+"'");
 
 		this.previousValue = this.mutationPoint;
-		this.mutationPoint = this.mutationPoint.insertReplace(cast + "null");
+		this.mutationPoint = this.mutationPoint.insertReplace(newCode);
 
 
 		println("/*--------------------------------------*/");
