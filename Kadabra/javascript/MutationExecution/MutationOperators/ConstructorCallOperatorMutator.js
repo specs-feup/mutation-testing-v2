@@ -57,9 +57,10 @@ class ConstructorCallOperatorMutator extends Mutator {
 		}
 
 		// Get type of mutation point
+		const type = this.mutationPoint.type;
 
 		this.previousValue = this.mutationPoint;
-		this.mutationPoint = this.mutationPoint.insertReplace("null");
+		this.mutationPoint = this.mutationPoint.insertReplace("("+type+") null");
 
 
 		println("/*--------------------------------------*/");
