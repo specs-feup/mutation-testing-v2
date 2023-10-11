@@ -48,6 +48,13 @@ class ConstructorCallOperatorMutator extends Mutator {
 
 	_mutatePrivate() {
 		this.mutationPoint = this.mutationPoints[this.currentIndex++];
+
+		//println("MUTATION POINT PARENT: " + this.mutationPoint.parent)
+		while(this.mutationPoint.parent !== undefined && this.mutationPoint.parent.instanceOf("call")) {
+			this.mutationPoint = this.mutationPoint.parent;
+			//println("CHANGING MUTATION POINT PARENT TO: " + this.mutationPoint.parent)
+		}
+
 		this.previousValue = this.mutationPoint;
 		this.mutationPoint = this.mutationPoint.insertReplace("null");
 
