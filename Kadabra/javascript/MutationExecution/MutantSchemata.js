@@ -186,7 +186,7 @@ function addMuidStatic($file) {
 
   // Declare MUID_STATIC
   mainClass.insertCode(
-    'private static final String MUID_STATIC = System.getProperty("MUID");'
+    'static final String MUID_STATIC = System.getProperty("MUID");'
   );
 
 }
