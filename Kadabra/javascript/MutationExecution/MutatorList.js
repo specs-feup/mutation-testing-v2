@@ -51,7 +51,6 @@ const classes = {
   XMLEditTextWidgetDeletionOperatorMutator,
   XMLButtonWidgetDeletionOperatorMutator,
   XMLTextViewWidgetDeletionOperatorMutator,
-
 };
 
 const mutatorList = getMutators();

@@ -21,6 +21,7 @@ const mutationType = laraArgs.mutationType;
 
 main();
 
+
 function main() {
   //Shows aditional prints
   if (debugMessages) {

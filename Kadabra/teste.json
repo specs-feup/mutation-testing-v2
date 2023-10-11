@@ -5,12 +5,107 @@
     "projectPath":"../TestProject/src/main/java",
     "outputPath":"../output",
     "operatorNameList":[
+       "BinaryMutator",
+       "BinaryMutator",
+       "BinaryMutator",
+       "BinaryMutator",
+       "BinaryMutator",
+       "BinaryMutator",
+       "BinaryMutator",
+       "BinaryMutator",
+       "BinaryMutator",
+       "BinaryMutator",
+       "BinaryMutator",
+       "BinaryMutator",
+       "BinaryMutator",
+       "BinaryMutator",
+       "BinaryMutator",
+       "BinaryMutator",
+       "BinaryMutator",
+       "BinaryMutator",
+       "BinaryMutator",
        "BinaryMutator"
     ],
     "operatorArgumentList":[
        [
           "+",
           "-"
+       ],
+       [
+          "+",
+          "*"
+       ],
+       [
+          "+",
+          "/"
+       ],
+       [
+          "+",
+          "%"
+       ],
+       [
+          "-",
+          "+"
+       ],
+       [
+          "-",
+          "*"
+       ],
+       [
+          "-",
+          "/"
+       ],
+       [
+          "-",
+          "%"
+       ],
+       [
+          "*",
+          "-"
+       ],
+       [
+          "*",
+          "+"
+       ],
+       [
+          "*",
+          "/"
+       ],
+       [
+          "*",
+          "%"
+       ],
+       [
+          "/",
+          "-"
+       ],
+       [
+          "/",
+          "*"
+       ],
+       [
+          "/",
+          "+"
+       ],
+       [
+          "/",
+          "%"
+       ],
+       [
+          "%",
+          "-"
+       ],
+       [
+          "%",
+          "*"
+       ],
+       [
+          "%",
+          "/"
+       ],
+       [
+          "%",
+          "+"
        ]
     ],
     "isAndroid":false,
