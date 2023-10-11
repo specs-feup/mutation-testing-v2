@@ -51,16 +51,36 @@ class ConstructorCallOperatorMutator extends Mutator {
 
 		// "new" can be part of a chained method call, go back until we get the whole chain
 		//println("MUTATION POINT PARENT: " + this.mutationPoint.parent)
-		while(this.mutationPoint.parent !== undefined && this.mutationPoint.parent.instanceOf("call") && this.mutationPoint.parent.children[0] === this.mutationPoint) {
+		let inInCall = this.mutationPoint.parent.instanceOf("call");
+		let isInChainCall = false;
+		while(this.mutationPoint.parent !== undefined && this.mutationPoint.parent.instanceOf("call") && this.mutationPoint.parent.children[0].same(this.mutationPoint)) {
 			this.mutationPoint = this.mutationPoint.parent;
+			isInChainCall = true;
 			//println("CHANGING MUTATION POINT PARENT TO: " + this.mutationPoint.parent)
 		}
 
 		// Get type of mutation point
-		const type = this.mutationPoint.type;
+		let cast = "";
+		if(inInCall && !isInChainCall) {
+			let cast = this.mutationPoint.code.trim();
+			
+			if(cast.startsWith("new")) {
+				cast = cast.substring("new".length).trim();
+			}
+
+			const indexOfPar = cast.indexOf("(");
+			if(indexOfPar !== -1) {
+				cast = cast.substring(0, indexOfPar);
+			}
+
+			if(cast.length !== 0) {
+				cast = "(" + cast + ") ";
+			}
+		}
+
 
 		this.previousValue = this.mutationPoint;
-		this.mutationPoint = this.mutationPoint.insertReplace("("+type+") null");
+		this.mutationPoint = this.mutationPoint.insertReplace(cast + "null");
 
 
 		println("/*--------------------------------------*/");
