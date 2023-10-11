@@ -15,8 +15,8 @@ class BinaryMutator extends Mutator {
     this.previousValue = undefined;
 
     this.arithmeticOperators = ["+", "-", "*", "/", "%"];
-    this.bitwiseOperators = ["&", "|"]
-    this.bitwiseOperators2 = ["<<", ">>"];
+    this.bitwiseOperators = ["&", "|", "^"]
+    this.bitwiseOperators2 = ["<<", ">>", ">>>"];
     this.comparisonOperators = ["==", "!="];
     this.comparisonOperators2 = [">", "<", ">=", "<="];
     this.logicalOperators = ["&&", "||"];
@@ -47,7 +47,6 @@ class BinaryMutator extends Mutator {
         this.bitwiseOperators.contains(this.original) &&
         this.bitwiseOperators.contains(this.result)
       ) {
-
         if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }
@@ -90,7 +89,6 @@ class BinaryMutator extends Mutator {
         this.assignmentOperators.contains(this.original) &&
         this.assignmentOperators.contains(this.result)
       ) {
-
         if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }

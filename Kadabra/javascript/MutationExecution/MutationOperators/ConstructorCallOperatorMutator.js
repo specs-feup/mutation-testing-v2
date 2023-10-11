@@ -23,11 +23,11 @@ class ConstructorCallOperatorMutator extends Mutator {
 
 	addJp(joinpoint) {
 
-		if (joinpoint != undefined && joinpoint.instanceOf("return") && joinpoint.children[0] != undefined && joinpoint.children[0].instanceOf("new")) {
+		if (joinpoint != undefined && joinpoint.instanceOf("new") ) {
 
-			if (joinpoint.children[0].children[0] != undefined && joinpoint.children[0].children[0].instanceOf("reference") && joinpoint.children[0].children[0].name === "<init>" && joinpoint.children[0].children[0].type === "Executable") {
+			if (joinpoint.children[0] != undefined && joinpoint.children[0].instanceOf("reference") && joinpoint.children[0].name === "<init>" && joinpoint.children[0].type === "Executable") {
 
-				this.mutationPoints.push(joinpoint.children[0]);
+				this.mutationPoints.push(joinpoint);
 			}
 		}
 		if (this.mutationPoints.length > 0) {
@@ -48,8 +48,7 @@ class ConstructorCallOperatorMutator extends Mutator {
 
 	_mutatePrivate() {
 		this.mutationPoint = this.mutationPoints[this.currentIndex++];
-		this.previousValue = this.mutationPoint.copy();
-		this.mutationPoint.insertBefore(this.previousValue.toString() + ";");
+		this.previousValue = this.mutationPoint;
 		this.mutationPoint = this.mutationPoint.insertReplace("null");
 
 

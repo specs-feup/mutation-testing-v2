@@ -9,7 +9,7 @@
       <string>workspace</string>
       <FileList>
         <fileList>
-          <file>..\..\Projects\java-jwt\lib\src\main\java\com\auth0\jwt\JWTVerifier.java</file>
+          <file></file>
         </fileList>
       </FileList>
     </entry>

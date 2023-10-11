@@ -76,7 +76,8 @@ function main() {
   }
 
   //Kadabra Parallel execution
-  let result = Weaver.runParallel(args_final, args_final.length);
+  //let result = Weaver.runParallel(args_final, args_final.length);
+  let result = Weaver.runParallel(args_final, 1);  
 
   //Writes the output formated to a file
   writeExecutionInfo(result);
@@ -88,9 +89,9 @@ function getFilesToUse() {
   //Checks what files to use
   let allJavaFiles = Io.getFiles(projectPath, "*.java", true);
   let javaFilesToRemove = Io.getFiles(folderToIgnore, "*.java", true);
-  println("AllJavaFiles: " + allJavaFiles);
-  println("Folder to Ignore: " + folderToIgnore);
-  println("javaFilesToRemove: " + javaFilesToRemove);
+  //println("AllJavaFiles: " + allJavaFiles);
+  //println("Folder to Ignore: " + folderToIgnore);
+  //println("javaFilesToRemove: " + javaFilesToRemove);
 
   if (
     folderToIgnore != null &&
