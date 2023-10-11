@@ -184,35 +184,9 @@ function addMuidStatic($file) {
 
   //println("Main class: " + mainClass);
 
-  const children = mainClass.children;
-  if (children.length === 0) {
-    println("Could not find any element inside class " + mainClass);
-    return;
-  }
-
-  let insertPoint = undefined;
-  const types = [];
-  for (const child of children) {
-    types.push(child.joinPointType);
-    if (
-      child.instanceOf("declaration") ||
-      child.instanceOf("type") ||
-      child.instanceOf("executable")
-    ) {
-      insertPoint = child;
-      break;
-    }
-  }
-
-  if (insertPoint === undefined) {
-    println(
-      "Could not find an insertion point for MUID, found types: " + types
-    );
-    return;
-  }
-
   // Declare MUID_STATIC
-  insertPoint.insertBefore(
+  mainClass.insertCode(
     'private static final String MUID_STATIC = System.getProperty("MUID");'
   );
+
 }
