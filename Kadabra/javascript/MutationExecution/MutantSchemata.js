@@ -27,7 +27,9 @@ function main() {
   }
 
   //If no mutatans were selected
-  if (mutatorList.length === 0) {
+  
+  
+  if (MutatorList.getMutators().length === 0) {    
     println("No mutators selected");
     return;
   }
@@ -39,6 +41,20 @@ function main() {
 
   //print("Output" + output);
   Script.setOutput({ output });
+}
+
+
+function runTreeAndApplyMetaMutantNew() {
+
+  // Two phases, first collect mutations associated with each point,
+  // then mutate on that point
+
+  // Map jps to list of mutations 
+
+  // On second phase, walk the tree again, apply mutations over each point, one at a time
+
+  // NOT IMPLEMENTED YET
+  // Requires another architecture, where Mutator returns a list of Mutations
 }
 
 function runTreeAndApplyMetaMutant() {
@@ -65,6 +81,8 @@ function runTreeAndApplyMetaMutant() {
     let mutationPoints = 0;
     let needElseIf = false;
     let firstTime = true;
+    const mutatorList = MutatorList.getMutators();
+
     for (mutator of mutatorList) {
       if (mutator.addJp($jp)) {
         mutationPoints++;
@@ -109,8 +127,11 @@ function runTreeAndApplyMetaMutant() {
         //print(mutator.toJson());
 
         if (needElseIf) {
+          //println("MUT: NEED ELSE IF")
           if (mutationPoints > 1) {
+            //println("MUTATION POINTS GREATER THAN 1: " + mutationPoints)
             if (firstTime) {
+              //println("MUT: FIRST TIME")
               mutated.insertBefore(
                 'if("' +
                   mutantId +
@@ -121,6 +142,7 @@ function runTreeAndApplyMetaMutant() {
 
               firstTime = false;
             } else {
+              //println("MUT: OTHER TIME")
               mutated.insertBefore(
                 'else if("' +
                   mutantId +
@@ -131,6 +153,7 @@ function runTreeAndApplyMetaMutant() {
             }
             mutationPoints--;
           } else {
+            //println("MUTATION POINTS EQUAL TO 1: " + mutationPoints + " - ELSE INSERTED")            
             mutated.insertBefore(
               'else if("' +
                 mutantId +
@@ -141,6 +164,8 @@ function runTreeAndApplyMetaMutant() {
             mutated.insertAfter("}");
           }
         } else {
+          //println("MUT: DO NOT NEED ELSE IF - ELSE INSERTED")
+
           mutated.insertBefore(
             'if("' +
               mutantId +

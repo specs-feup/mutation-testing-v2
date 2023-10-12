@@ -53,9 +53,11 @@ const classes = {
   XMLTextViewWidgetDeletionOperatorMutator,
 };
 
-const mutatorList = getMutators();
+// To avoid a warning, and follow the convention that a JS file of a given name exposes a variable with the same name
+const MutatorList = {};
 
-function getMutators() {
+
+MutatorList.getMutators = function() {
   let operatorNameList = laraArgs.operatorNameList;
   let operatorArgumentList = laraArgs.operatorArgumentList;
 
@@ -70,5 +72,5 @@ function getMutators() {
   return Mutators;
 }
 
-// To avoid a warning, and follow the convention that a JS file of a given name exposes a variable with the same name
-const MutatorList = mutatorList;
+// backwards compatibility
+const mutatorList = MutatorList.getMutators();
