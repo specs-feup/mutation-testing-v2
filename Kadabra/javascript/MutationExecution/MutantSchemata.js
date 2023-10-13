@@ -113,6 +113,7 @@ function runTreeAndApplyMetaMutant() {
         // Mutate
         mutator.mutate();
 
+
         if (
           mutator.name === "NotSerializableOperatorMutator" ||
           mutator.name === "NonVoidCallMutator"
@@ -123,6 +124,8 @@ function runTreeAndApplyMetaMutant() {
             ? mutator.getMutationPoint()
             : mutator.getMutationPoint().ancestor("statement");
         }
+
+        const srcCode = getStatementCode(mutated);
 
         //print(mutator.toJson());
 
@@ -136,8 +139,9 @@ function runTreeAndApplyMetaMutant() {
                 'if("' +
                   mutantId +
                   '".equals(MUID_STATIC)){\n' +
-                  mutated.srcCode +
-                  ";\n}"
+                  srcCode +
+                  "\n}"
+                  //";\n}"                  
               );
 
               firstTime = false;
@@ -147,8 +151,9 @@ function runTreeAndApplyMetaMutant() {
                 'else if("' +
                   mutantId +
                   '".equals(MUID_STATIC)){\n' +
-                  mutated.srcCode +
-                  ";\n}"
+                  srcCode +
+                  //";\n}"
+                  "\n}"                  
               );
             }
             mutationPoints--;
@@ -158,8 +163,9 @@ function runTreeAndApplyMetaMutant() {
               'else if("' +
                 mutantId +
                 '".equals(MUID_STATIC)){\n' +
-                mutated.srcCode +
-                ";\n}else{\n\t"
+                srcCode +
+                //";\n}else{\n\t"
+                "\n}else{\n\t"                
             );
             mutated.insertAfter("}");
           }
@@ -170,8 +176,9 @@ function runTreeAndApplyMetaMutant() {
             'if("' +
               mutantId +
               '".equals(MUID_STATIC)){\n' +
-              mutated.srcCode +
-              ";\n}else{\n\t"
+              srcCode +
+              //";\n}else{\n\t"
+              "\n}else{\n\t"              
           );
           mutated.insertAfter("}");
         }
@@ -252,4 +259,31 @@ function addMuidStatic($file) {
     'static final String MUID_STATIC = System.getProperty("MUID");'
   );
 
+}
+
+
+
+
+function getStatementCode(mutated) {
+
+  let srcCode = mutated.srcCode;
+
+  //println("MUTATED BEFORE:\n" + srcCode)
+
+  // Determine if needs ';'
+  if(needsSemiColon(mutated)) {
+    srcCode = srcCode + ";";
+  }
+
+  //println("MUTATED AFTER:\n" + srcCode)
+  return srcCode;
+}
+
+function needsSemiColon(mutated) {
+
+  if(mutated.instanceOf("if") || mutated.instanceOf("loop")) {
+    return false;
+  }
+
+  return true;
 }
