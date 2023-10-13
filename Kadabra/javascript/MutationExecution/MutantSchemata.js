@@ -255,9 +255,52 @@ function addMuidStatic($file) {
   }
 
   // Declare MUID_STATIC
+  insertMuidStaticCode(mainClass, insertPoint, isAndroid);
+
+}
+
+
+function insertMuidStaticCode(mainClass, insertPoint, isAndroid) {
+  // Not Android, using Java properties
+  if(!isAndroid) {
+    // Declare MUID_STATIC
+    insertPoint.insertBefore(
+      'static final String MUID_STATIC = System.getProperty("MUID");'
+    );    
+
+    return;
+  }
+
+  const auxFunction = `
+  public static String getMUID(){ \
+  String propertyValue = null; \
+  try { \
+  Process process = Runtime.getRuntime().exec("getprop MUID"); \ 
+  InputStream inputStream = process.getInputStream(); \
+  BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream)); \
+  propertyValue = reader.readLine();\
+  reader.close();\
+  inputStream.close();\
+  } catch (IOException e) {\
+  Log.e("ERROR", String.valueOf(e));\
+  }\
+  return propertyValue;\
+  }`;
+
+  const imports = `
+  import java.io.BufferedReader;\n 
+  import java.io.IOException;\n
+  import java.io.InputStream;\n
+  import java.io.InputStreamReader;\n
+  import android.util.Log;
+  `;
+
+  mainClass.insertBefore(imports);
+  mainClass.insertMethod(auxFunction);
+
   insertPoint.insertBefore(
-    'static final String MUID_STATIC = System.getProperty("MUID");'
-  );
+    'static final String MUID_STATIC = getMUID();'
+  );   
 
 }
 

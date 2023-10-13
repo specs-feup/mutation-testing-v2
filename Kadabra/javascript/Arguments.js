@@ -21,6 +21,14 @@ class Arguments {
         "TraditionalMutation.js"
       ).trim();
     } else {
+		this.javascriptFile = (
+          includesFolder +
+          Io.getSeparator() +
+          "MutationExecution" +
+          Io.getSeparator() +
+          "MutantSchemata.js"
+        ).trim();
+		/*
       if (isAndroid) {
         this.javascriptFile = (
           includesFolder +
@@ -38,6 +46,7 @@ class Arguments {
           "MutantSchemata.js"
         ).trim();
       }
+	  */
     }
 
     this.includesFolder = (
