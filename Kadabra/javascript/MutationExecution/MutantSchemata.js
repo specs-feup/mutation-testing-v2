@@ -280,7 +280,7 @@ function insertMuidStaticCode(mainClass, insertPoint, isAndroid) {
   public static String getMUID(){ \
   String propertyValue = null; \
   try { \
-  android.os.Process process = Runtime.getRuntime().exec("getprop MUID"); \ 
+  java.lang.Process process = Runtime.getRuntime().exec("getprop MUID"); \ 
   InputStream inputStream = process.getInputStream(); \
   BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream)); \
   propertyValue = reader.readLine();\
