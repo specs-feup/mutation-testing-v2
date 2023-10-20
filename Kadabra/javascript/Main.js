@@ -24,6 +24,7 @@ const isAndroid = laraArgs.isAndroid;
 const classpath = laraArgs.classpath;
 const useIncompleteClassPath = laraArgs.useIncompleteClassPath;
 const mutationType = laraArgs.mutationType;
+const fullyQualifiedNames = laraArgs.fullyQualifiedNames;
 
 main();
 
@@ -69,7 +70,8 @@ function main() {
       includesFolder,
       classpath,
       useIncompleteClassPath,
-      isAndroid
+      isAndroid,
+      fullyQualifiedNames
     ).getList();
 
     args_final.push(args_kadabra);

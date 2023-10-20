@@ -7,7 +7,8 @@ class Arguments {
     includesFolder,
     classpath,
     useIncompleteClassPath,
-    isAndroid
+    isAndroid,
+    fullyQualifiedNames
   ) {
     this.writeCode = false;
     this.outputFolder = outputFolder;
@@ -58,7 +59,7 @@ class Arguments {
     this.externalDependencies = [];
     this.debugMode = false;
     this.args = args;
-    this.fullyQualifiedNames = false;
+    this.fullyQualifiedNames = fullyQualifiedNames === undefined ? false : fullyQualifiedNames;
     this.workspaceFolder = workspaceFolder;
     this.classpath = classpath;
     this.useIncompleteClassPath = useIncompleteClassPath;
