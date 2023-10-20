@@ -24,10 +24,12 @@ class NullValueIntentOperatorMutator extends Mutator {
 
     addJp(joinpoint) {
 
+        /*
         if (joinpoint.instanceOf("class") && this.addImport == false) {
             joinpoint.insertBefore(" import android.os.Parcelable;\n ");
             this.addImport = true;
         }
+        */
         if (joinpoint != undefined && joinpoint.parent != undefined && joinpoint.type === "Intent" && joinpoint.instanceOf('expression')
         ) {
             if (joinpoint.children[0] != undefined && joinpoint.children[0].name === "<init>" && joinpoint.children[0].type === "Executable") {
@@ -35,6 +37,9 @@ class NullValueIntentOperatorMutator extends Mutator {
                 if (joinpoint.children[2] != undefined) {
                     this.mutationPoints.push(joinpoint.children[2]);
 
+                    if (joinpoint.ancestor("file")) {
+                        joinpoint.addImport("android.os.Parcelable");
+                    }
                 }
             }
         }
