@@ -237,6 +237,11 @@ function addMuidStatic($file) {
   const types = [];
   for (const child of children) {
     types.push(child.joinPointType);
+
+    if(child.instanceOf("enumValue")) {
+      continue;
+    }
+
     if (
       child.instanceOf("declaration") ||
       //child.instanceOf("type") ||
