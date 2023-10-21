@@ -34,7 +34,12 @@ function main() {
     return;
   }
 
-  changeVarDeclarations();
+  
+  var files = Query.search("file").get().map(file => file.name).join();
+  println("Applying mutant schemata to " + files)
+  
+
+  Decomposition.changeVarDeclarations();
   //println("Mutant Schemata");
 
   let output = runTreeAndApplyMetaMutant();
