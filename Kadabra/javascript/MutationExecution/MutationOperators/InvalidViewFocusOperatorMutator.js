@@ -30,6 +30,7 @@ class InvalidViewFocusOperatorMutator extends Mutator {
             
             //if (joinpoint.children[0] == 'findViewById - Executable') {
             if (joinpoint.name === 'findViewById') {
+                // TODO: should not store parent, but point itself
                 this.mutationPoints.push(joinpoint.parent);                
             }
         }
