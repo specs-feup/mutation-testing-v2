@@ -40,9 +40,7 @@ class NullValueIntentPutExtraOperatorMutator extends Mutator {
                     if (joinpoint.call.children[i + 2] != undefined) {
                         this.mutationPoints.push(joinpoint.call.children[i + 2]);
                         
-                        if (joinpoint.ancestor("file")) {
-                            joinpoint.addImport("android.os.Parcelable");
-                        }
+                        joinpoint.ancestor("file").addImport("android.os.Parcelable");
                     }
                 }
             }
