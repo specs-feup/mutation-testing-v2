@@ -20,7 +20,28 @@ class LengthyGUICreationOperatorMutator extends Mutator {
         if (joinpoint.instanceOf('callStatement')
         ) {
             if (joinpoint.call.children[0] == 'super' && joinpoint.call.children[1] == 'onCreate - Executable') {
-                this.mutationPoints.push(joinpoint.call);
+                // TODO: this placeholder logic should be extracted to an utility function that can be used by other operators
+                
+                // Cannot have code before super, insert placeholder statement, if not already there
+                let leftSiblings = joinpoint.left; 
+                
+                let placeholder = undefined;
+
+                // No siblings, insert placeholder
+                if(leftSiblings.length === 0) {
+                    placeholder = joinpoint.insertAfter("// AFTER SUPER");
+                } else {
+                    const leftFirst = leftSiblings[0];
+                    // Already inserted
+                    if(leftFirst.code === "// AFTER SUPER")   {
+                        placeholder = leftFirst;
+                    } else {
+                        placeholder = joinpoint.insertAfter("// AFTER SUPER");
+                    }
+                }
+                //this.mutationPoints.push(joinpoint.call);
+                //this.mutationPoints.push(joinpoint);                
+                this.mutationPoints.push(placeholder);                                
             }
         }
         if (this.mutationPoints.length > 0) {
@@ -51,10 +72,12 @@ class LengthyGUICreationOperatorMutator extends Mutator {
         let codeSnippet = "try { Thread.sleep(10000); } catch (InterruptedException e) { e.printStackTrace(); }";
 
 
-
+        // Is a callStatement
+        const code = this.mutationPoint.code + "\n" + codeSnippet;
 
         this.previousValue = this.mutationPoint;
-        this.mutationPoint = this.mutationPoint.insertAfter(codeSnippet);
+        //this.mutationPoint = this.mutationPoint.insertAfter(codeSnippet);
+        this.mutationPoint = this.mutationPoint.replaceWith(code);        
         this.currentIndex++;
 
         println("/*--------------------------------------*/");
@@ -66,7 +89,8 @@ class LengthyGUICreationOperatorMutator extends Mutator {
     }
     _restorePrivate() {
 
-        this.mutationPoint = this.mutationPoint.replaceWith("");
+        this.mutationPoint = this.mutationPoint.replaceWith(this.previousValue);
+        //this.mutationPoint = this.mutationPoint.replaceWith("");
         this.previousValue = undefined;
         this.mutationPoint = undefined;
     }

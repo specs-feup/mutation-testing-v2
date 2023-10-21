@@ -3,6 +3,14 @@ laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
 
+/***
+ * TODO: This operator seems to not be working, is taking certain assumptions with the code and is not making the necessary verifications.
+ * 
+ * It seems it wants to find code of the kind 'a = ...findViewById(), but:
+ * - Is not verifying if there is an assign statement
+ * - Is not verifying if the call is the return value of the assign statement
+ * - Mutation is also not correct since it is inserting code  after, and not replacing the mutation point (or statement of the point) itself
+ */
 class InvalidViewFocusOperatorMutator extends Mutator {
     constructor() {
         super("InvalidViewFocusOperatorMutator");
@@ -19,10 +27,10 @@ class InvalidViewFocusOperatorMutator extends Mutator {
 
         if (joinpoint.instanceOf('call')
         ) {
-
-            if (joinpoint.children[0] == 'findViewById - Executable') {
-
-                this.mutationPoints.push(joinpoint.parent);
+            
+            //if (joinpoint.children[0] == 'findViewById - Executable') {
+            if (joinpoint.name === 'findViewById') {
+                this.mutationPoints.push(joinpoint.parent);                
             }
         }
         if (this.mutationPoints.length > 0) {
@@ -50,13 +58,21 @@ class InvalidViewFocusOperatorMutator extends Mutator {
     _mutatePrivate() {
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
-        let variable = this.mutationPoint.toString().split("=")[0].trim();
+        //println("Mutation point: " + this.mutationPoint.code)
+        //const stmt = this.mutationPoint.isStatement ? this.mutationPoint : this.mutationPoint.ancestor("statement"); 
+        //println("Mutation point statement: " + stmt.code)
 
+        let variable = this.mutationPoint.toString().split("=")[0].trim();
+        //println("Variable: " + variable)
         let toReplaceWith = variable + ".requestFocus()"
         this.currentIndex++;
 
+
+        //const code = stmt.code + "\n" + toReplaceWith;
+
         this.previousValue = this.mutationPoint;
         this.mutationPoint = this.mutationPoint.insertAfter(toReplaceWith);
+        //this.mutationPoint = this.mutationPoint.replaceWith(code);
 
 
         println("/*--------------------------------------*/");

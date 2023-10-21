@@ -3,6 +3,14 @@ laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
 
+/***
+ * TODO: This operator seems to not be working, is taking certain assumptions with the code and is not making the necessary verifications.
+ * 
+ * It seems it wants to find code of the kind 'a = ...findViewById(), but:
+ * - Is not verifying if there is an assign statement
+ * - Is not verifying if the call is the return value of the assign statement
+ * - Mutation is also not correct since it is inserting code  after, and not replacing the mutation point (or statement of the point) itself
+ */
 class ViewComponentNotVisibleOperatorMutator extends Mutator {
     constructor() {
         super("ViewComponentNotVisibleOperatorMutator");
@@ -19,8 +27,10 @@ class ViewComponentNotVisibleOperatorMutator extends Mutator {
 
         if (joinpoint.instanceOf('call')) {
 
+            // TODO: Should use joinpoint.name === 'findViewById'
             if (joinpoint.children[0] != undefined && joinpoint.children[0] == 'findViewById - Executable') {
                 if (joinpoint.parent != undefined) {
+                    // TODO: should not store parent, but point itself
                     this.mutationPoints.push(joinpoint.parent);
                 }
             }
