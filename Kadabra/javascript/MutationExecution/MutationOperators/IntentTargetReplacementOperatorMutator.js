@@ -32,7 +32,7 @@ class IntentTargetReplacementOperatorMutator extends Mutator {
                 //this.mutationPoints.push(joinpoint.children[2]);
                 potentialPoint = joinpoint.children[2];
 
-                if (joinpoint.children[2].type === 'Class' && joinpoint.children[2].children[1].name === 'class' && joinpoint.children[2].children[1].type === 'Field') {
+                if (joinpoint.children[2] !== undefined && joinpoint.children[2].type === 'Class' && joinpoint.children[2].children[1] != undefined && joinpoint.children[2].children[1].name === 'class' && joinpoint.children[2].children[1].type === 'Field') {
                     this.package = joinpoint.children[2].children[1].children[0].children[0].name;
 
 
