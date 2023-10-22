@@ -26,8 +26,21 @@ class ConstructorCallOperatorMutator extends Mutator {
 		if (joinpoint != undefined && joinpoint.instanceOf("new") ) {
 
 			if (joinpoint.children[0] != undefined && joinpoint.children[0].instanceOf("reference") && joinpoint.children[0].name === "<init>" && joinpoint.children[0].type === "Executable") {
-
 				this.mutationPoints.push(joinpoint);
+
+				// ToDo: improve filter?
+				/*
+				// Usually, there are problems if parent is a call
+				if(!joinpoint.parent.instanceOf("call")) {
+					this.mutationPoints.push(joinpoint);
+				} 
+				// But only if it is not a chained call, check this case
+				else {
+					if(!joinpoint.parent.children[0].same(joinpoint)) {
+						this.mutationPoints.push(joinpoint);						
+					}
+				}
+				*/
 			}
 		}
 		if (this.mutationPoints.length > 0) {
@@ -53,11 +66,13 @@ class ConstructorCallOperatorMutator extends Mutator {
 		//println("MUTATION POINT PARENT: " + this.mutationPoint.parent)
 		let inInCall = this.mutationPoint.parent.instanceOf("call");
 		let isInChainCall = false;
+		/*
 		while(this.mutationPoint.parent !== undefined && this.mutationPoint.parent.instanceOf("call") && this.mutationPoint.parent.children[0].same(this.mutationPoint)) {
 			this.mutationPoint = this.mutationPoint.parent;
 			isInChainCall = true;
 			//println("CHANGING MUTATION POINT PARENT TO: " + this.mutationPoint.parent)
 		}
+		*/
 
 		// Get type of mutation point
 		let cast = "";

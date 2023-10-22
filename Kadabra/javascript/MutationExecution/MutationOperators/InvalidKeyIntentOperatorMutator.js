@@ -61,9 +61,43 @@ class InvalidKeyIntentOperatorMutator extends Mutator {
 
         this.currentIndex++;
 
+		
+        let cast = "";
+
+        // "new" can be part of a chained method call, go back until we get the whole chain
+		let isInCall = this.mutationPoint.parent.instanceOf("call");
+		let isInChainCall = false;
+
+		// Get type of mutation point
+		if(isInCall && !isInChainCall) {
+			println("Creating cast for " + this.mutationPoint.code)
+			cast = this.mutationPoint.code.trim();
+			
+			if(cast.startsWith("new")) {
+				cast = cast.substring("new".length).trim();
+			}
+
+			const indexOfPar = cast.indexOf("(");
+			if(indexOfPar !== -1) {
+				cast = cast.substring(0, indexOfPar);
+			}
+
+			if(cast.length !== 0) {
+				cast = "(" + cast + ") ";
+			}
+
+			//println("CAST: " + cast);
+		} else {
+            cast = "("+this.mutationPoint.type+")";
+        }
+        
+		//println("CAST OUTSIDE: " + cast);
+        
+		const newCode = cast + "null";
+
         this.previousValue = this.mutationPoint;
 
-        this.mutationPoint = this.mutationPoint.insertReplace("\"" + null + "\"");
+        this.mutationPoint = this.mutationPoint.insertReplace(newCode);
 
 
         println("/*--------------------------------------*/");
