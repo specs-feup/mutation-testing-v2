@@ -83,7 +83,7 @@ class LengthyGUIListenerOperatorMutator extends Mutator {
 
     _mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
-        println("this.mutationPoint: " + this.mutationPoint);
+        //println("this.mutationPoint: " + this.mutationPoint.joinPointType);
         let codeSnippet = "try { Thread.sleep(10000); } catch (InterruptedException e) { e.printStackTrace(); }";
 
         // Is a statement

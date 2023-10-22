@@ -72,7 +72,10 @@ function runTreeAndApplyMetaMutant() {
     this.addMuidStatic($jp);
   }
 
-  for (var $jp of Query.root().descendants) {
+  var descendants = Query.root().descendants;
+  //descendants.reverse();
+
+  for (var $jp of descendants) {
     // Add MUID_STATIC variable to all files
     //if ($jp.instanceOf("file")) {
     //  this.addMuidStatic($jp);
@@ -135,6 +138,13 @@ function runTreeAndApplyMetaMutant() {
               if(mutated === undefined) {
                 throw "Could not get corresponding 'switch' of case '"+mutated+"'";
               }
+            }
+
+            println("Mutated: " + mutated.code);
+            var tryStmt = mutated.ancestor("try");
+            println("TryStmt: " + tryStmt);
+            if(tryStmt !== undefined) {
+              mutated = tryStmt;
             }
         }
 
