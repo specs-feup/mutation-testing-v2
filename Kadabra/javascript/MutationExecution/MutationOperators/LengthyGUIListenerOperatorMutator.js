@@ -16,22 +16,46 @@ class LengthyGUIListenerOperatorMutator extends Mutator {
       return true;
     }
     addJp(joinpoint) {
+        // ToDo: Previous way of determining if join point should be mutated entered in conflict with BuggyGUIListenerOperatorMutator,
+        // because mutation point was to "far away" from the join point being tested
+        // As a rule of thumb, it is ok for the mutation point to not be the current join point as long as they are confined to the same statement
+        // This restriction can lifted ifOperators are adapted to return the point mutation point, and MutantSchemata is adapted to use this information  
 
         if (
-            joinpoint.type === "OnClickListener"
+            //joinpoint.type === "OnClickListener"
+            joinpoint.instanceOf('body')
         ) {
+            if(joinpoint.parent !== undefined && joinpoint.parent.instanceOf("method") && joinpoint.parent.parent !== undefined && joinpoint.parent.parent.parent !== undefined && joinpoint.parent.parent.parent.type === "OnClickListener") {
+
+                        let numChildren = joinpoint.numChildren;
+                        if(numChildren > 0) {
+                            // Mutation point is a statement
+                            this.mutationPoints.push(joinpoint.children[numChildren - 1]);
+                            
+                            // ToDo: Currently MutantSchemata only supports one mutation per operator per point
+                            return true;
+                        }
+            }
+            /*
             for (let i = 0; i < joinpoint.numChildren; i++) {
                 for (let j = 0; j < joinpoint.children[i].numChildren; j++) {
                     if (joinpoint.children[i].children[j].instanceOf('method')) {
                         for (let k = 0; k < joinpoint.children[i].children[j].numChildren; k++) {
                             if (joinpoint.children[i].children[j].children[k].instanceOf('body')) {
                                 let numChildren = joinpoint.children[i].children[j].children[k].numChildren;
-                                this.mutationPoints.push(joinpoint.children[i].children[j].children[k].children[numChildren - 1]);
+                                if(numChildren > 0) {
+                                    // Mutation point is a statement
+                                    this.mutationPoints.push(joinpoint.children[i].children[j].children[k].children[numChildren - 1]);
+                                    
+                                    // ToDo: Currently MutantSchemata only supports one mutation per operator per point
+                                    return true;
+                                }
                             }
                         }
                     }
                 }
             }
+            */
         }
 
 
@@ -62,8 +86,12 @@ class LengthyGUIListenerOperatorMutator extends Mutator {
         println("this.mutationPoint: " + this.mutationPoint);
         let codeSnippet = "try { Thread.sleep(10000); } catch (InterruptedException e) { e.printStackTrace(); }";
 
+        // Is a statement
+        const code = this.mutationPoint.code + "\n" + codeSnippet;
+
+
         this.previousValue = this.mutationPoint;
-        this.mutationPoint = this.mutationPoint.insertAfter(codeSnippet);
+        this.mutationPoint = this.mutationPoint.replaceWith(code);
 
 
         this.currentIndex++;
@@ -76,7 +104,7 @@ class LengthyGUIListenerOperatorMutator extends Mutator {
     }
     _restorePrivate() {
 
-        this.mutationPoint = this.mutationPoint.replaceWith("");
+        this.mutationPoint = this.mutationPoint.replaceWith(this.previousValue);
         this.previousValue = undefined;
         this.mutationPoint = undefined;
     }
