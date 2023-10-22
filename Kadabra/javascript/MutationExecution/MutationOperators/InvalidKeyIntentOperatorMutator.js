@@ -62,6 +62,9 @@ class InvalidKeyIntentOperatorMutator extends Mutator {
         this.currentIndex++;
 
 		
+        // ToDo: there is duplicated code below that also is in ConstructorCallOperatorMutator, refactor
+        // Although it is now exactly the same, ConstructorCallOperatorMutator assumes mutationPoint is a "new", this one is an argument
+/*
         let cast = "";
 
         // "new" can be part of a chained method call, go back until we get the whole chain
@@ -88,11 +91,11 @@ class InvalidKeyIntentOperatorMutator extends Mutator {
 
 			//println("CAST: " + cast);
 		} else {
-            cast = "("+this.mutationPoint.type+")";
+
         }
-        
+  */      
 		//println("CAST OUTSIDE: " + cast);
-        
+        const cast = "("+this.mutationPoint.type+")";        
 		const newCode = cast + "null";
 
         this.previousValue = this.mutationPoint;
