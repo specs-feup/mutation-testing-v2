@@ -34,19 +34,34 @@ class IntentPayloadReplacementOperatorMutator extends Mutator {
                 if (joinpoint.call.children[i].instanceOf('reference') && joinpoint.call.children[i].name === "putExtra") {
                     this.mutationPoints.push(joinpoint.call.children[i + 2]);
 
-                    if (joinpoint.call.children[i + 2].typeReference == 'String') {
+                    //const type = joinpoint.call.children[i + 2].typeReference;
+                    const type = joinpoint.call.children[i + 2].type;
+
+                    // ToDo: missing case for array type
+
+                    if (type === 'String') {
                         this.dataTypeOfSecondParam = "\"\"";
 
-                    } else if (joinpoint.call.children[i + 2].typeReference == 'int' || joinpoint.call.children[i + 2].typeReference == 'float' || joinpoint.call.children[i + 2].typeReference == 'double' || joinpoint.call.children[i + 2].typeReference == 'long' || joinpoint.call.children[i + 2].typeReference == 'short' || joinpoint.call.children[i + 2].typeReference == 'short' || joinpoint.call.children[i + 2].typeReference == 'char' || joinpoint.call.children[i + 2].typeReference == 'byte') {
+                    } else if (type === 'int' || type === 'float' || type === 'double' || type === 'long') {
                         this.dataTypeOfSecondParam = "0";
+                    } else if (type === 'short') {
+                        this.dataTypeOfSecondParam = "(short) 0";
 
-                    } else if (joinpoint.call.children[i + 2].typeReference == 'boolean') {
+                    } else if (type === 'byte') {
+                        this.dataTypeOfSecondParam = "(byte) 0";
+
+                    } else if (type === 'char') {
+                        this.dataTypeOfSecondParam = "'0'";
+
+                    } else if (type === 'boolean') {
                         this.dataTypeOfSecondParam = "true";
 
-                    } else if (joinpoint.call.children[i + 2].typeReference == 'ArrayList') {
-                        this.dataTypeOfSecondParam = "[]";
+                    // Wrong, ArrayList is object    
+                    //} else if (type == 'ArrayList') {
+                    //    println("Type: " + joinpoint.call.children[i + 2].type)
+                    //    this.dataTypeOfSecondParam = "[]";
                     } else {
-                        this.dataTypeOfSecondParam = "null";
+                        this.dataTypeOfSecondParam = "(" + type + ") null";
                     }
 
                     debug(
