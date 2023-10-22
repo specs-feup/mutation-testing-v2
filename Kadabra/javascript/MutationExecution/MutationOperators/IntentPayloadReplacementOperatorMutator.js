@@ -38,7 +38,7 @@ class IntentPayloadReplacementOperatorMutator extends Mutator {
                     const type = joinpoint.call.children[i + 2].type;
 
                     // ToDo: missing case for array type
-
+                    // ToDo: this could be extracted to an utility method
                     if (type === 'String') {
                         this.dataTypeOfSecondParam = "\"\"";
 
@@ -61,6 +61,8 @@ class IntentPayloadReplacementOperatorMutator extends Mutator {
                     //    println("Type: " + joinpoint.call.children[i + 2].type)
                     //    this.dataTypeOfSecondParam = "[]";
                     } else {
+                        // ToDo: Instead of the type of the argument (I think this is what being used),
+                        // we should fetch the method declaration and use the type of the corresponding parameter 
                         this.dataTypeOfSecondParam = "(" + type + ") null";
                     }
 
