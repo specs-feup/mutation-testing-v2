@@ -128,6 +128,14 @@ function runTreeAndApplyMetaMutant() {
           var mutated = mutator.getMutationPoint().isStatement
             ? mutator.getMutationPoint()
             : mutator.getMutationPoint().ancestor("statement");
+
+            // If case, get corresponding switch
+            if(mutated.instanceOf("case")) {
+              mutated = mutated.ancestor("switch");
+              if(mutated === undefined) {
+                throw "Could not get corresponding 'switch' of case '"+mutated+"'";
+              }
+            }
         }
 
         const srcCode = getStatementCode(mutated);
