@@ -35,9 +35,12 @@ function main() {
   }
 
   
-  var files = Query.search("file").get().map(file => file.name).join();
+  var filesJp = Query.search("file").get();
+  
+  var files = filesJp.map(file => file.name).join();
   println("Applying mutant schemata to " + files)
   
+  filesJp.forEach(file => patchFile(file));
 
   Decomposition.changeVarDeclarations();
   //println("Mutant Schemata");
@@ -359,4 +362,17 @@ function needsSemiColon(mutated) {
 
   //println("ADDING ; ->  " + mutated.joinPointType);
   return true;
+}
+
+/**
+ * Specific patches for some of the tests.
+ * 
+ * @param {file} file 
+ */
+function patchFile(file) {
+
+  if(file.name === "BattleNetImporter.java") {
+      // _key must not be final, otherwise fully qualified names will not work
+    Query.search("field", "_key").first().removeModifier("final");
+  }
 }
