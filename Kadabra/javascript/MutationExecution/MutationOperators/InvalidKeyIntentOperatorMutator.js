@@ -100,8 +100,23 @@ class InvalidKeyIntentOperatorMutator extends Mutator {
         //const cast = "("+this.mutationPoint.type+")";        
 		
         // ToDo: First argument of a Intent construtor is always Context?
-        const cast = "(android.content.Context) "; 
+        //const cast = "(android.content.Context) "; 
         
+        let type = this.mutationPoint.type;
+        const children = this.mutationPoint.children;
+        if(children.length === 1 && children[0].instanceOf("reference")) {
+            const reference = children[0];
+
+            if(reference.children.length > 1 && reference.children[1].instanceOf("typeReference")) {
+                type = reference.children[1].code;
+                //println("CHILD 1: " + type)
+                //println("REFERENCE TYPE: " + reference.referenceType)                
+                //println("REFERENCE CODE: " + reference.referenceType.code)                                
+            }
+        }
+
+        const cast = "("+type+") "; 
+
         const newCode = cast + "null";
 
         this.previousValue = this.mutationPoint;
