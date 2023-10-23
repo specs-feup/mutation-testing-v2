@@ -64,9 +64,17 @@ class IntentPayloadReplacementOperatorMutator extends Mutator {
                     } else {
                         var castType = type;
 
-                        const paramChildren = secondParam.children;
+                        let paramChildren = secondParam.children;
+
+                        if(paramChildren.length === 1 && paramChildren[0].instanceOf("reference")) {
+                            paramChildren = paramChildren[0].children;
+                        }
+
                         if(paramChildren.length > 0 && paramChildren[0].instanceOf("typeReference")) {
                             castType = paramChildren[0].code;
+                            //println("CHANGED CAST: " + castType)
+                        } else {
+                            //println("DID NOT CHANGE CAST: " + castType + "\n" + secondParam.ast);
                         }
                         // ToDo: Instead of the type of the argument (I think this is what being used),
                         // we should fetch the method declaration and use the type of the corresponding parameter 
