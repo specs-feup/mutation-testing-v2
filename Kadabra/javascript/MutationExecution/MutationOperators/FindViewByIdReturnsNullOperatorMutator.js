@@ -18,6 +18,12 @@ class FindViewByIdReturnsNullOperatorMutator extends Mutator {
 
         if (joinpoint.instanceOf('call')
         ) {
+            
+            // Do not apply if in a chained call
+            if(joinpoint.ancestor("call") !== undefined) {
+                return false;
+            }
+
             if (joinpoint.children[0] == 'findViewById - Executable') {
 
                 this.mutationPoints.push(joinpoint);
