@@ -352,9 +352,11 @@ function getStatementCode(mutated) {
 
 function needsSemiColon(mutated) {
 
-  if(mutated.instanceOf("if") || mutated.instanceOf("loop") || mutated.instanceOf("try")) {
+  if(mutated.instanceOf("if") || mutated.instanceOf("loop") || mutated.instanceOf("try") || mutated.instanceOf("callStatement")) {
+    //println("NOT ADDING ; ->  " + mutated.joinPointType);
     return false;
   }
 
+  //println("ADDING ; ->  " + mutated.joinPointType);
   return true;
 }
