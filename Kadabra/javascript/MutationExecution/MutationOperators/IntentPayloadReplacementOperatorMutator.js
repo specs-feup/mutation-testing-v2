@@ -35,7 +35,8 @@ class IntentPayloadReplacementOperatorMutator extends Mutator {
                     this.mutationPoints.push(joinpoint.call.children[i + 2]);
 
                     //const type = joinpoint.call.children[i + 2].typeReference;
-                    const type = joinpoint.call.children[i + 2].type;
+                    const secondParam = joinpoint.call.children[i + 2];
+                    const type = secondParam.type;
 
                     // ToDo: missing case for array type
                     // ToDo: this could be extracted to an utility method
@@ -61,9 +62,19 @@ class IntentPayloadReplacementOperatorMutator extends Mutator {
                     //    println("Type: " + joinpoint.call.children[i + 2].type)
                     //    this.dataTypeOfSecondParam = "[]";
                     } else {
+                        var castType = type;
+
+                        const paramChildren = secondParam.children;
+                        if(paramChildren.length > 0 && paramChildren[0].instanceOf("typeReference")) {
+                            castType = paramChildren[0].code;
+                        }
                         // ToDo: Instead of the type of the argument (I think this is what being used),
                         // we should fetch the method declaration and use the type of the corresponding parameter 
-                        this.dataTypeOfSecondParam = "(" + type + ") null";
+                        //const nullLiteral = KadabraNodes.nullLiteral(secondParam);
+                        //println("Null: " + nullLiteral.code)
+                        //println("Null ast:\n" + nullLiteral.ast)
+                        this.dataTypeOfSecondParam = "(" + castType + ") null";
+                        //this.dataTypeOfSecondParam = nullLiteral.code;                        
                     }
 
                     debug(
