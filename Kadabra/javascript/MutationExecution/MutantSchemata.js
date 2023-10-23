@@ -27,20 +27,18 @@ function main() {
   }
 
   //If no mutatans were selected
-  
-  
-  if (MutatorList.getMutators().length === 0) {    
+
+  if (MutatorList.getMutators().length === 0) {
     println("No mutators selected");
     return;
   }
 
-  
   var filesJp = Query.search("file").get();
-  
-  var files = filesJp.map(file => file.name).join();
-  println("Applying mutant schemata to " + files)
-  
-  filesJp.forEach(file => patchFile(file));
+
+  var files = filesJp.map((file) => file.name).join();
+  println("Applying mutant schemata to " + files);
+
+  filesJp.forEach((file) => patchFile(file));
 
   Decomposition.changeVarDeclarations();
   //println("Mutant Schemata");
@@ -51,16 +49,11 @@ function main() {
   Script.setOutput({ output });
 }
 
-
 function runTreeAndApplyMetaMutantNew() {
-
   // Two phases, first collect mutations associated with each point,
   // then mutate on that point
-
-  // Map jps to list of mutations 
-
+  // Map jps to list of mutations
   // On second phase, walk the tree again, apply mutations over each point, one at a time
-
   // NOT IMPLEMENTED YET
   // Requires another architecture, where Mutator returns a list of Mutations
 }
@@ -127,7 +120,6 @@ function runTreeAndApplyMetaMutant() {
         // Mutate
         mutator.mutate();
 
-
         if (
           mutator.name === "NotSerializableOperatorMutator" ||
           mutator.name === "NonVoidCallMutator"
@@ -138,20 +130,22 @@ function runTreeAndApplyMetaMutant() {
             ? mutator.getMutationPoint()
             : mutator.getMutationPoint().ancestor("statement");
 
-            // If case, get corresponding switch
-            if(mutated.instanceOf("case")) {
-              mutated = mutated.ancestor("switch");
-              if(mutated === undefined) {
-                throw "Could not get corresponding 'switch' of case '"+mutated+"'";
-              }
+          // If case, get corresponding switch
+          if (mutated.instanceOf("case")) {
+            mutated = mutated.ancestor("switch");
+            if (mutated === undefined) {
+              throw (
+                "Could not get corresponding 'switch' of case '" + mutated + "'"
+              );
             }
+          }
 
-            println("Mutated: " + mutated.code);
-            var tryStmt = mutated.ancestor("try");
-            println("TryStmt: " + tryStmt);
-            if(tryStmt !== undefined) {
-              mutated = tryStmt;
-            }
+          println("Mutated: " + mutated.code);
+          var tryStmt = mutated.ancestor("try");
+          println("TryStmt: " + tryStmt);
+          if (tryStmt !== undefined) {
+            mutated = tryStmt;
+          }
         }
 
         const srcCode = getStatementCode(mutated);
@@ -170,7 +164,7 @@ function runTreeAndApplyMetaMutant() {
                   '".equals(MUID_STATIC)){\n' +
                   srcCode +
                   "\n}"
-                  //";\n}"                  
+                //";\n}"
               );
 
               firstTime = false;
@@ -182,19 +176,19 @@ function runTreeAndApplyMetaMutant() {
                   '".equals(MUID_STATIC)){\n' +
                   srcCode +
                   //";\n}"
-                  "\n}"                  
+                  "\n}"
               );
             }
             mutationPoints--;
           } else {
-            //println("MUTATION POINTS EQUAL TO 1: " + mutationPoints + " - ELSE INSERTED")            
+            //println("MUTATION POINTS EQUAL TO 1: " + mutationPoints + " - ELSE INSERTED")
             mutated.insertBefore(
               'else if("' +
                 mutantId +
                 '".equals(MUID_STATIC)){\n' +
                 srcCode +
                 //";\n}else{\n\t"
-                "\n}else{\n\t"                
+                "\n}else{\n\t"
             );
             mutated.insertAfter("}");
           }
@@ -207,7 +201,7 @@ function runTreeAndApplyMetaMutant() {
               '".equals(MUID_STATIC)){\n' +
               srcCode +
               //";\n}else{\n\t"
-              "\n}else{\n\t"              
+              "\n}else{\n\t"
           );
           mutated.insertAfter("}");
         }
@@ -215,7 +209,6 @@ function runTreeAndApplyMetaMutant() {
         mutator.restore();
 
         //println("SRC CODE AFTER RESTORE:\n" + mutationPoint.ancestor("statement"))
-
       }
     }
 
@@ -246,8 +239,7 @@ function addMuidStatic($file) {
     return;
   }
 
-
-//    println(Query.root().ast);
+  //    println(Query.root().ast);
 
   //println("Main class: " + mainClass);
 
@@ -257,7 +249,6 @@ function addMuidStatic($file) {
   //mainClass.insertCode(
   //  'static final String MUID_STATIC = System.getProperty("MUID");'
   //);
-
 
   const children = mainClass.children;
   if (children.length === 0) {
@@ -270,7 +261,7 @@ function addMuidStatic($file) {
   for (const child of children) {
     types.push(child.joinPointType);
 
-    if(child.instanceOf("enumValue")) {
+    if (child.instanceOf("enumValue")) {
       continue;
     }
 
@@ -286,24 +277,25 @@ function addMuidStatic($file) {
 
   if (insertPoint === undefined) {
     println(
-      "Could not find an insertion point for MUID in class "+mainClass.name+", found types: " + types
+      "Could not find an insertion point for MUID in class " +
+        mainClass.name +
+        ", found types: " +
+        types
     );
     return;
   }
 
   // Declare MUID_STATIC
   insertMuidStaticCode(mainClass, insertPoint, isAndroid);
-
 }
-
 
 function insertMuidStaticCode(mainClass, insertPoint, isAndroid) {
   // Not Android, using Java properties
-  if(!isAndroid) {
+  if (!isAndroid) {
     // Declare MUID_STATIC
     insertPoint.insertBefore(
       'static final String MUID_STATIC = System.getProperty("MUID");'
-    );    
+    );
 
     return;
   }
@@ -312,7 +304,7 @@ function insertMuidStaticCode(mainClass, insertPoint, isAndroid) {
   public static String getMUID(){ \
   String propertyValue = null; \
   try { \
-  java.lang.Process process = Runtime.getRuntime().exec("getprop MUID"); \ 
+  java.lang.Process process = Runtime.getRuntime().exec("getprop debug.MUID"); \ 
   InputStream inputStream = process.getInputStream(); \
   BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream)); \
   propertyValue = reader.readLine();\
@@ -335,23 +327,16 @@ function insertMuidStaticCode(mainClass, insertPoint, isAndroid) {
   mainClass.insertBefore(imports);
   mainClass.insertMethod(auxFunction);
 
-  insertPoint.insertBefore(
-    'static final String MUID_STATIC = getMUID();'
-  );   
-
+  insertPoint.insertBefore("static final String MUID_STATIC = getMUID();");
 }
 
-
-
-
 function getStatementCode(mutated) {
-
   let srcCode = mutated.srcCode;
 
   //println("MUTATED BEFORE:\n" + srcCode)
 
   // Determine if needs ';'
-  if(needsSemiColon(mutated)) {
+  if (needsSemiColon(mutated)) {
     srcCode = srcCode + ";";
   }
 
@@ -360,8 +345,11 @@ function getStatementCode(mutated) {
 }
 
 function needsSemiColon(mutated) {
-
-  if(mutated.instanceOf("if") || mutated.instanceOf("loop") || mutated.instanceOf("try")) {
+  if (
+    mutated.instanceOf("if") ||
+    mutated.instanceOf("loop") ||
+    mutated.instanceOf("try")
+  ) {
     println("NOT ADDING ; ->  " + mutated.joinPointType);
     return false;
   }
@@ -372,19 +360,23 @@ function needsSemiColon(mutated) {
 
 /**
  * Specific patches for some of the tests.
- * 
- * @param {file} file 
+ *
+ * @param {file} file
  */
 function patchFile(file) {
-
-  if(file.name === "BattleNetImporter.java") {
-      // _key must not be final, otherwise fully qualified names will not work
+  if (file.name === "BattleNetImporter.java") {
+    // _key must not be final, otherwise fully qualified names will not work
     Query.search("field", "_key").first().removeModifier("final");
   }
 
-  if(file.name === "EditEntryActivity.java") {
+  if (file.name === "EditEntryActivity.java") {
     var call = Query.searchFrom(file, "call", "showTextInputDialog").first();
-    call.setArgument(KadabraNodes.snippetExpr("com.beemdevelopment.aegis.ui.EditEntryActivity.this"), 0);
+    call.setArgument(
+      KadabraNodes.snippetExpr(
+        "com.beemdevelopment.aegis.ui.EditEntryActivity.this"
+      ),
+      0
+    );
     //println("CALL AST:\n"+call.ast);
   }
 }
