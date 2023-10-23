@@ -17,6 +17,11 @@ class NullIntentOperatorMutator extends Mutator {
     addJp(joinpoint) {
 
         if (joinpoint != undefined) {
+            // If part of a member call, do not apply
+            if(joinpoint.ancestor("call") !== undefined) {
+                return false;
+            }
+
             if (joinpoint.type != undefined) {
                 if (joinpoint.type == "Intent" && joinpoint.children[0] != undefined && joinpoint.children[0].name != undefined && joinpoint.children[0].name === "<init>" && joinpoint.children[0].type != undefined && joinpoint.children[0].type === "Executable" && joinpoint.parent != undefined && !joinpoint.parent.instanceOf('var') && joinpoint.type != "Package" && joinpoint.parent != undefined
                 ) {
