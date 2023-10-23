@@ -121,6 +121,9 @@ function runTreeAndApplyMetaMutant() {
           filePath: Io.getRelativePath(filePath, projectPath),
         });
 
+        const mutationPoint = mutator.getMutationPoint();
+        //println("SRC CODE BEFORE:\n" + mutationPoint.ancestor("statement"))
+
         // Mutate
         mutator.mutate();
 
@@ -152,7 +155,7 @@ function runTreeAndApplyMetaMutant() {
         }
 
         const srcCode = getStatementCode(mutated);
-
+        //println("SRC CODE AFTER MUTATION:\n" + mutationPoint.ancestor("statement"))
         //print(mutator.toJson());
 
         if (needElseIf) {
@@ -210,6 +213,9 @@ function runTreeAndApplyMetaMutant() {
         }
 
         mutator.restore();
+
+        //println("SRC CODE AFTER RESTORE:\n" + mutationPoint.ancestor("statement"))
+
       }
     }
 
@@ -374,5 +380,11 @@ function patchFile(file) {
   if(file.name === "BattleNetImporter.java") {
       // _key must not be final, otherwise fully qualified names will not work
     Query.search("field", "_key").first().removeModifier("final");
+  }
+
+  if(file.name === "EditEntryActivity.java") {
+    var call = Query.searchFrom(file, "call", "showTextInputDialog").first();
+    call.setArgument(KadabraNodes.snippetExpr("com.beemdevelopment.aegis.ui.EditEntryActivity.this"), 0);
+    //println("CALL AST:\n"+call.ast);
   }
 }
