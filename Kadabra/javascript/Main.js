@@ -80,9 +80,10 @@ function main() {
   //Kadabra Parallel execution
   //let result = Weaver.runParallel(args_final, args_final.length);
   let result = Weaver.runParallel(args_final, 1);  
+  //let result = Weaver.runParallel(args_final, 16);    
 
   //Writes the output formated to a file
-  writeExecutionInfo(result);
+  writeExecutionInfo(result, args_final);
 }
 
 function getFilesToUse() {
@@ -135,7 +136,7 @@ function getFilesToUse() {
   return filesToUse;
 }
 
-function writeExecutionInfo(result) {
+function writeExecutionInfo(result, args_final) {
   let fileData = [];
 
   for (i in result) {
@@ -150,7 +151,7 @@ function writeExecutionInfo(result) {
         //println('Contents of result[i]["output"]:');
         //printlnObject(result[i]["output"]);
 
-        fileData.push({"error": error.message});
+        fileData.push({"error": error.message, "args": args_final[i]});
       }
     }
   }
