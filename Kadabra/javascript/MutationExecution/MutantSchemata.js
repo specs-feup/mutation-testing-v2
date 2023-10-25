@@ -361,7 +361,7 @@ function getStatementCode(mutated) {
 
 function needsSemiColon(mutated) {
 
-  if(mutated.instanceOf("if") || mutated.instanceOf("loop") || mutated.instanceOf("try")) {
+  if(mutated.instanceOf("if") || mutated.instanceOf("loop") || mutated.instanceOf("try") || mutated.instanceOf("switch")) {
     println("NOT ADDING ; ->  " + mutated.joinPointType);
     return false;
   }
@@ -385,6 +385,12 @@ function patchFile(file) {
   if(file.name === "EditEntryActivity.java") {
     var call = Query.searchFrom(file, "call", "showTextInputDialog").first();
     call.setArgument(KadabraNodes.snippetExpr("com.beemdevelopment.aegis.ui.EditEntryActivity.this"), 0);
-    //println("CALL AST:\n"+call.ast);
   }
+
+  if(file.name === "MainActivity.java") {
+    var call = Query.searchFrom(file, "call", "showDeleteEntriesDialog").first();
+    call.setArgument(KadabraNodes.snippetExpr("com.beemdevelopment.aegis.ui.MainActivity.this"), 0);
+  }
+
+  
 }
