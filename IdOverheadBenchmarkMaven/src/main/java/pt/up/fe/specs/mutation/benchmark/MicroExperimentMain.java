@@ -30,18 +30,30 @@ public class MicroExperimentMain {
                 reader.close();
                 inputStream.close();
             } catch (IOException e) {
-                //Log.e("ERROR", String.valueOf(e));
+                throw new RuntimeException(e);
             }
             return propertyValue;
         } else {
-            return System.getProperty("MUID");
+            return System.getProperty("debug.MUID");
+        }
+    }
+
+    private static void setProp() {
+        if(IS_ANDROID) {
+            try {
+                Process process = Runtime.getRuntime().exec("setprop debug.MUID ae7f9682-6bd8-45e8-a3da-4020ccc153fa");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            // Setup property
+            System.setProperty("debug.MUID", "ae7f9682-6bd8-45e8-a3da-4020ccc153fa");
         }
     }
 
     public static void main(String[] args) {
 
-        // Setup property
-        System.setProperty("MUID", "ae7f9682-6bd8-45e8-a3da-4020ccc153fa");
+        setProp();
 
         MicroExperimentMain.testHarness("static final, static init, first path", () -> staticFinalWithStaticInitFirstPath());
         MicroExperimentMain.testHarness("static final, static init, else path", () -> staticFinalWithStaticInitElsePath());
