@@ -165,6 +165,15 @@ function runTreeAndApplyMetaMutant() {
             if (firstTime) {
               //println("MUT: FIRST TIME")
               mutated.insertBefore(
+                'switch(MUID_STATIC) {\n' +
+                'case "' + mutantId + '": {\n' +
+                srcCode + "\n" +
+                'break;\n' +
+                '}\n'
+              );
+
+              /*
+              mutated.insertBefore(
                 'if("' +
                   mutantId +
                   '".equals(MUID_STATIC)){\n' +
@@ -172,10 +181,19 @@ function runTreeAndApplyMetaMutant() {
                   "\n}"
                   //";\n}"                  
               );
+              */
 
               firstTime = false;
             } else {
               //println("MUT: OTHER TIME")
+              mutated.insertBefore(
+                'case "' + mutantId + '": {\n' +
+                srcCode + "\n" +
+                'break;\n' +
+                '}\n'
+              );
+
+              /*
               mutated.insertBefore(
                 'else if("' +
                   mutantId +
@@ -184,10 +202,27 @@ function runTreeAndApplyMetaMutant() {
                   //";\n}"
                   "\n}"                  
               );
+              */
+
             }
             mutationPoints--;
           } else {
             //println("MUTATION POINTS EQUAL TO 1: " + mutationPoints + " - ELSE INSERTED")            
+            mutated.insertBefore(
+              'case "' + mutantId + '": {\n' +
+              srcCode + "\n" +
+              'break;\n' +
+              '}\n' +
+              'default: {\n'
+            );
+
+            mutated.insertAfter(
+              'break;\n' + 
+              '}\n' +
+              '}\n'
+              );
+
+              /*
             mutated.insertBefore(
               'else if("' +
                 mutantId +
@@ -196,11 +231,32 @@ function runTreeAndApplyMetaMutant() {
                 //";\n}else{\n\t"
                 "\n}else{\n\t"                
             );
+            */
+
+            /*
             mutated.insertAfter("}");
+            */
           }
         } else {
           //println("MUT: DO NOT NEED ELSE IF - ELSE INSERTED")
 
+          mutated.insertBefore(
+            'switch(MUID_STATIC) {\n' +
+            'case "' + mutantId + '": {\n' +
+            srcCode + "\n" +
+            'break;\n' +
+            '}\n' +
+            'default: {\n'
+          );
+
+
+          mutated.insertAfter(
+            'break;\n' + 
+            '}\n' +
+            '}\n'
+            );
+
+            /*
           mutated.insertBefore(
             'if("' +
               mutantId +
@@ -209,7 +265,11 @@ function runTreeAndApplyMetaMutant() {
               //";\n}else{\n\t"
               "\n}else{\n\t"              
           );
+          */
+
+          /*
           mutated.insertAfter("}");
+          */
         }
 
         mutator.restore();
