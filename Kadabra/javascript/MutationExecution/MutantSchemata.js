@@ -7,6 +7,7 @@ laraImport("MutationOperators.*");
 laraImport("MutatorList");
 laraImport("Decomposition");
 
+// ToDo: This should be a class with instance variables, not a script with global variables
 const outputPath = laraArgs.outputPath;
 const filePath = laraArgs.filePath;
 const projectPath = laraArgs.projectPath.trim();
@@ -60,6 +61,7 @@ function runTreeAndApplyMetaMutantNew() {
 
 function runTreeAndApplyMetaMutant() {
   var mutantList = [];
+  let mutantCounter = 0;
 
   // Add MUID_STATIC variable to all files
   for (var $jp of Query.search("file")) {
@@ -100,12 +102,16 @@ function runTreeAndApplyMetaMutant() {
 
     for (mutator of mutatorList) {
       while (mutator.hasMutations()) {
+        // Generate the new mutant ID
         let mutantId =
           mutator.getName() +
           "_" +
           fileName.replace(".java", "") +
           "_" +
-          Strings.uuid();
+          mutantCounter;
+          //Strings.uuid();
+
+          mutantCounter++;
 
         mutantList.push({
           mutantId: mutantId,
