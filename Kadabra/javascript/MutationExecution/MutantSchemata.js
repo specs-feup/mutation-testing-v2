@@ -361,7 +361,8 @@ function insertMuidStaticCode(mainClass, insertPoint, isAndroid) {
   if(!isAndroid) {
     // Declare MUID_STATIC
     insertPoint.insertBefore(
-      'static final String MUID_STATIC = System.getProperty("MUID");'
+      'static final String ORIGINAL_MUID_STATIC = System.getProperty("MUID");\n' +
+      'static final String MUID_STATIC = ORIGINAL_MUID_STATIC != null ? ORIGINAL_MUID_STATIC : "ORIGINAL_PROGRAM";'      
     );    
 
     return;
@@ -369,7 +370,7 @@ function insertMuidStaticCode(mainClass, insertPoint, isAndroid) {
 
   const auxFunction = `
   public static String getMUID(){ \
-  String propertyValue = null; \
+  String propertyValue = "ORIGINAL_PROGRAM"; \
   try { \
   java.lang.Process process = Runtime.getRuntime().exec("getprop debug.MUID"); \ 
   InputStream inputStream = process.getInputStream(); \
