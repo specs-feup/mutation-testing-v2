@@ -509,7 +509,7 @@ function isReturningStmt($stmt) {
     return isReturningStmt(lastStmt);
   }
 
-  println("IS RETURN FALSE FOR: " + $stmt.joinPointType);
+  //println("IS RETURN FALSE FOR: " + $stmt.joinPointType);
 
 
   return false;
