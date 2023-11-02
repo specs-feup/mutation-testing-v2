@@ -155,6 +155,7 @@ function runTreeAndApplyMetaMutant() {
         }
 
         const srcCode = getStatementCode(mutated);
+        const breakCode = isReturningStmt(mutated) ? '' : 'break;\n';
         //println("SRC CODE AFTER MUTATION:\n" + mutationPoint.ancestor("statement"))
         //print(mutator.toJson());
 
@@ -168,7 +169,7 @@ function runTreeAndApplyMetaMutant() {
                 'switch(MUID_STATIC) {\n' +
                 'case "' + mutantId + '": {\n' +
                 srcCode + "\n" +
-                'break;\n' +
+                breakCode +
                 '}\n'
               );
 
@@ -189,7 +190,7 @@ function runTreeAndApplyMetaMutant() {
               mutated.insertBefore(
                 'case "' + mutantId + '": {\n' +
                 srcCode + "\n" +
-                'break;\n' +
+                breakCode +
                 '}\n'
               );
 
@@ -211,13 +212,13 @@ function runTreeAndApplyMetaMutant() {
             mutated.insertBefore(
               'case "' + mutantId + '": {\n' +
               srcCode + "\n" +
-              'break;\n' +
+              breakCode +
               '}\n' +
               'default: {\n'
             );
 
             mutated.insertAfter(
-              'break;\n' + 
+              breakCode + 
               '}\n' +
               '}\n'
               );
@@ -244,14 +245,14 @@ function runTreeAndApplyMetaMutant() {
             'switch(MUID_STATIC) {\n' +
             'case "' + mutantId + '": {\n' +
             srcCode + "\n" +
-            'break;\n' +
+            breakCode +
             '}\n' +
             'default: {\n'
           );
 
 
           mutated.insertAfter(
-            'break;\n' + 
+            breakCode + 
             '}\n' +
             '}\n'
             );
@@ -448,4 +449,49 @@ function patchFile(file) {
   }
 
   
+}
+
+/**
+ * 
+ * @param {*} $stmt 
+ * @returns {Boolean} true if the given node returns in some way (return instruction, throw instruction, etc), false if execution continues from that point on
+ */
+function isReturningStmt($stmt) {
+  //println("IS RETURN TYPE: " + $stmt.joinPointType);
+
+  if($stmt.instanceOf("return") || $stmt.instanceOf("throw")) {
+    return true;
+  }
+
+  // If 'try', body and catches must all return true for it to be a returning stmt
+  if($stmt.instanceOf("try")) {
+    let result = isReturningStmt($stmt.body);
+
+    for(var currentCatch of $stmt.catches) {
+      //println("CATCH AST:\n" + currentCatch.ast);
+      //println("CATCH BODY AST:\n" + currentCatch.body.ast);
+      result = result & isReturningStmt(currentCatch.body);
+    }
+
+    return result;
+  }
+
+  // Check last statement of body
+  if($stmt.instanceOf('body')) {
+    //println("BODY")
+    println($stmt.ast);
+
+    const lastStmt = $stmt.lastStmt;
+
+    // No last statement, no return
+    if(lastStmt === undefined) {
+      return false;
+    }
+
+    return isReturningStmt(lastStmt);
+  }
+
+
+
+  return false;
 }
