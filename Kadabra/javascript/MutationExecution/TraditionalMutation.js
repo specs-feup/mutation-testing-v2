@@ -15,10 +15,14 @@ const fileName = filePath.substring(
   filePath.lastIndexOf(Io.getSeparator()) + 1
 );
 const projectExecutionName = laraArgs.projectExecutionName;
+let counter = 0;
 
 main();
 
 function main() {
+  // Initialize counter
+  counter = 0;
+
   //Shows aditional prints
   if (debugMessages) {
     setDebug(true);
@@ -94,7 +98,10 @@ function saveFile(mutatorName) {
     "_" +
     fileName.replace(".java", "") +
     "_" +
-    Strings.uuid();
+    counter;
+
+  // Update counter
+  counter += 1;
 
   let newFolder = outputPath + Io.getSeparator() + projectExecutionName + aux;
 
