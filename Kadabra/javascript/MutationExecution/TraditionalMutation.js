@@ -69,13 +69,18 @@ function applyTraditionalMutation() {
   let auxOutputStr = [];
   for (mutator of mutatorList) {
     while (mutator.hasMutations()) {
+      const mutationId = nextMutationId(mutator.getName());
+      
       let auxLine = mutator.getMutationPoint().line;
+
+      // Insert comment signaling the mutation
+      mutator.getMutationPoint().insertBefore("// " + mutationId);
 
       //Aplies the mutation
       mutator.mutate();
 
       //Saves to a file
-      let path = saveFile(mutator.getName());
+      let path = saveFile(mutationId);
 
       auxOutputStr.push({
         mutantId: path,
@@ -83,25 +88,32 @@ function applyTraditionalMutation() {
         mutationLine: auxLine,
         filePath: Io.getRelativePath(filePath, projectPath),
       });
+
+
     }
   }
 
   return JSON.stringify(auxOutputStr);
 }
 
-function saveFile(mutatorName) {
-  let relativePath = Io.getRelativePath(filePath, projectPath);
-
-  let aux =
-    Io.getSeparator() +
+function nextMutationId(mutatorName) {
+  const id = Io.getSeparator() +
     mutatorName +
     "_" +
     fileName.replace(".java", "") +
     "_" +
     counter;
 
-  // Update counter
-  counter += 1;
+    // Update counter
+    counter += 1;
+
+    return id;
+}
+
+function saveFile(mutationId) {
+  let relativePath = Io.getRelativePath(filePath, projectPath);
+
+  let aux = mutationId;
 
   let newFolder = outputPath + Io.getSeparator() + projectExecutionName + aux;
 
