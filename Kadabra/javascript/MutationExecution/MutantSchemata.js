@@ -6,6 +6,7 @@ laraImport("kadabra.KadabraNodes");
 laraImport("MutationOperators.*");
 laraImport("MutatorList");
 laraImport("Decomposition");
+laraImport("MutatorUtils");
 
 // ToDo: This should be a class with instance variables, not a script with global variables
 const outputPath = laraArgs.outputPath;
@@ -404,7 +405,7 @@ function getStatementCode(mutated) {
   //println("MUTATED BEFORE:\n" + srcCode)
 
   // Determine if needs ';'
-  if(needsSemiColon(mutated)) {
+  if(MutatorUtils.needsSemiColon(mutated)) {
     srcCode = srcCode + ";";
   }
 
@@ -412,16 +413,18 @@ function getStatementCode(mutated) {
   return srcCode;
 }
 
+/*
 function needsSemiColon(mutated) {
 
   if(mutated.instanceOf("if") || mutated.instanceOf("loop") || mutated.instanceOf("try") || mutated.instanceOf("switch")) {
-    println("NOT ADDING ; ->  " + mutated.joinPointType);
+    //println("NOT ADDING ; ->  " + mutated.joinPointType);
     return false;
   }
 
-  println("ADDING ; ->  " + mutated.joinPointType);
+  //println("ADDING ; ->  " + mutated.joinPointType);
   return true;
 }
+*/
 
 /**
  * Specific patches for some of the tests.

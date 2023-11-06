@@ -2,6 +2,7 @@ laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
+laraImport("MutatorUtils");
 
 /***
  * TODO: This operator seems to not be working, is taking certain assumptions with the code and is not making the necessary verifications.
@@ -20,18 +21,25 @@ class InvalidViewFocusOperatorMutator extends Mutator {
         this.mutationPoint = undefined;
         this.previousValue = undefined;
     }
-    isAndroidSpecific(){
-      return true;
+    isAndroidSpecific() {
+        return true;
     }
     addJp(joinpoint) {
 
         if (joinpoint.instanceOf('call')
         ) {
-            
+
             //if (joinpoint.children[0] == 'findViewById - Executable') {
             if (joinpoint.name === 'findViewById') {
-                // TODO: should not store parent, but point itself
-                this.mutationPoints.push(joinpoint.parent);                
+
+                // Parent must be an assignment, and right side must be this join point
+                if (joinpoint.parent.instanceOf("assignment") && joinpoint.compareNodes(joinpoint.parent.rhs)) {
+                    // TODO: should not store parent, but point itself
+                    this.mutationPoints.push(joinpoint.parent);
+                    //this.mutationPoints.push(joinpoint);    
+                }
+
+
             }
         }
         if (this.mutationPoints.length > 0) {
@@ -60,20 +68,23 @@ class InvalidViewFocusOperatorMutator extends Mutator {
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
         //println("Mutation point: " + this.mutationPoint.code)
-        //const stmt = this.mutationPoint.isStatement ? this.mutationPoint : this.mutationPoint.ancestor("statement"); 
-        //println("Mutation point statement: " + stmt.code)
+        const stmt = this.mutationPoint.isStatement ? this.mutationPoint : this.mutationPoint.ancestor("statement");
+        //println("Mutation point statement: " + stmt.ast)
 
-        let variable = this.mutationPoint.toString().split("=")[0].trim();
+        // Mutation point is assignment, use left-hand
+        const variable = this.mutationPoint.lhs.code;
+        //const variable = this.mutationPoint.toString().split("=")[0].trim();
         //println("Variable: " + variable)
+        
         let toReplaceWith = variable + ".requestFocus()"
         this.currentIndex++;
 
-
-        //const code = stmt.code + "\n" + toReplaceWith;
+        const semiColon = MutatorUtils.needsSemiColon(stmt) ? ";" : "";
+        const code = stmt.code + semiColon + "\n" + toReplaceWith;
 
         this.previousValue = this.mutationPoint;
-        this.mutationPoint = this.mutationPoint.insertAfter(toReplaceWith);
-        //this.mutationPoint = this.mutationPoint.replaceWith(code);
+        //this.mutationPoint = this.mutationPoint.insertAfter(toReplaceWith);
+        this.mutationPoint = this.mutationPoint.replaceWith(code);
 
 
         println("/*--------------------------------------*/");
@@ -85,7 +96,8 @@ class InvalidViewFocusOperatorMutator extends Mutator {
     }
     _restorePrivate() {
 
-        this.mutationPoint = this.mutationPoint.replaceWith("");
+        //this.mutationPoint = this.mutationPoint.replaceWith("");
+        this.mutationPoint.replaceWith(this.previousValue);
         this.previousValue = undefined;
         this.mutationPoint = undefined;
     }
