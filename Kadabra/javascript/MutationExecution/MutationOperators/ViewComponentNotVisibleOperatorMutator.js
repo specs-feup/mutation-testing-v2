@@ -2,6 +2,7 @@ laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
+laraImport("MutatorUtils");
 
 /***
  * TODO: This operator seems to not be working, is taking certain assumptions with the code and is not making the necessary verifications.
@@ -27,10 +28,10 @@ class ViewComponentNotVisibleOperatorMutator extends Mutator {
 
         if (joinpoint.instanceOf('call')) {
 
-            // TODO: Should use joinpoint.name === 'findViewById'
-            if (joinpoint.children[0] != undefined && joinpoint.children[0] == 'findViewById - Executable') {
-                if (joinpoint.parent != undefined) {
-                    // TODO: should not store parent, but point itself
+            if (joinpoint.name === 'findViewById') {
+
+                // Parent must be an assignment, and right side must be this join point
+                if (joinpoint.parent.instanceOf("assignment") && joinpoint.compareNodes(joinpoint.parent.rhs)) {
                     this.mutationPoints.push(joinpoint.parent);
                 }
             }
@@ -61,13 +62,20 @@ class ViewComponentNotVisibleOperatorMutator extends Mutator {
     _mutatePrivate() {
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
-        let variable = this.mutationPoint.toString().split("=")[0].trim();
+
+        const stmt = this.mutationPoint.isStatement ? this.mutationPoint : this.mutationPoint.ancestor("statement");
+
+        // Mutation point is assignment, use left-hand
+        const variable = this.mutationPoint.lhs.code;
 
         let toReplaceWith = variable + ".setVisibility(android.view.View.INVISIBLE)"
         this.currentIndex++;
 
+        const semiColon = MutatorUtils.needsSemiColon(stmt) ? ";" : "";
+        const code = stmt.code + semiColon + "\n" + toReplaceWith;
+
         this.previousValue = this.mutationPoint;
-        this.mutationPoint = this.mutationPoint.insertAfter(toReplaceWith);
+        this.mutationPoint = this.mutationPoint.replaceWith(code);
 
 
         println("/*--------------------------------------*/");
@@ -79,7 +87,7 @@ class ViewComponentNotVisibleOperatorMutator extends Mutator {
     }
     _restorePrivate() {
 
-        this.mutationPoint = this.mutationPoint.replaceWith("");
+        this.mutationPoint.replaceWith(this.previousValue);
         this.previousValue = undefined;
         this.mutationPoint = undefined;
     }
