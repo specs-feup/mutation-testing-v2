@@ -29,7 +29,7 @@ function main() {
   }
 
   //If no mutatans were selected
-  if (mutatorList.length === 0) {
+  if (MutatorList.getMutators().length === 0) {
     println("No mutators selected");
     return;
   }
@@ -39,6 +39,11 @@ function main() {
 
   let output = {};
 
+  // Apply mutations traditionally
+  println("Generating Mutants for file " + fileName);
+  output = applyTraditionalMutation();
+
+  /*
   //Goes to each node and stores the mutatation point
   println("Going through AST for file " + fileName);
   runTreeAndGetMutantsTraditionaly();
@@ -46,74 +51,78 @@ function main() {
   //Goes to each stored mutation point and applies the mutation
   println("Generating Mutants for file " + fileName);
   output = applyTraditionalMutation();
-
+  */
   Script.setOutput({ output });
-}
-
-function runTreeAndGetMutantsTraditionaly() {
-  for (var $jp of Query.root().descendants) {
-    var $call = $jp.ancestor("call");
-
-    // Ignore nodes that are children of $call with the name <init>
-    if ($call !== undefined && $call.name === "<init>") continue;
-
-    for (mutator of mutatorList) {
-      if (mutator.addJp($jp)) {
-        debug(mutator);
-      }
-    }
-  }
 }
 
 function applyTraditionalMutation() {
   let auxOutputStr = [];
-  for (mutator of mutatorList) {
-    while (mutator.hasMutations()) {
-      const mutationId = nextMutationId(mutator.getName());
-      
-      let auxLine = mutator.getMutationPoint().line;
 
-      // Insert comment signaling the mutation
-      mutator.getMutationPoint().insertBefore("// " + mutationId);
+  for (var $jp of Query.root().descendants) {
 
-      //Aplies the mutation
-      mutator.mutate();
+    var $call = $jp.ancestor("call");
 
-      //Saves to a file
-      let path = saveFile(mutationId);
+    // Ignore nodes that are children of $call with the name <init>
+    if ($call !== undefined && $call.name === "<init>") {
+      continue;
+    }
 
-      auxOutputStr.push({
-        mutantId: path,
-        mutantion: mutator.toJson(),
-        mutationLine: auxLine,
-        filePath: Io.getRelativePath(filePath, projectPath),
-      });
+    const mutatorList = MutatorList.getMutators();
+    for (mutator of mutatorList) {
+
+      if (mutator.addJp($jp)) {
+        debug(mutator);
+      }
+
+      while (mutator.hasMutations()) {
+        const mutationId = nextMutationId(mutator.getName());
+
+        let auxLine = mutator.getMutationPoint().line;
+
+        // Insert comment signaling the mutation
+        mutator.getMutationPoint().insertBefore("// " + mutationId);
+
+        //Aplies the mutation
+        mutator.mutate();
+
+        //Saves to a file
+        let path = saveFile(mutationId);
+
+        auxOutputStr.push({
+          mutantId: mutationId,
+          mutantion: mutator.toJson(),
+          mutationLine: auxLine,
+          filePath: Io.getRelativePath(filePath, projectPath),
+        });
 
 
+      }
     }
   }
 
   return JSON.stringify(auxOutputStr);
 }
 
+
 function nextMutationId(mutatorName) {
-  const id = Io.getSeparator() +
+  const id = 
+    //Io.getSeparator() +
     mutatorName +
     "_" +
     fileName.replace(".java", "") +
     "_" +
     counter;
 
-    // Update counter
-    counter += 1;
+  // Update counter
+  counter += 1;
 
-    return id;
+  return id;
 }
 
 function saveFile(mutationId) {
   let relativePath = Io.getRelativePath(filePath, projectPath);
 
-  let aux = mutationId;
+  let aux = Io.getSeparator() + mutationId;
 
   let newFolder = outputPath + Io.getSeparator() + projectExecutionName + aux;
 
@@ -121,8 +130,8 @@ function saveFile(mutationId) {
 
   Io.writeFile(
     newFolder +
-      Io.getSeparator() +
-      relativePath.replace("/", Io.getSeparator()),
+    Io.getSeparator() +
+    relativePath.replace("/", Io.getSeparator()),
     Query.root().code
   );
 
