@@ -58,7 +58,7 @@ class RemoveNullCheck extends Mutator {
 		} else if (this.newValue.operator === '==') {
 			this.newValue.setOperator('!=');
 		} else {
-			throw "Expected operator to be either '==' or '!=', is '"+mutationPoint.operator+"'");
+			throw "Expected operator to be either '==' or '!=', is '"+mutationPoint.operator+"'";
 		}
 
 		
