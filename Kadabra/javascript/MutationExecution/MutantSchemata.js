@@ -104,13 +104,15 @@ function runTreeAndApplyMetaMutant() {
     for (mutator of mutatorList) {
       while (mutator.hasMutations()) {
         // Generate the new mutant ID
-        let mutantId =
-          mutator.getName() +
+        let mutantId = MutatorUtils.buildMutantId(fileName, mutantCounter, mutator);
+
+/*
+        mutator.getName() +
           "_" +
           fileName.replace(".java", "") +
           "_" +
           mutantCounter;
-          //Strings.uuid();
+*/          
 
           mutantCounter++;
 
@@ -307,16 +309,6 @@ function addMuidStatic($file) {
     return;
   }
 
-//    println(Query.root().ast);
-
-  //println("Main class: " + mainClass);
-
-  // Declare MUID_STATIC
-  // Does not work, because inserts at the end of the class, and this is a problem if
-  // used inside static blocks
-  //mainClass.insertCode(
-  //  'static final String MUID_STATIC = System.getProperty("MUID");'
-  //);
 
   const children = mainClass.children;
   if (children.length === 0) {
@@ -413,18 +405,6 @@ function getStatementCode(mutated) {
   return srcCode;
 }
 
-/*
-function needsSemiColon(mutated) {
-
-  if(mutated.instanceOf("if") || mutated.instanceOf("loop") || mutated.instanceOf("try") || mutated.instanceOf("switch")) {
-    //println("NOT ADDING ; ->  " + mutated.joinPointType);
-    return false;
-  }
-
-  //println("ADDING ; ->  " + mutated.joinPointType);
-  return true;
-}
-*/
 
 /**
  * Specific patches for some of the tests.
@@ -454,69 +434,3 @@ function patchFile(file) {
 
   
 }
-
-/**
- * 
- * @param {*} $stmt 
- * @returns {Boolean} true if the given node returns in some way (return instruction, throw instruction, etc), false if execution continues from that point on
- */
-/*
-function isReturningStmt($stmt) {
-
-  if($stmt.instanceOf("return") || $stmt.instanceOf("throw")) {
-    return true;
-  }
-
-  // If 'try', body and catches must all return true for it to be a returning stmt
-  if($stmt.instanceOf("try")) {
-    let result = isReturningStmt($stmt.body);
-
-    for(var currentCatch of $stmt.catches) {
-      //println("CATCH AST:\n" + currentCatch.ast);
-      //println("CATCH BODY AST:\n" + currentCatch.body.ast);
-      result = result & isReturningStmt(currentCatch.body);
-    }
-
-    return result;
-  }
-
-  // If 'switch', true if all cases return
-  if($stmt.instanceOf('switch')) {
-    let result = true;
-    for(const switchCase of $stmt.cases) {
-      const stmts = switchCase.stmts;
-      
-      // If empty, assume fall-through to next case,
-      // leaving result unchanged
-      if(stmts.length === 0) {
-        continue;
-      }
-
-      // Apply to last statement of case
-      result = result & isReturningStmt(stmts[stmts.length-1]);
-    }
-      
-      return result;
-  }
-
-  // Check last statement of body
-  if($stmt.instanceOf('body')) {
-    //println("BODY")
-    println($stmt.ast);
-
-    const lastStmt = $stmt.lastStmt;
-
-    // No last statement, no return
-    if(lastStmt === undefined) {
-      return false;
-    }
-
-    return isReturningStmt(lastStmt);
-  }
-
-  //println("IS RETURN FALSE FOR: " + $stmt.joinPointType);
-
-
-  return false;
-}
-*/

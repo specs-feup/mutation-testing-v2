@@ -76,7 +76,10 @@ function applyTraditionalMutation() {
       }
 
       while (mutator.hasMutations()) {
-        const mutationId = nextMutationId(mutator.getName());
+        //const mutationId = nextMutationId(mutator.getName());
+        const mutationId = MutatorUtils.buildMutantId(fileName, counter, mutator);
+        counter += 1;
+
 
         let auxLine = mutator.getMutationPoint().line;
 
@@ -104,7 +107,7 @@ function applyTraditionalMutation() {
   return JSON.stringify(auxOutputStr);
 }
 
-
+/*
 function nextMutationId(mutatorName) {
   const id = 
     //Io.getSeparator() +
@@ -119,6 +122,7 @@ function nextMutationId(mutatorName) {
 
   return id;
 }
+*/
 
 function saveFile(mutationId) {
   let relativePath = Io.getRelativePath(filePath, projectPath);

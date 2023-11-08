@@ -80,4 +80,24 @@ class MutatorUtils {
         return false;
     }
 
+
+    /**
+     * Generates a new mutant ID.
+     * 
+     * @param {*} fileName 
+     * @param {*} mutantCounter 
+     * @param {*} mutator 
+     * @returns 
+     */
+    static buildMutantId(fileName, mutantCounter, mutator) {
+                
+                // Since mutations are done independently by file, file name comes first 
+                return fileName.replace(".java", "") +
+                "_" +
+                // Counter is supposed to represent all possible mutation points, although certain approaches might not be able to support them
+                mutantCounter +
+                "_" +
+                mutator.getName();
+    }
+
 }
