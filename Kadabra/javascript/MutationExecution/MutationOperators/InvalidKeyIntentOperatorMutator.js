@@ -24,10 +24,14 @@ class InvalidKeyIntentOperatorMutator extends Mutator {
 
     addJp(joinpoint) {
 
+        // TODO: Only supports assignments (e.g., a = new Intent) and not declarations (e.g., Intent a = new Intent)
+        // TODO: Move if restriction to schemata
 
         if (joinpoint.type === "Intent" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') && !joinpoint.parent.instanceOf("if") && joinpoint.parent.type === undefined && joinpoint!=undefined
         ) {
+
             if (joinpoint.children[0].name === "<init>" && joinpoint.children[0].type === "Executable") {
+
                 if (joinpoint.children[1] != undefined) {
                     this.mutationPoints.push(joinpoint.children[1]);
                 }

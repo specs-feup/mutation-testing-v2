@@ -83,7 +83,9 @@ function runTreeAndApplyMetaMutant() {
     var $call = $jp.ancestor("call");
 
     // Ignore nodes that are children of $call with the name <init>
-    if ($call !== undefined && $call.name === "<init>") continue;
+    if ($call !== undefined && $call.name === "<init>") {
+      continue;
+    }
 
     let mutationPoints = 0;
     let needElseIf = false;

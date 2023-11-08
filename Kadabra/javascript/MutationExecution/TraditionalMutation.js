@@ -35,30 +35,20 @@ function main() {
     return;
   }
 
-  //changeVarDeclarations();
-  println("Traditional Mutation");
+  Decomposition.changeVarDeclarations();
 
   let output = {};
 
   // Apply mutations traditionally
-  println("Generating Mutants for file " + fileName);
+  println("Applying traditional mutantion to " + fileName);
   output = applyTraditionalMutation();
 
-  /*
-  //Goes to each node and stores the mutatation point
-  println("Going through AST for file " + fileName);
-  runTreeAndGetMutantsTraditionaly();
-
-  //Goes to each stored mutation point and applies the mutation
-  println("Generating Mutants for file " + fileName);
-  output = applyTraditionalMutation();
-  */
   Script.setOutput({ output });
 }
 
 function applyTraditionalMutation() {
   let auxOutputStr = [];
-
+  //println("FILE:\n"+Query.search("file").first().ast);
   for (var $jp of Query.root().descendants) {
 
     var $call = $jp.ancestor("call");
@@ -74,7 +64,9 @@ function applyTraditionalMutation() {
       if (mutator.addJp($jp)) {
         debug(mutator);
       }
+    }
 
+    for (mutator of mutatorList) {
       while (mutator.hasMutations()) {
         //const mutationId = nextMutationId(mutator.getName());
         const mutationId = MutatorUtils.buildMutantId(fileName, counter, mutator);
