@@ -6,6 +6,7 @@ laraImport("kadabra.KadabraNodes");
 laraImport("MutationOperators.*");
 laraImport("MutatorList");
 laraImport("Decomposition");
+laraImport("MutatorUtils");
 
 const outputPath = laraArgs.outputPath;
 const filePath = laraArgs.filePath;

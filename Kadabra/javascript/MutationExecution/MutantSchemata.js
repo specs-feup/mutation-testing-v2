@@ -149,14 +149,14 @@ function runTreeAndApplyMetaMutant() {
 
             println("Mutated: " + mutated.code);
             var tryStmt = mutated.ancestor("try");
-            println("TryStmt: " + tryStmt);
+            //println("TryStmt: " + tryStmt);
             if(tryStmt !== undefined) {
               mutated = tryStmt;
             }
         }
 
         const srcCode = getStatementCode(mutated);
-        const breakCode = isReturningStmt(mutated) ? '' : 'break;\n';
+        const breakCode = MutatorUtils.isReturningStmt(mutated) ? '' : 'break;\n';
         //println("SRC CODE AFTER MUTATION:\n" + mutationPoint.ancestor("statement"))
         //print(mutator.toJson());
 
@@ -460,6 +460,7 @@ function patchFile(file) {
  * @param {*} $stmt 
  * @returns {Boolean} true if the given node returns in some way (return instruction, throw instruction, etc), false if execution continues from that point on
  */
+/*
 function isReturningStmt($stmt) {
 
   if($stmt.instanceOf("return") || $stmt.instanceOf("throw")) {
@@ -518,3 +519,4 @@ function isReturningStmt($stmt) {
 
   return false;
 }
+*/
