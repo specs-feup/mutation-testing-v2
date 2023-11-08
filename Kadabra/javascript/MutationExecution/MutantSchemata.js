@@ -116,10 +116,15 @@ function runTreeAndApplyMetaMutant() {
 
           mutantCounter++;
 
+        const line = mutator.getMutationPoint().line;
+        if(line === undefined) {
+          println("- Mutation point of type '"+mutator.getMutationPoint().joinPointType+"' with no line defined");
+        }
+
         mutantList.push({
           mutantId: mutantId,
           mutantion: mutator.toJson(),
-          mutationLine: mutator.getMutationPoint().line,
+          mutationLine: line,
           filePath: Io.getRelativePath(filePath, projectPath),
         });
 

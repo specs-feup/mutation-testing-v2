@@ -82,6 +82,9 @@ function applyTraditionalMutation() {
 
 
         let auxLine = mutator.getMutationPoint().line;
+        if(auxLine === undefined) {
+          println("- Mutation point of type '"+mutator.getMutationPoint().joinPointType+"' with no line defined");
+        }
 
         // Insert comment signaling the mutation
         mutator.getMutationPoint().insertBefore("// " + mutationId);
