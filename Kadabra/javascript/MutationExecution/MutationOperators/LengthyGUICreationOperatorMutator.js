@@ -30,6 +30,8 @@ class LengthyGUICreationOperatorMutator extends Mutator {
                 // No siblings, insert placeholder
                 if(leftSiblings.length === 0) {
                     placeholder = joinpoint.insertAfter("// AFTER SUPER");
+					// Set line
+					placeholder.line = joinpoint.line;
                 } else {
                     const leftFirst = leftSiblings[0];
                     // Already inserted
@@ -37,8 +39,11 @@ class LengthyGUICreationOperatorMutator extends Mutator {
                         placeholder = leftFirst;
                     } else {
                         placeholder = joinpoint.insertAfter("// AFTER SUPER");
+						// Set line
+						placeholder.line = joinpoint.line;						
                     }
                 }
+				
                 //this.mutationPoints.push(joinpoint.call);
                 //this.mutationPoints.push(joinpoint);                
                 this.mutationPoints.push(placeholder);                                
