@@ -50,17 +50,18 @@ class RemoveNullCheck extends Mutator {
 
 		var mutationPoint = this.mutationPoints[this.currentIndex];
 
-		this.previousValue = mutationPoint.copy();
+		this.previousValue = mutationPoint;
+		this.newValue = mutationPoint.insertReplace(mutationPoint.copy());
 
-		if (mutationPoint.operator === '!=') {
-			mutationPoint.setOperator('==');
-			this.newValue = mutationPoint;
+		if (this.newValue.operator === '!=') {
+			this.newValue.setOperator('==');
+		} else if (this.newValue.operator === '==') {
+			this.newValue.setOperator('!=');
+		} else {
+			throw "Expected operator to be either '==' or '!=', is '"+mutationPoint.operator+"'");
 		}
 
-		else if (mutationPoint.operator === '==') {
-			mutationPoint.setOperator('!=');
-			this.newValue = mutationPoint;
-		}
+		
 
 		this.currentIndex++;
 
