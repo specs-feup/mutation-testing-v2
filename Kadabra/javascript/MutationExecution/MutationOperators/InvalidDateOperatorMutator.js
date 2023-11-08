@@ -70,7 +70,7 @@ class InvalidDateOperatorMutator extends Mutator {
 
         this.currentIndex++;
 
-        this.previousValue = this.mutationPoint.copy();
+        this.previousValue = this.mutationPoint;
 
         println(" this.originalParent" + this.previousValue);
         this.mutationPoint = this.mutationPoint.insertReplace(s);

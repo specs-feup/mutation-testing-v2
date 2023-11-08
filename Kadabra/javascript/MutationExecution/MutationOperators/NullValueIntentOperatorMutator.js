@@ -74,6 +74,7 @@ class NullValueIntentOperatorMutator extends Mutator {
         this.mutationPoint = this.mutationPoint.insertReplace("new Parcelable[0]");
 
 
+
         println("/*--------------------------------------*/");
         println("Mutating operator n." + this.currentIndex + ": " + this.previousValue
             + " to " + this.mutationPoint);

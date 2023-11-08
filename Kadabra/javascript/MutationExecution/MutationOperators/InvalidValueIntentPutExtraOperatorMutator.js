@@ -72,13 +72,12 @@ class InvalidValueIntentPutExtraOperatorMutator extends Mutator {
     _mutatePrivate() {
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
-
+		
         this.currentIndex++;
 
-        this.previousValue = this.mutationPoint.copy();
+		this.previousValue = this.mutationPoint;
 
         this.mutationPoint = this.mutationPoint.insertReplace("new Parcelable[0]");
-
 
         println("/*--------------------------------------*/");
         println("Mutating operator n." + this.currentIndex + ": " + this.previousValue

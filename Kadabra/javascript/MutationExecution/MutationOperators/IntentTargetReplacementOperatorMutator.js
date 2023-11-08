@@ -103,7 +103,8 @@ class IntentTargetReplacementOperatorMutator extends Mutator {
 
         this.currentIndex++;
 
-        this.previousValue = this.mutationPoint.copy();
+        this.previousValue = this.mutationPoint;
+
         //println("INSERT: " + this.targetValues[randomIndex])
         this.mutationPoint = this.mutationPoint.insertReplace(this.targetValues[randomIndex]);
 

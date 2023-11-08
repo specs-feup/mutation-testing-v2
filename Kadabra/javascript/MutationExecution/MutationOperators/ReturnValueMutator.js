@@ -67,7 +67,7 @@ class ReturnValueMutator extends Mutator {
 		this.returnExpression = mutationInfo[0];
 		let mutationValue = mutationInfo[1];
 
-		this.originalReturnExpression = this.returnExpression.copy();
+		this.originalReturnExpression = this.returnExpression;
 
 		let mutatedReturn = 'return ' + mutationValue;
 		this.returnExpression = this.returnExpression.insertReplace(mutatedReturn);

@@ -124,7 +124,7 @@ class IntentPayloadReplacementOperatorMutator extends Mutator {
 
         this.currentIndex++;
 
-        this.previousValue = this.mutationPoint.copy();
+        this.previousValue = this.mutationPoint;        
 
         this.mutationPoint = this.mutationPoint.insertReplace(this.dataTypeOfSecondParam);
 
