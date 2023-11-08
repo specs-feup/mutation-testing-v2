@@ -90,6 +90,7 @@ function applyTraditionalMutation() {
         mutator.getMutationPoint().insertBefore("// " + mutationId);
 
         //Aplies the mutation
+        println("- Applying mutator '"+mutator.getName()+"'");
         mutator.mutate();
 
         //Saves to a file
@@ -103,6 +104,8 @@ function applyTraditionalMutation() {
         });
 
 
+        // Restore
+        mutator.restore();
       }
     }
   }
