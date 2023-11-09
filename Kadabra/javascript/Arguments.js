@@ -29,25 +29,6 @@ class Arguments {
           Io.getSeparator() +
           "MutantSchemata.js"
         ).trim();
-		/*
-      if (isAndroid) {
-        this.javascriptFile = (
-          includesFolder +
-          Io.getSeparator() +
-          "MutationExecution" +
-          Io.getSeparator() +
-          "MutantSchemataAndroid.js"
-        ).trim();
-      } else {
-        this.javascriptFile = (
-          includesFolder +
-          Io.getSeparator() +
-          "MutationExecution" +
-          Io.getSeparator() +
-          "MutantSchemata.js"
-        ).trim();
-      }
-	  */
     }
 
     this.includesFolder = (
