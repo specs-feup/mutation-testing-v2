@@ -2,9 +2,10 @@ laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
+laraImport("lara.util.Random");
 
 class ForLoopReplacementOperatorMutator extends Mutator {
-    constructor() {
+    constructor(seed) {
         super("ForLoopReplacementOperatorMutator");
 
         this.mutationPoints = [];
@@ -14,6 +15,8 @@ class ForLoopReplacementOperatorMutator extends Mutator {
         this.forStatement = undefined;
 
         this.classTypeOfIDeclaration = undefined;
+
+		this.random = new Random(seed);
     }
 
     isAndroidSpecific() {
@@ -66,7 +69,7 @@ class ForLoopReplacementOperatorMutator extends Mutator {
     _mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
-        var randomNumber = Math.floor(Math.random() * (100)) + 1;
+        var randomNumber = Math.floor(this.random.next() * (100)) + 1;
 
         this.previousValue = this.forStatement.toString();
 

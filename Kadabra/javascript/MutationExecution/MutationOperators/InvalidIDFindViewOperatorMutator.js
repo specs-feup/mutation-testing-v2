@@ -2,15 +2,17 @@ laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
+laraImport("lara.util.Random");
 
 class InvalidIDFindViewOperatorMutator extends Mutator {
-    constructor() {
+    constructor(seed) {
         super("InvalidIDFindViewOperatorMutator");
 
         this.mutationPoints = [];
         this.currentIndex = 0;
         this.mutationPoint = undefined;
         this.previousValue = undefined;
+		this.random = new Random(seed);
     }
     isAndroidSpecific() {
         return true;
@@ -47,7 +49,7 @@ class InvalidIDFindViewOperatorMutator extends Mutator {
     }
 
     _mutatePrivate() {
-        const randomIndex = Math.floor(Math.random() * 1000000).toString();
+        const randomIndex = Math.floor(this.random.next() * 1000000).toString();
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 

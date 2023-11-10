@@ -2,9 +2,10 @@ laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
+laraImport("lara.util.Random");
 
 class StringCallReplacementOperatorMutator extends Mutator {
-    constructor() {
+    constructor(seed) {
         super("StringCallReplacementOperatorMutator");
 
         this.mutationPointsTypeString = [];
@@ -15,6 +16,7 @@ class StringCallReplacementOperatorMutator extends Mutator {
         this.nameOfmethodsOfJavaLang = ["length", "charAt", "substring", "startsWith", "endsWith", "toUpperCase", "toLowerCase"];
         this.methodsOfJavaLang0arguments = ["length()", "toUpperCase()", "toLowerCase()"];
         this.methodsOfJavaLang1arguments = ["charAt", "startsWith", "endsWith", "contains"];
+		this.random = new Random(seed);
 
     }
     isAndroidSpecific() {
@@ -92,8 +94,8 @@ class StringCallReplacementOperatorMutator extends Mutator {
 
     _mutatePrivate() {
 
-        let randomIndex = Math.floor(Math.random() * this.methodsOfJavaLang0arguments.length);
-        let randomIndex1 = Math.floor(Math.random() * this.methodsOfJavaLang1arguments.length);
+        let randomIndex = Math.floor(this.random.next() * this.methodsOfJavaLang0arguments.length);
+        let randomIndex1 = Math.floor(this.random.next() * this.methodsOfJavaLang1arguments.length);
 
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
@@ -104,7 +106,7 @@ class StringCallReplacementOperatorMutator extends Mutator {
         if (this.mutationPointString.split(";").length == 2) {
 
             while (this.methodsOfJavaLang0arguments[randomIndex] == (this.mutationPointString.split(";")[1] + "()")) {
-                randomIndex = Math.floor(Math.random() * this.methodsOfJavaLang0arguments.length);
+                randomIndex = Math.floor(this.random.next() * this.methodsOfJavaLang0arguments.length);
             }
             this.mutationPoint = this.mutationPoint.insertReplace(this.mutationPointString.split(";")[0].replace(this.mutationPointString.split(";")[1] + "()", this.methodsOfJavaLang0arguments[randomIndex]));
         } else if (this.mutationPointString.split(";").length == 3) {
@@ -114,7 +116,7 @@ class StringCallReplacementOperatorMutator extends Mutator {
             } else if ((typeof this.mutationPointString.split(";")[2]) === "string") {
 
                 while ((this.methodsOfJavaLang1arguments[randomIndex1] == (this.mutationPointString.split(";")[1]) || (this.methodsOfJavaLang1arguments[randomIndex1] == "charAt"))) {
-                    randomIndex1 = Math.floor(Math.random() * this.methodsOfJavaLang1arguments.length);
+                    randomIndex1 = Math.floor(this.random.next() * this.methodsOfJavaLang1arguments.length);
                 }
                 this.mutationPoint = this.mutationPoint.insertReplace(this.mutationPointString.split(";")[0].replace(this.mutationPointString.split(";")[1] + "(" + '"' + this.mutationPointString.split(";")[2] + '"' + ")", this.methodsOfJavaLang1arguments[randomIndex1] + "(" + '"' + this.mutationPointString.split(";")[2] + '"' + ")"));
 

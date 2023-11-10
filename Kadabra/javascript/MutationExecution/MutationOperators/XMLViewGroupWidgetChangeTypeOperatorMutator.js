@@ -2,9 +2,10 @@ laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
+laraImport("lara.util.Random");
 
 class XMLViewGroupWidgetChangeTypeOperatorMutator extends Mutator {
-    constructor(rootPath) {
+    constructor(rootPath, seed) {
         super("XMLViewGroupWidgetChangeTypeOperatorMutator");
 
         this.mutationPoints = [];
@@ -18,6 +19,7 @@ class XMLViewGroupWidgetChangeTypeOperatorMutator extends Mutator {
         this.increment = 1;
         this.destinationPath = undefined;
         this.rootPath = rootPath;
+		this.random = new Random(seed);
     }
 
     isAndroidSpecific() {
@@ -73,13 +75,13 @@ class XMLViewGroupWidgetChangeTypeOperatorMutator extends Mutator {
 
                                         //XML PART
 
-                                        let randomIndex = Math.floor(Math.random() * this.viewGroupTypes.length);
+                                        let randomIndex = Math.floor(this.random.next() * this.viewGroupTypes.length);
 
                                         for (let viewGroup of Query.searchFrom(root, "xmlElement")) {
                                             let src = root.srcCode;
                                             if (viewGroup.name == "LinearLayout" || viewGroup.name == "RelativeLayout" || viewGroup.name == "FrameLayout" || viewGroup.name == "androidx.constraintlayout.widget.ConstraintLayout" || viewGroup.name == "TableLayout" || viewGroup.name == "androidx.gridlayout.widget.GridLayout" || viewGroup.name == "androidx.coordinatorlayout.widget.CoordinatorLayout" || viewGroup.name == "androidx.core.widget.NestedScrollView") {
                                                 while (viewGroup.name === this.viewGroupTypes[randomIndex]) {
-                                                    randomIndex = Math.floor(Math.random() * this.viewGroupTypes.length);
+                                                    randomIndex = Math.floor(this.random.next() * this.viewGroupTypes.length);
                                                 }
                                                 println("viewGroup.name: " + viewGroup.name + "  kkkkk " + this.viewGroupTypes[randomIndex]);
                                                 src = src.replace(viewGroup.name, this.viewGroupTypes[randomIndex]);

@@ -2,9 +2,10 @@ laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
+laraImport("lara.util.Random");
 
 class RandomActionIntentDefinitionOperatorMutator extends Mutator {
-    constructor() {
+    constructor(seed) {
         super("RandomActionIntentDefinitionOperatorMutator");
 
         this.mutationPoints = [];
@@ -13,7 +14,7 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
         this.previousValue = undefined;
         this.package = undefined;
         this.targetValues = ["new android.content.Intent(android.content.Intent.ACTION_VIEW)", "new android.content.Intent(android.content.Intent.ACTION_SEND)"];
-
+		this.random = new Random(seed);
     }
 
     isAndroidSpecific() {
@@ -56,13 +57,13 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
 
     _mutatePrivate() {
 
-        let randomValue = Math.floor(Math.random() * this.targetValues.length);
+        let randomValue = Math.floor(this.random.next() * this.targetValues.length);
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
 
         while (this.targetValues[randomValue] == this.mutationPoint) {
-            randomValue = Math.floor(Math.random() * this.targetValues.length);
+            randomValue = Math.floor(this.random.next() * this.targetValues.length);
         }
         this.previousValue = this.mutationPoint;
 

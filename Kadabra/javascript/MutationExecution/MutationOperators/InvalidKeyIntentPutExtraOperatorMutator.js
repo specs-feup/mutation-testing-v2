@@ -2,15 +2,17 @@ laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
+laraImport("lara.util.Random");
 
 class InvalidKeyIntentPutExtraOperatorMutator extends Mutator {
-    constructor() {
+    constructor(seed) {
         super("InvalidKeyIntentPutExtraOperatorMutator");
 
         this.mutationPoints = [];
         this.currentIndex = 0;
         this.mutationPoint = undefined;
         this.previousValue = undefined;
+		this.random = new Random(seed);
     }
 
     isAndroidSpecific() {
@@ -66,7 +68,7 @@ class InvalidKeyIntentPutExtraOperatorMutator extends Mutator {
     }
 
     _mutatePrivate() {
-        let randomValue = (Math.random() + 1).toString(36).substring(2);
+        let randomValue = (this.random.next() + 1).toString(36).substring(2);
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
         this.currentIndex++;

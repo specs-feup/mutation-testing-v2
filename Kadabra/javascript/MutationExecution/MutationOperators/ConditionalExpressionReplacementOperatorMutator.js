@@ -2,12 +2,14 @@ laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
+laraImport("lara.util.Random");
+
 /**
  *  @param {$joinPoint} $joinPoint - A join point to use as starting point to search for conditionals to insert '!'.
  */
 class ConditionalExpressionReplacementOperatorMutator extends Mutator {
     //Parent constructor
-    constructor() {
+    constructor(seed) {
 
         super("ConditionalExpressionReplacementOperatorMutator");
 
@@ -17,6 +19,7 @@ class ConditionalExpressionReplacementOperatorMutator extends Mutator {
         this.currentIndex = 0;
         this.mutationPoint = undefined;
         this.previousValue = undefined;
+		this.random = new Random(seed);
     }
 
     isAndroidSpecific() {
@@ -78,14 +81,14 @@ class ConditionalExpressionReplacementOperatorMutator extends Mutator {
     _mutatePrivate() {
 
 
-        let randomIndex = Math.floor(Math.random() * this.valuesToAssignExpression2OfConditionalExpression.length);
+        let randomIndex = Math.floor(this.random.next() * this.valuesToAssignExpression2OfConditionalExpression.length);
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
         this.previousValue = this.mutationPoint
         println("CC " + this.previousValue);
         while (this.previousValue == this.valuesToAssignExpression2OfConditionalExpression[randomIndex].toString()) {
-            randomIndex = Math.floor(Math.random() * this.valuesToAssignExpression2OfConditionalExpression.length);
+            randomIndex = Math.floor(this.random.next() * this.valuesToAssignExpression2OfConditionalExpression.length);
 
         }
         this.mutationPoint = this.mutationPoint.insertReplace(this.valuesToAssignExpression2OfConditionalExpression[randomIndex].toString());

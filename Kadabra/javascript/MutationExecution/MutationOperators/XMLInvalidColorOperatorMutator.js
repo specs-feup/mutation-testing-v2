@@ -2,9 +2,10 @@ laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
+laraImport("lara.util.Random");
 
 class XMLInvalidColorOperatorMutator extends Mutator {
-    constructor(rootPath) {
+    constructor(rootPath, seed) {
         super("XMLInvalidColorOperatorMutator");
 
         this.mutationPoints = [];
@@ -18,6 +19,7 @@ class XMLInvalidColorOperatorMutator extends Mutator {
         this.increment = 1;
         this.destinationPath = undefined;
         this.rootPath = rootPath;
+		this.random = new Random(seed);
     }
 
     isAndroidSpecific() {
@@ -81,11 +83,11 @@ class XMLInvalidColorOperatorMutator extends Mutator {
                                             }
                                         }
                                         if (this.colors.length > 0) {
-                                            randomIndex = Math.floor(Math.random() * this.colors.length);
+                                            randomIndex = Math.floor(this.random.next() * this.colors.length);
                                             for (let textColor of Query.searchFrom(root, "xmlElement")) {
                                                 if (textColor.attribute("android:textColor")) {
                                                     while (textColor.attribute("android:textColor") == this.colors[randomIndex]) {
-                                                        randomIndex = Math.floor(Math.random() * this.colors.length);
+                                                        randomIndex = Math.floor(this.random.next() * this.colors.length);
                                                     }
                                                     textColor.setAttribute("android:textColor", this.colors[randomIndex]);
                                                     Io.writeFile(this.destinationPath, root.srcCode);

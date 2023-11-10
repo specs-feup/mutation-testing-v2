@@ -2,9 +2,10 @@ laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
+laraImport("lara.util.Random");
 
 class IntentTargetReplacementOperatorMutator extends Mutator {
-    constructor() {
+    constructor(seed) {
         super("IntentTargetReplacementOperatorMutator");
 
         this.mutationPoints = [];
@@ -14,6 +15,7 @@ class IntentTargetReplacementOperatorMutator extends Mutator {
         this.package = undefined;
         this.targetValues = [];
         this.allClassValues = [];
+		this.random = new Random(seed);
     }
     isAndroidSpecific() {
         return true;
@@ -97,7 +99,7 @@ class IntentTargetReplacementOperatorMutator extends Mutator {
 
     _mutatePrivate() {
         //println("Target values: " + this.targetValues.length)
-        const randomIndex = Math.floor(Math.random() * this.targetValues.length);
+        const randomIndex = Math.floor(this.random.next() * this.targetValues.length);
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 

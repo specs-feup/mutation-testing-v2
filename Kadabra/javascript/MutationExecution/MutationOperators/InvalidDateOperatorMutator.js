@@ -2,15 +2,17 @@ laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
+laraImport("lara.util.Random");
 
 class InvalidDateOperatorMutator extends Mutator {
-    constructor() {
+    constructor(seed) {
         super("InvalidDateOperatorMutator");
 
         this.mutationPoints = [];
         this.currentIndex = 0;
         this.mutationPoint = undefined;
         this.previousValue = undefined;
+		this.random = new Random(seed);
     }
 
     isAndroidSpecific() {
@@ -64,7 +66,7 @@ class InvalidDateOperatorMutator extends Mutator {
 
     _mutatePrivate() {
 
-        let randomValue = Math.floor(Math.random() * 6553600);
+        let randomValue = Math.floor(this.random.next() * 6553600);
         let s = "new Date(" + randomValue + ")";
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
