@@ -10,10 +10,15 @@ var contextFolder = WeaverOptions.getData().getContextFolder();
 
 // Support for paths relative to the configuration file 
 const projectPaths = parsePathList(contextFolder, laraArgs.projectPath);
-// const projectPath = Io.getPath(contextFolder, laraArgs.projectPath).getAbsolutePath();
+
 println("Project paths: " + projectPaths)
-const outputPath = toAbsolutePath(contextFolder, laraArgs.outputPath);
-//const outputPath = Io.getPath(contextFolder, laraArgs.outputPath).getAbsolutePath();
+
+const outputPaths = parsePathList(contextFolder, laraArgs.outputPath);
+
+println("Output Paths: " + laraArgs.outputPath)
+if (outputPaths.length !== projectPaths.length) {
+  throw "Project paths length (" + projectPaths.length + ") must be the same as project outputs paths (" + outputPaths.length + ")";
+}
 
 //const includesFolders = parsePathList(contextFolder, laraArgs.includesFolder);
 const includesFolder = Io.getPath(contextFolder, laraArgs.includesFolder).getAbsolutePath();
@@ -56,16 +61,16 @@ function parsePathList(baseFolder, paths) {
 
   const finalPaths = [];
 
-  for(const path of pathsArray) {
+  for (const path of pathsArray) {
     // Convert to absolute path
-    const absPath = toAbsolutePath(baseFolder, path);       
+    const absPath = toAbsolutePath(baseFolder, path);
 
     // If exists, add to path list
-    if(Io.getPath(absPath).exists()) {
-      finalPaths.push(absPath);
-    } else {
-      println("Could not find path '"+path+"'");
-    }
+    //if(Io.getPath(absPath).exists()) {
+    finalPaths.push(absPath);
+    //} else {
+    //  println("Could not find path '"+path+"'");
+    //}
   }
 
   return finalPaths;
@@ -81,7 +86,9 @@ function main() {
 
   //makes the project copy if it's not being used traditional mutation
   if (!traditionalMutation) {
-    for (const projectPath of projectPaths) {
+    for (let i = 0; i < projectPaths.length; i++) {
+      const projectPath = projectPaths[i];
+      const outputPath = outputPaths[i];
       println("Copying " + projectPath)
       Io.copyFolder(
         projectPath,
@@ -97,7 +104,9 @@ function main() {
   // Get only java files without the test files
   const filesToUsePerProject = getFilesToUse();
   println("Files to use: " + Object.values(filesToUsePerProject));
-  for (const projectPath in filesToUsePerProject) {
+  for (let i = 0; i < projectPaths.length; i++) {
+    const projectPath = projectPaths[i];
+    const outputPath = outputPaths[i];
     const filesToUse = filesToUsePerProject[projectPath];
     //filesToUse = getFilesToUse();
 
@@ -167,13 +176,13 @@ function getFilesToUse() {
           }
           if (j == javaFilesToRemove.length - 1 && !j.includes("build")) {
             //filesToUse.push(allJavaFiles[i]);
-            filesToUsePerProject[projectPath].push(allJavaFiles[i]);  
+            filesToUsePerProject[projectPath].push(allJavaFiles[i]);
           }
         }
       }
     } else {
       //filesToUse = allJavaFiles;
-      filesToUsePerProject[projectPath] = allJavaFiles;      
+      filesToUsePerProject[projectPath] = allJavaFiles;
     }
 
     if (folderToIgnoreAndroid != null && folderToIgnoreAndroid != "") {
@@ -221,7 +230,7 @@ function writeExecutionInfo(result, args_final) {
   }
 
   Io.writeFile(
-    outputPath +
+    outputPaths[0] +
     Io.getSeparator() +
     projectExecutionName +
     Io.getSeparator() +
