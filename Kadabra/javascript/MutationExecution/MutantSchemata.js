@@ -184,7 +184,7 @@ function runTreeAndApplyMetaMutant() {
               //println("MUT: FIRST TIME")
               mutated.insertBefore(
                 'switch(MUID_STATIC) {\n' +
-                'case ' + mutantId + ': {\n' +
+                'case ' + mutantIdNumber + ': {\n' +
                 srcCode + "\n" +
                 breakCode +
                 '}\n'
@@ -205,7 +205,7 @@ function runTreeAndApplyMetaMutant() {
             } else {
               //println("MUT: OTHER TIME")
               mutated.insertBefore(
-                'case ' + mutantId + ': {\n' +
+                'case ' + mutantIdNumber + ': {\n' +
                 srcCode + "\n" +
                 breakCode +
                 '}\n'
@@ -227,7 +227,7 @@ function runTreeAndApplyMetaMutant() {
           } else {
             //println("MUTATION POINTS EQUAL TO 1: " + mutationPoints + " - ELSE INSERTED")            
             mutated.insertBefore(
-              'case ' + mutantId + ': {\n' +
+              'case ' + mutantIdNumber + ': {\n' +
               srcCode + "\n" +
               breakCode +
               '}\n' +
@@ -260,7 +260,7 @@ function runTreeAndApplyMetaMutant() {
 
           mutated.insertBefore(
             'switch(MUID_STATIC) {\n' +
-            'case ' + mutantId + ': {\n' +
+            'case ' + mutantIdNumber + ': {\n' +
             srcCode + "\n" +
             breakCode +
             '}\n' +
