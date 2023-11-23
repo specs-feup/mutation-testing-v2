@@ -7,6 +7,7 @@ laraImport("MutationOperators.*");
 laraImport("MutatorList");
 laraImport("Decomposition");
 laraImport("MutatorUtils");
+laraImport("IdNumberGenerator");
 
 // ToDo: This should be a class with instance variables, not a script with global variables
 const outputPath = laraArgs.outputPath;
@@ -19,6 +20,8 @@ const fileName = filePath.substring(
 const operatorNameList = laraArgs.operatorNameList;
 const projectExecutionName = laraArgs.projectExecutionName;
 const isAndroid = laraArgs.isAndroid;
+const baseIndex = baseIndex;
+const totalFiles = totalFiles;
 
 main();
 
@@ -63,6 +66,7 @@ function runTreeAndApplyMetaMutantNew() {
 function runTreeAndApplyMetaMutant() {
   var mutantList = [];
   let mutantCounter = 0;
+  const idNumberGenerator = new IdNumberGenerator(baseIndex, totalFiles);
 
   // Add MUID_STATIC variable to all files
   for (var $jp of Query.search("file")) {
@@ -107,6 +111,7 @@ function runTreeAndApplyMetaMutant() {
       while (mutator.hasMutations()) {
         // Generate the new mutant ID
         let mutantId = MutatorUtils.buildMutantId(fileName, mutantCounter, mutator);
+        const mutantIdNumber = idNumberGenerator.next();
 
 /*
         mutator.getName() +
@@ -125,6 +130,7 @@ function runTreeAndApplyMetaMutant() {
 
         mutantList.push({
           mutantId: mutantId,
+          mutantIdNumber: mutantIdNumber,
           mutantion: mutator.toJson(),
           mutationLine: line,
           filePath: Io.getRelativePath(filePath, projectPath),
@@ -178,7 +184,7 @@ function runTreeAndApplyMetaMutant() {
               //println("MUT: FIRST TIME")
               mutated.insertBefore(
                 'switch(MUID_STATIC) {\n' +
-                'case "' + mutantId + '": {\n' +
+                'case ' + mutantId + ': {\n' +
                 srcCode + "\n" +
                 breakCode +
                 '}\n'
@@ -199,7 +205,7 @@ function runTreeAndApplyMetaMutant() {
             } else {
               //println("MUT: OTHER TIME")
               mutated.insertBefore(
-                'case "' + mutantId + '": {\n' +
+                'case ' + mutantId + ': {\n' +
                 srcCode + "\n" +
                 breakCode +
                 '}\n'
@@ -221,7 +227,7 @@ function runTreeAndApplyMetaMutant() {
           } else {
             //println("MUTATION POINTS EQUAL TO 1: " + mutationPoints + " - ELSE INSERTED")            
             mutated.insertBefore(
-              'case "' + mutantId + '": {\n' +
+              'case ' + mutantId + ': {\n' +
               srcCode + "\n" +
               breakCode +
               '}\n' +
@@ -254,7 +260,7 @@ function runTreeAndApplyMetaMutant() {
 
           mutated.insertBefore(
             'switch(MUID_STATIC) {\n' +
-            'case "' + mutantId + '": {\n' +
+            'case ' + mutantId + ': {\n' +
             srcCode + "\n" +
             breakCode +
             '}\n' +
@@ -363,15 +369,15 @@ function insertMuidStaticCode(mainClass, insertPoint, isAndroid) {
     // Declare MUID_STATIC
     insertPoint.insertBefore(
       'static final String ORIGINAL_MUID_STATIC = System.getProperty("MUID");\n' +
-      'static final String MUID_STATIC = ORIGINAL_MUID_STATIC != null ? ORIGINAL_MUID_STATIC : "ORIGINAL_PROGRAM";'      
+      'static final int MUID_STATIC = ORIGINAL_MUID_STATIC != null ? Integer.parseInt(ORIGINAL_MUID_STATIC) : -1;'      
     );    
 
     return;
   }
 
   const auxFunction = `
-  public static String getMUID(){ \
-  String propertyValue = "ORIGINAL_PROGRAM"; \
+  public static int getMUID(){ \
+  String propertyValue = "-1"; \
   try { \
   java.lang.Process process = Runtime.getRuntime().exec("getprop debug.MUID"); \ 
   InputStream inputStream = process.getInputStream(); \
@@ -382,7 +388,7 @@ function insertMuidStaticCode(mainClass, insertPoint, isAndroid) {
   } catch (IOException e) {\
   Log.e("ERROR", String.valueOf(e));\
   }\
-  return propertyValue;\
+  return Integer.parseInt(propertyValue);\
   }`;
 
   const imports = `
@@ -396,7 +402,7 @@ function insertMuidStaticCode(mainClass, insertPoint, isAndroid) {
   mainClass.insertBefore(imports);
   mainClass.insertMethod(auxFunction);
 
-  insertPoint.insertBefore("static final String MUID_STATIC = getMUID();");
+  insertPoint.insertBefore("static final int MUID_STATIC = getMUID();");
 }
 
 function getStatementCode(mutated) {

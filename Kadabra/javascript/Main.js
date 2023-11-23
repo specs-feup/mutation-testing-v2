@@ -104,6 +104,17 @@ function main() {
   // Get only java files without the test files
   const filesToUsePerProject = getFilesToUse();
   println("Files to use: " + Object.values(filesToUsePerProject));
+
+  // Count total files
+  let totalFiles = 0;
+  for (let i = 0; i < projectPaths.length; i++) {
+    const projectPath = projectPaths[i];
+    const filesToUse = filesToUsePerProject[projectPath];
+    totalFiles += filesToUse.length;
+  } 
+
+  let currentFileIndex = 0;
+
   for (let i = 0; i < projectPaths.length; i++) {
     const projectPath = projectPaths[i];
     const outputPath = outputPaths[i];
@@ -122,7 +133,12 @@ function main() {
         projectExecutionName: projectExecutionName,
         isAndroid: laraArgs.isAndroid,
         mutationType: laraArgs.mutationType,
+        baseIndex: currentFileIndex,
+        totalFiles: totalFiles,
       };
+
+      currentFileIndex += 1;
+
 
       let args_kadabra = new Arguments(
         (outputPath + Io.getSeparator() + projectExecutionName).trim(),
