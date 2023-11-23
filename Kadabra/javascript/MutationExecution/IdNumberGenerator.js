@@ -7,13 +7,12 @@ class IdNumberGenerator {
     constructor(base, total) {
         this.#base = base;
         
-        numDigits = (total-1).toString().length;
+        let numDigits = (total-1).toString().length;
         if(numDigits === 0) {
             numDigits = 1
         }
         this.#multiplier = Math.pow(10, numDigits);
 
-        Math.pow()
         this.#current = 0;
     }
 
