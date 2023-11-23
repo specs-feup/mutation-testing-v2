@@ -20,8 +20,8 @@ const fileName = filePath.substring(
 const operatorNameList = laraArgs.operatorNameList;
 const projectExecutionName = laraArgs.projectExecutionName;
 const isAndroid = laraArgs.isAndroid;
-const baseIndex = baseIndex;
-const totalFiles = totalFiles;
+const baseIndex = laraArgs.baseIndex;
+const totalFiles = laraArgs.totalFiles;
 
 main();
 
