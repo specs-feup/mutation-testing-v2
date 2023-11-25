@@ -22,6 +22,7 @@ const projectExecutionName = laraArgs.projectExecutionName;
 const isAndroid = laraArgs.isAndroid;
 const baseIndex = laraArgs.baseIndex;
 const totalFiles = laraArgs.totalFiles;
+const patch = laraArgs.patch;
 
 main();
 
@@ -43,7 +44,15 @@ function main() {
   var files = filesJp.map((file) => file.name).join();
   println("Applying mutant schemata to " + files);
   
-  filesJp.forEach((file) => patchFile(file));
+  // Check if patch needs to be applied
+  if(patch !== undefined) {
+    println("Applying patch '"+patch+"'")
+    // Import it. This should expose a global function "patchFile" that accepts a file
+    laraImport(patch);
+    filesJp.forEach((file) => patchFile(file));
+  }
+
+
 
   Decomposition.changeVarDeclarations();
   //println("Mutant Schemata");
@@ -425,6 +434,7 @@ function getStatementCode(mutated) {
  * 
  * @param {file} file 
  */
+/*
 function patchFile(file) {
   if(file.name === "BattleNetImporter.java") {
       // _key must not be final, otherwise fully qualified names will not work
@@ -448,3 +458,4 @@ function patchFile(file) {
 
   
 }
+*/

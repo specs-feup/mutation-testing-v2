@@ -35,6 +35,7 @@ const classpath = laraArgs.classpath;
 const useIncompleteClassPath = laraArgs.useIncompleteClassPath;
 const mutationType = laraArgs.mutationType;
 const fullyQualifiedNames = laraArgs.fullyQualifiedNames;
+const patch = laraArgs.patch;
 
 main();
 
@@ -135,6 +136,7 @@ function main() {
         mutationType: laraArgs.mutationType,
         baseIndex: currentFileIndex,
         totalFiles: totalFiles,
+        patch: patch,
       };
 
       currentFileIndex += 1;
