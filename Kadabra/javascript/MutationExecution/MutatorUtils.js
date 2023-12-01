@@ -5,6 +5,11 @@ class MutatorUtils {
    * @returns true if given statement needs a semi-colon, false otherwise
    */
   static needsSemiColon(stmt) {
+    // If already has ; in the end, does not need
+    if(stmt.code.trim().endsWith(";")) {
+      return false;
+    }
+
     if (
       stmt.instanceOf("if") ||
       stmt.instanceOf("loop") ||

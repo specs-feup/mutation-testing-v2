@@ -68,7 +68,7 @@ class ViewComponentNotVisibleOperatorMutator extends Mutator {
         // Mutation point is assignment, use left-hand
         const variable = this.mutationPoint.lhs.code;
 
-        let toReplaceWith = variable + ".setVisibility(android.view.View.INVISIBLE)"
+        let toReplaceWith = variable + ".setVisibility(android.view.View.INVISIBLE);"
         this.currentIndex++;
 
         const semiColon = MutatorUtils.needsSemiColon(stmt) ? ";" : "";
