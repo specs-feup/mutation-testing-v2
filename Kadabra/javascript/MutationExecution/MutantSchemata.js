@@ -200,16 +200,6 @@ function runTreeAndApplyMetaMutant() {
                 '}\n'
               );
 
-              /*
-              mutated.insertBefore(
-                'if("' +
-                  mutantId +
-                  '".equals(MUID_STATIC)){\n' +
-                  srcCode +
-                  "\n}"
-                  //";\n}"                  
-              );
-              */
 
               firstTime = false;
             } else {
@@ -221,17 +211,6 @@ function runTreeAndApplyMetaMutant() {
                 breakCode +
                 '}\n'
               );
-
-              /*
-              mutated.insertBefore(
-                'else if("' +
-                  mutantId +
-                  '".equals(MUID_STATIC)){\n' +
-                  srcCode +
-                  //";\n}"
-                  "\n}"                  
-              );
-              */
 
             }
             mutationPoints--;
@@ -252,20 +231,6 @@ function runTreeAndApplyMetaMutant() {
               '}\n'
               );
 
-              /*
-            mutated.insertBefore(
-              'else if("' +
-                mutantId +
-                '".equals(MUID_STATIC)){\n' +
-                srcCode +
-                //";\n}else{\n\t"
-                "\n}else{\n\t"                
-            );
-            */
-
-            /*
-            mutated.insertAfter("}");
-            */
           }
         } else {
           //println("MUT: DO NOT NEED ELSE IF - ELSE INSERTED")
@@ -287,20 +252,6 @@ function runTreeAndApplyMetaMutant() {
             '}\n'
             );
 
-            /*
-          mutated.insertBefore(
-            'if("' +
-              mutantId +
-              '".equals(MUID_STATIC)){\n' +
-              srcCode +
-              //";\n}else{\n\t"
-              "\n}else{\n\t"              
-          );
-          */
-
-          /*
-          mutated.insertAfter("}");
-          */
         }
 
         mutator.restore();
@@ -421,14 +372,11 @@ function insertMuidStaticCode(mainClass, insertPoint, isAndroid) {
 function getStatementCode(mutated) {
   let srcCode = mutated.srcCode;
 
-  //println("MUTATED BEFORE:\n" + srcCode)
-
   // Determine if needs ';'
   if(MutatorUtils.needsSemiColon(mutated)) {
     srcCode = srcCode + ";";
   }
 
-  //println("MUTATED AFTER:\n" + srcCode)
   return srcCode;
 }
 
