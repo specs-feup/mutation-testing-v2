@@ -149,7 +149,7 @@ function runTreeAndApplyMetaMutant() {
         //println("SRC CODE BEFORE:\n" + mutationPoint.ancestor("statement"))
 
         // Mutate
-        println("- Applying mutator '"+mutator.getName()+"'");
+        println("- Applying mutator '"+mutator.getName()+"' ("+mutantId+")");
         mutator.mutate();
 
         if (

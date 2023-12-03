@@ -82,7 +82,7 @@ function applyTraditionalMutation() {
         mutator.getMutationPoint().insertBefore("// " + mutationId);
 
         //Aplies the mutation
-        println("- Applying mutator '"+mutator.getName()+"'");
+        println("- Applying mutator '"+mutator.getName()+"' ("+mutationId+")");
         mutator.mutate();
 
         //Saves to a file
