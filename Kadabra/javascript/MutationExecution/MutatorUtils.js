@@ -6,7 +6,8 @@ class MutatorUtils {
    */
   static needsSemiColon(stmt) {
     // If already has ; in the end, does not need
-    if(stmt.code.trim().endsWith(";")) {
+    if(stmt.srcCode.trim().endsWith(";")) {
+      //println("NOT ADDING ;, ENDS WITH ->  " + stmt.srcCode);
       return false;
     }
 
@@ -14,12 +15,13 @@ class MutatorUtils {
       stmt.instanceOf("if") ||
       stmt.instanceOf("loop") ||
       stmt.instanceOf("try") ||
-      stmt.instanceOf("switch") ||
-      stmt.instanceOf("new") ||
-      stmt.instanceOf("call") ||
-      stmt.instanceOf("callStatement")
+      stmt.instanceOf("switch")
+      //stmt.instanceOf("new") ||
+      //stmt.instanceOf("call") ||
+      //stmt.instanceOf("callStatement")
     ) {
       //println("NOT ADDING ; ->  " + stmt.joinPointType);
+      println("Needs: is an instance of filtered");
       return false;
     }
 
