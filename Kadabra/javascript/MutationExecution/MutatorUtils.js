@@ -29,6 +29,18 @@ class MutatorUtils {
     return true;
   }
 
+
+  static getStatementCode(mutated) {
+    let srcCode = mutated.srcCode;
+  
+    // Determine if needs ';'
+    if(MutatorUtils.needsSemiColon(mutated)) {
+      srcCode = srcCode + ";";
+    }
+  
+    return srcCode;
+  }
+
   /**
    *
    * @param {*} $stmt

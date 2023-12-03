@@ -3,6 +3,7 @@ laraImport("kadabra.KadabraNodes");
 laraImport("weaver.WeaverJps");
 laraImport("weaver.Weaver");
 laraImport("lara.util.Random");
+laraImport("MutatorUtils");
 
 class RandomActionIntentDefinitionOperatorMutator extends Mutator {
     constructor(seed) {
@@ -72,7 +73,7 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
 
         // Mutation point might be a stmt now
         if(this.mutationPoint.instanceOf("statement") && MutatorUtils.needsSemiColon(this.mutationPoint)) {
-            this.mutationPoint = this.mutationPoint.insertReplace(this.mutationPoint.code + ";");
+            this.mutationPoint = this.mutationPoint.insertReplace(MutatorUtils.getStatementCode(this.mutationPoint));
         }            
 
         this.currentIndex++;

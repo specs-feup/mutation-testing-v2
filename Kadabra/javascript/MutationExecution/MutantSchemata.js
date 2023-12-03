@@ -180,7 +180,7 @@ function runTreeAndApplyMetaMutant() {
             }
         }
 
-        const srcCode = getStatementCode(mutated);
+        const srcCode = MutatorUtils.getStatementCode(mutated);
         const breakCode = MutatorUtils.isReturningStmt(mutated) ? '' : 'break;\n';
         //println("SRC CODE AFTER MUTATION:\n" + mutationPoint.ancestor("statement"))
         //print(mutator.toJson());
@@ -369,6 +369,7 @@ function insertMuidStaticCode(mainClass, insertPoint, isAndroid) {
   insertPoint.insertBefore("static final int MUID_STATIC = getMUID();");
 }
 
+/*
 function getStatementCode(mutated) {
   let srcCode = mutated.srcCode;
 
@@ -379,6 +380,7 @@ function getStatementCode(mutated) {
 
   return srcCode;
 }
+*/
 
 
 /**

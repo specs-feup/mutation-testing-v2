@@ -6,6 +6,7 @@ laraImport("kadabra.KadabraNodes");
 laraImport("MutationOperators.*");
 laraImport("MutatorList");
 laraImport("Decomposition");
+laraImport("MutatorUtils");
 
 // ToDo: This should be a class with instance variables, not a script with global variables
 const outputPath = laraArgs.outputPath;
@@ -154,7 +155,7 @@ function runTreeAndApplyMetaMutant() {
             }
         }
 
-        const srcCode = getStatementCode(mutated);
+        const srcCode = MutatorUtils.getStatementCode(mutated);
         //println("SRC CODE AFTER MUTATION:\n" + mutationPoint.ancestor("statement"))
         //print(mutator.toJson());
 
@@ -336,6 +337,7 @@ function insertMuidStaticCode(mainClass, insertPoint, isAndroid) {
   insertPoint.insertBefore("static final String MUID_STATIC = getMUID();");
 }
 
+/*
 function getStatementCode(mutated) {
   let srcCode = mutated.srcCode;
 
@@ -349,7 +351,8 @@ function getStatementCode(mutated) {
   //println("MUTATED AFTER:\n" + srcCode)
   return srcCode;
 }
-
+*/
+/*
 function needsSemiColon(mutated) {
 
   if(mutated.instanceOf("if") || mutated.instanceOf("loop") || mutated.instanceOf("try") || mutated.instanceOf("switch")) {
@@ -360,6 +363,7 @@ function needsSemiColon(mutated) {
   println("ADDING ; ->  " + mutated.joinPointType);
   return true;
 }
+*/
 
 /**
  * Specific patches for some of the tests.

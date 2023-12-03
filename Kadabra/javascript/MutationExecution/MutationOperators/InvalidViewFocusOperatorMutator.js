@@ -79,12 +79,13 @@ class InvalidViewFocusOperatorMutator extends Mutator {
         let toReplaceWith = variable + ".requestFocus();"
         this.currentIndex++;
 
-        println("Type: " + stmt.joinPointType);
-        println("Needs semicolon?: " + MutatorUtils.needsSemiColon(stmt))
+        //println("Type: " + stmt.joinPointType);
+        //println("Needs semicolon?: " + MutatorUtils.needsSemiColon(stmt))
 
-        const semiColon = MutatorUtils.needsSemiColon(stmt) ? ";" : "";
-        const code = stmt.code + semiColon + "\n" + toReplaceWith;
-        println("Code: " + code)
+        //const semiColon = MutatorUtils.needsSemiColon(stmt) ? ";" : "";
+        //const code = stmt.code + semiColon + "\n" + toReplaceWith;
+		const code = MutatorUtils.getStatementCode(stmt) + "\n" + toReplaceWith;
+        //println("Code: " + code)
 
         this.previousValue = this.mutationPoint;
         //this.mutationPoint = this.mutationPoint.insertAfter(toReplaceWith);
