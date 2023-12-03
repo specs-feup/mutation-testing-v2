@@ -69,6 +69,12 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
 
 
         this.mutationPoint = this.mutationPoint.insertReplace(this.targetValues[randomValue]);
+
+        // Mutation point might be a stmt now
+        if(this.mutationPoint.instanceOf("statement") && MutatorUtils.needsSemiColon(this.mutationPoint)) {
+            this.mutationPoint = this.mutationPoint.insertReplace(this.mutationPoint.code + ";");
+        }            
+
         this.currentIndex++;
 
         println("/*--------------------------------------*/");
