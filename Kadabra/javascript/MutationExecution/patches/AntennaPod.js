@@ -27,9 +27,9 @@ function patchFile(file) {
 
 function patchEpisodesSurpriseSection(file, method) {
     println(Query.searchFrom(file, "method", "onCreateView").first().ast);
-
-    for(const jp of Query.searchFrom(file, "method", method).search("var", {code: code => code.startsWith("de.danoeh.antennapod.ui.home.HomeSection.viewBinding")})) {
-        jp.replaceWith("viewBinding")
+        
+    for(const jp of Query.searchFrom(file, "method", method).search("call", {code: "de.danoeh.antennapod.ui.home.HomeSection.viewBinding.recyclerView.scrollToPosition(0)"})) {
+        jp.replaceWith("viewBinding.recyclerView.scrollToPosition(0)");
     }
 }
 
