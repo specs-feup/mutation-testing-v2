@@ -18,7 +18,9 @@ class BuggyGUIListenerOperatorMutator extends Mutator {
 }
     addJp(joinpoint) {
         if (
-            joinpoint.type === "OnClickListener" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var')
+            joinpoint.type === "OnClickListener" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') 
+            // This is to ensure it works on MutantSchemata
+            && joinpoint.ancestor("statement") !== undefined 
         ) {
             this.mutationPoints.push(joinpoint);
         }
