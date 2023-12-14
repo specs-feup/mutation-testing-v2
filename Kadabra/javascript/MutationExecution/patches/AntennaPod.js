@@ -17,14 +17,17 @@ function patchFile(file) {
         patchViewBinding(file, "onCreateView");
         patchViewBinding(file, "loadItems");
     } else if(file.name === "EpisodesSurpriseSection.java") {
-        patchViewBinding(file, "onCreateView");
-        patchViewBinding(file, "onEventMainThread");
         // NOVO TESTE        
         patchEpisodesSurpriseSection(file, "onCreateView");
+        patchViewBinding(file, "onCreateView");
+        patchViewBinding(file, "onEventMainThread");
+
     }
 }
 
 function patchEpisodesSurpriseSection(file, method) {
+    println(Query.searchFrom(file, "method", "onCreateView").first().ast);
+
     for(const jp of Query.searchFrom(file, "method", method).search("var", {code: code => code.startsWith("de.danoeh.antennapod.ui.home.HomeSection.viewBinding")})) {
         jp.replaceWith("viewBinding")
     }
