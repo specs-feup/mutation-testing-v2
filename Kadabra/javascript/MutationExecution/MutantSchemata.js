@@ -162,6 +162,10 @@ function runTreeAndApplyMetaMutant() {
             ? mutator.getMutationPoint()
             : mutator.getMutationPoint().ancestor("statement");
 
+          if(mutated === undefined && mutator.getMutationPoint() !== undefined) {
+            throw "Could not get a statement out of the mutation point, probably is being applied to a point that is not inside a statement or that is not a statement.";
+          }
+
             // If case, get corresponding switch
             if(mutated.instanceOf("case")) {
               mutated = mutated.ancestor("switch");
