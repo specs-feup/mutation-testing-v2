@@ -100,6 +100,11 @@ function runTreeAndApplyMetaMutant() {
       continue;
     }
 
+    // HACK: Ignore nodes that are inside loop headers
+    if($jp.isInsideLoopHeader) {
+      continue;
+    }
+
     let mutationPoints = 0;
     let needElseIf = false;
     let firstTime = true;

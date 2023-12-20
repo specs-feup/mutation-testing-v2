@@ -58,6 +58,11 @@ function applyTraditionalMutation() {
       continue;
     }
 
+    // HACK: Ignore nodes that are inside loop headers
+    if($jp.isInsideLoopHeader) {
+      continue;
+    }
+
     const mutatorList = MutatorList.getMutators();
     for (mutator of mutatorList) {
 
