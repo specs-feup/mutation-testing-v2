@@ -16,6 +16,8 @@ const fileName = filePath.substring(
   filePath.lastIndexOf(Io.getSeparator()) + 1
 );
 const projectExecutionName = laraArgs.projectExecutionName;
+const patch = laraArgs.patch;
+
 let counter = 0;
 
 main();
@@ -35,12 +37,27 @@ function main() {
     return;
   }
 
+  var filesJp = Query.search("file").get();
+  
+  var files = filesJp.map((file) => file.name).join();
+  //println("Applying mutant schemata to " + files);
+  println("Applying traditional mutantion to " + fileName);
+
+
+  // Check if patch needs to be applied
+  if(patch !== undefined) {
+    println("Applying patch '"+patch+"'")
+    // Import it. This should expose a global function "patchFile" that accepts a file
+    laraImport(patch);
+    filesJp.forEach((file) => patchFile(file));
+  }
+
   Decomposition.changeVarDeclarations();
 
   let output = {};
 
   // Apply mutations traditionally
-  println("Applying traditional mutantion to " + fileName);
+  //println("Applying traditional mutantion to " + fileName);
   output = applyTraditionalMutation();
 
   Script.setOutput({ output });
