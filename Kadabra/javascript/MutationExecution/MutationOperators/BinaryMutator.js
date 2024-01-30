@@ -15,7 +15,7 @@ class BinaryMutator extends Mutator {
     this.previousValue = undefined;
 
     this.arithmeticOperators = ["+", "-", "*", "/", "%"];
-    this.bitwiseOperators = ["&", "|", "^"]
+    this.bitwiseOperators = ["&", "|", "^"];
     this.bitwiseOperators2 = ["<<", ">>", ">>>"];
     this.comparisonOperators = ["==", "!="];
     this.comparisonOperators2 = [">", "<", ">=", "<="];
@@ -34,7 +34,8 @@ class BinaryMutator extends Mutator {
       !(joinpoint.type === "String") &&
       !(joinpoint.type === "char") &&
       !(joinpoint.rhs.type === "char") &&
-      !(joinpoint.lhs.type === "char")
+      !(joinpoint.lhs.type === "char") &&
+      joinpoint.ancestor("statement") !== undefined // To ensure we get a mutation point. Schemata specific.
     ) {
       if (
         this.arithmeticOperators.contains(this.original) &&
@@ -50,12 +51,10 @@ class BinaryMutator extends Mutator {
         if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }
-      }
-      else if (
+      } else if (
         this.bitwiseOperators2.contains(this.original) &&
         this.bitwiseOperators2.contains(this.result)
       ) {
-
         if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }
@@ -63,17 +62,13 @@ class BinaryMutator extends Mutator {
         this.comparisonOperators.contains(this.original) &&
         this.comparisonOperators.contains(this.result)
       ) {
-
         if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }
-      }
-      else if (
+      } else if (
         this.comparisonOperators2.contains(this.original) &&
         this.comparisonOperators2.contains(this.result)
       ) {
-
-
         if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }
@@ -81,7 +76,6 @@ class BinaryMutator extends Mutator {
         this.logicalOperators.contains(this.original) &&
         this.logicalOperators.contains(this.result)
       ) {
-
         if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }
@@ -96,7 +90,6 @@ class BinaryMutator extends Mutator {
         println("First Operator cannot be replaced with the Second one");
         //return false;
       }
-
     }
     if (this.mutationPoints.length > 0) {
       return true;
@@ -133,11 +126,11 @@ class BinaryMutator extends Mutator {
     println("/*--------------------------------------*/");
     println(
       "Mutating operator n." +
-      this.currentIndex +
-      ": " +
-      this.previousValue +
-      " to " +
-      this.mutationPoint
+        this.currentIndex +
+        ": " +
+        this.previousValue +
+        " to " +
+        this.mutationPoint
     );
     println("/*--------------------------------------*/");
   }
