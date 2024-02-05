@@ -4,24 +4,31 @@ laraImport("weaver.Query");
 laraImport("weaver.WeaverOptions");
 laraImport("Arguments");
 
-
 var contextFolder = WeaverOptions.getData().getContextFolder();
 
-
-// Support for paths relative to the configuration file 
+// Support for paths relative to the configuration file
 const projectPaths = parsePathList(contextFolder, laraArgs.projectPath);
 
-println("Project paths: " + projectPaths)
+println("Project paths: " + projectPaths);
 
 const outputPaths = parsePathList(contextFolder, laraArgs.outputPath);
 
-println("Output Paths: " + laraArgs.outputPath)
+println("Output Paths: " + laraArgs.outputPath);
 if (outputPaths.length !== projectPaths.length) {
-  throw "Project paths length (" + projectPaths.length + ") must be the same as project outputs paths (" + outputPaths.length + ")";
+  throw (
+    "Project paths length (" +
+    projectPaths.length +
+    ") must be the same as project outputs paths (" +
+    outputPaths.length +
+    ")"
+  );
 }
 
 //const includesFolders = parsePathList(contextFolder, laraArgs.includesFolder);
-const includesFolder = Io.getPath(contextFolder, laraArgs.includesFolder).getAbsolutePath();
+const includesFolder = Io.getPath(
+  contextFolder,
+  laraArgs.includesFolder
+).getAbsolutePath();
 
 const traditionalMutation = laraArgs.traditionalMutation;
 const debugMessages = laraArgs.debugMessages;
@@ -36,16 +43,17 @@ const useIncompleteClassPath = laraArgs.useIncompleteClassPath;
 const mutationType = laraArgs.mutationType;
 const fullyQualifiedNames = laraArgs.fullyQualifiedNames;
 const patch = laraArgs.patch;
+const excludeList = laraArgs.excludeList ?? [];
 
 main();
 
 /**
  * Transforms a path into an absolute path.
  * If it is a relative path, uses the given base folder as the base path.
- * 
- * @param {java.io.File} baseFolder  
- * @param {String} path 
- * @return {String} an absolute path to the given path 
+ *
+ * @param {java.io.File} baseFolder
+ * @param {String} path
+ * @return {String} an absolute path to the given path
  */
 function toAbsolutePath(baseFolder, path) {
   let file = Io.getPath(path);
@@ -75,7 +83,6 @@ function parsePathList(baseFolder, paths) {
   }
 
   return finalPaths;
-
 }
 
 function main() {
@@ -84,13 +91,12 @@ function main() {
     setDebug(true);
   }
 
-
   //makes the project copy if it's not being used traditional mutation
   if (!traditionalMutation) {
     for (let i = 0; i < projectPaths.length; i++) {
       const projectPath = projectPaths[i];
       const outputPath = outputPaths[i];
-      println("Copying " + projectPath)
+      println("Copying " + projectPath);
       Io.copyFolder(
         projectPath,
         outputPath + Io.getSeparator() + projectExecutionName,
@@ -99,11 +105,13 @@ function main() {
     }
   }
 
-
   const args_final = [];
 
   // Get only java files without the test files
-  const filesToUsePerProject = getFilesToUse();
+  const filesToUsePerProjectUnfiltered = getFilesToUse();
+
+  const filesToUsePerProject = filterFiles(filesToUsePerProjectUnfiltered);
+
   println("Files to use: " + Object.values(filesToUsePerProject));
 
   // Count total files
@@ -112,7 +120,7 @@ function main() {
     const projectPath = projectPaths[i];
     const filesToUse = filesToUsePerProject[projectPath];
     totalFiles += filesToUse.length;
-  } 
+  }
 
   let currentFileIndex = 0;
 
@@ -141,7 +149,6 @@ function main() {
 
       currentFileIndex += 1;
 
-
       let args_kadabra = new Arguments(
         (outputPath + Io.getSeparator() + projectExecutionName).trim(),
         JSON.stringify(args),
@@ -160,16 +167,54 @@ function main() {
   //Kadabra Parallel execution
   //let result = Weaver.runParallel(args_final, args_final.length);
   let result = Weaver.runParallel(args_final, 1);
-  //let result = Weaver.runParallel(args_final, 16);    
-
+  //let result = Weaver.runParallel(args_final, 16);
   //Writes the output formated to a file
   writeExecutionInfo(result, args_final);
+}
+
+function filterFiles(filesToUsePerProjectUnfiltered) {
+  const filteredProjectFiles = {};
+
+  for (key in filesToUsePerProjectUnfiltered) {
+    const files = filesToUsePerProjectUnfiltered[key];
+    const filteredFiles = [];
+
+    for (file of files) {
+      if (excludeFile(file)) {
+        println(
+          "Excluding file '" +
+            file.getAbsolutePath() +
+            "' due to exclude filter"
+        );
+        continue;
+      }
+
+      filteredFiles.push(file);
+    }
+
+    filteredProjectFiles[key] = filteredFiles;
+  }
+
+  return filteredProjectFiles;
+}
+
+function excludeFile(file) {
+  for (var filter of excludeList) {
+    if (typeof filter === "string") {
+      if (file.getName() === filter) {
+        return true;
+      }
+
+      continue;
+    }
+
+    throw "Filtering not implemented for objects of type "(typeof filter);
+  }
 }
 
 function getFilesToUse() {
   const filesToUsePerProject = {};
   for (const projectPath of projectPaths) {
-
     filesToUsePerProject[projectPath] = [];
     //const filesToUse = filesToUsePerProject[projectPath];
     // let filesToUse = [];
@@ -204,12 +249,18 @@ function getFilesToUse() {
     }
 
     if (folderToIgnoreAndroid != null && folderToIgnoreAndroid != "") {
-      let javaFilesToRemove = Io.getFiles(folderToIgnoreAndroid, "*.java", true);
+      let javaFilesToRemove = Io.getFiles(
+        folderToIgnoreAndroid,
+        "*.java",
+        true
+      );
       let filesToUseFinal = [];
 
       for (i in filesToUsePerProject[projectPath]) {
         for (j in javaFilesToRemove) {
-          if (filesToUsePerProject[projectPath][i].equals(javaFilesToRemove[j])) {
+          if (
+            filesToUsePerProject[projectPath][i].equals(javaFilesToRemove[j])
+          ) {
             break;
           }
           if (j == javaFilesToRemove.length - 1 && !j.includes("build")) {
@@ -231,6 +282,16 @@ function writeExecutionInfo(result, args_final) {
   let fileData = [];
 
   for (i in result) {
+    // Check if error occurred
+    if (result[i]["error"] != undefined) {
+      fileData.push({
+        error: result[i]["error"],
+        args: args_final[i],
+        stackTrace: result[i]["stackTrace"],
+      });
+      continue;
+    }
+
     if (result[i]["output"] != "[]") {
       try {
         let listaAux = JSON.parse(result[i]["output"]);
@@ -238,21 +299,23 @@ function writeExecutionInfo(result, args_final) {
           fileData.push(listaAux[j]);
         }
       } catch (error) {
-        println("Exception while parsing output result with index " + i + ": " + error);
+        println(
+          "Exception while parsing output result with index " + i + ": " + error
+        );
         //println('Contents of result[i]["output"]:');
         //printlnObject(result[i]["output"]);
 
-        fileData.push({ "error": error.message, "args": args_final[i] });
+        fileData.push({ error: error.message, args: args_final[i] });
       }
     }
   }
 
   Io.writeFile(
     outputPaths[0] +
-    Io.getSeparator() +
-    projectExecutionName +
-    Io.getSeparator() +
-    "MutationInfo.json",
+      Io.getSeparator() +
+      projectExecutionName +
+      Io.getSeparator() +
+      "MutationInfo.json",
     JSON.stringify(fileData)
   );
 }

@@ -33,26 +33,24 @@ function main() {
   }
 
   //If no mutatans were selected
-  
-  if (MutatorList.getMutators().length === 0) {    
+
+  if (MutatorList.getMutators().length === 0) {
     println("No mutators selected");
     return;
   }
 
   var filesJp = Query.search("file").get();
-  
+
   var files = filesJp.map((file) => file.name).join();
   println("Applying mutant schemata to " + files);
-  
+
   // Check if patch needs to be applied
-  if(patch !== undefined) {
-    println("Applying patch '"+patch+"'")
+  if (patch !== undefined) {
+    println("Applying patch '" + patch + "'");
     // Import it. This should expose a global function "patchFile" that accepts a file
     laraImport(patch);
     filesJp.forEach((file) => patchFile(file));
   }
-
-
 
   Decomposition.changeVarDeclarations();
   //println("Mutant Schemata");
@@ -66,7 +64,7 @@ function main() {
 function runTreeAndApplyMetaMutantNew() {
   // Two phases, first collect mutations associated with each point,
   // then mutate on that point
-  // Map jps to list of mutations 
+  // Map jps to list of mutations
   // On second phase, walk the tree again, apply mutations over each point, one at a time
   // NOT IMPLEMENTED YET
   // Requires another architecture, where Mutator returns a list of Mutations
@@ -101,7 +99,7 @@ function runTreeAndApplyMetaMutant() {
     }
 
     // HACK: Ignore nodes that are inside loop headers
-    if($jp.isInsideLoopHeader) {
+    if ($jp.isInsideLoopHeader) {
       continue;
     }
 
@@ -124,22 +122,30 @@ function runTreeAndApplyMetaMutant() {
     for (mutator of mutatorList) {
       while (mutator.hasMutations()) {
         // Generate the new mutant ID
-        let mutantId = MutatorUtils.buildMutantId(fileName, mutantCounter, mutator);
+        let mutantId = MutatorUtils.buildMutantId(
+          fileName,
+          mutantCounter,
+          mutator
+        );
         const mutantIdNumber = idNumberGenerator.next();
 
-/*
+        /*
         mutator.getName() +
           "_" +
           fileName.replace(".java", "") +
           "_" +
           mutantCounter;
-*/          
+*/
 
-          mutantCounter++;
+        mutantCounter++;
 
         const line = mutator.getMutationPoint().line;
-        if(line === undefined) {
-          println("- Mutation point of type '"+mutator.getMutationPoint().joinPointType+"' with no line defined");
+        if (line === undefined) {
+          println(
+            "- Mutation point of type '" +
+              mutator.getMutationPoint().joinPointType +
+              "' with no line defined"
+          );
         }
 
         mutantList.push({
@@ -154,7 +160,9 @@ function runTreeAndApplyMetaMutant() {
         //println("SRC CODE BEFORE:\n" + mutationPoint.ancestor("statement"))
 
         // Mutate
-        println("- Applying mutator '"+mutator.getName()+"' ("+mutantId+")");
+        println(
+          "- Applying mutator '" + mutator.getName() + "' (" + mutantId + ")"
+        );
         mutator.mutate();
 
         if (
@@ -167,30 +175,35 @@ function runTreeAndApplyMetaMutant() {
             ? mutator.getMutationPoint()
             : mutator.getMutationPoint().ancestor("statement");
 
-          if(mutated === undefined && mutator.getMutationPoint() !== undefined) {
+          if (
+            mutated === undefined &&
+            mutator.getMutationPoint() !== undefined
+          ) {
             throw "Could not get a statement out of the mutation point, probably is being applied to a point that is not inside a statement or that is not a statement.";
           }
 
-            // If case, get corresponding switch
-            if(mutated.instanceOf("case")) {
-              mutated = mutated.ancestor("switch");
-              if(mutated === undefined) {
+          // If case, get corresponding switch
+          if (mutated.instanceOf("case")) {
+            mutated = mutated.ancestor("switch");
+            if (mutated === undefined) {
               throw (
                 "Could not get corresponding 'switch' of case '" + mutated + "'"
               );
-              }
             }
+          }
 
-            println("Mutated: " + mutated.code);
-            var tryStmt = mutated.ancestor("try");
-            //println("TryStmt: " + tryStmt);
-            if(tryStmt !== undefined) {
-              mutated = tryStmt;
-            }
+          println("Mutated: " + mutated.code);
+          var tryStmt = mutated.ancestor("try");
+          //println("TryStmt: " + tryStmt);
+          if (tryStmt !== undefined) {
+            mutated = tryStmt;
+          }
         }
 
         const srcCode = MutatorUtils.getStatementCode(mutated);
-        const breakCode = MutatorUtils.isReturningStmt(mutated) ? '' : 'break;\n';
+        const breakCode = MutatorUtils.isReturningStmt(mutated)
+          ? ""
+          : "break;\n";
         //println("SRC CODE AFTER MUTATION:\n" + mutationPoint.ancestor("statement"))
         //print(mutator.toJson());
 
@@ -201,66 +214,73 @@ function runTreeAndApplyMetaMutant() {
             if (firstTime) {
               //println("MUT: FIRST TIME")
               mutated.insertBefore(
-                'switch(MUID_STATIC) {\n' +
-                '// '+ mutantId + "\n" +
-                'case ' + mutantIdNumber + ': {\n' +
-                srcCode + "\n" +
-                breakCode +
-                '}\n'
+                "switch(MUID_STATIC) {\n" +
+                  "// " +
+                  mutantId +
+                  "\n" +
+                  "case " +
+                  mutantIdNumber +
+                  ": {\n" +
+                  srcCode +
+                  "\n" +
+                  breakCode +
+                  "}\n"
               );
-
 
               firstTime = false;
             } else {
               //println("MUT: OTHER TIME")
               mutated.insertBefore(
-                '// '+ mutantId + "\n" +
-                'case ' + mutantIdNumber + ': {\n' +
-                srcCode + "\n" +
-                breakCode +
-                '}\n'
+                "// " +
+                  mutantId +
+                  "\n" +
+                  "case " +
+                  mutantIdNumber +
+                  ": {\n" +
+                  srcCode +
+                  "\n" +
+                  breakCode +
+                  "}\n"
               );
-
             }
             mutationPoints--;
           } else {
-            //println("MUTATION POINTS EQUAL TO 1: " + mutationPoints + " - ELSE INSERTED")            
+            //println("MUTATION POINTS EQUAL TO 1: " + mutationPoints + " - ELSE INSERTED")
             mutated.insertBefore(
-              '// '+ mutantId + "\n" +
-              'case ' + mutantIdNumber + ': {\n' +
-              srcCode + "\n" +
-              breakCode +
-              '}\n' +
-              'default: {\n'
+              "// " +
+                mutantId +
+                "\n" +
+                "case " +
+                mutantIdNumber +
+                ": {\n" +
+                srcCode +
+                "\n" +
+                breakCode +
+                "}\n" +
+                "default: {\n"
             );
 
-            mutated.insertAfter(
-              breakCode + 
-              '}\n' +
-              '}\n'
-              );
-
+            mutated.insertAfter(breakCode + "}\n" + "}\n");
           }
         } else {
           //println("MUT: DO NOT NEED ELSE IF - ELSE INSERTED")
 
           mutated.insertBefore(
-            'switch(MUID_STATIC) {\n' +
-            '// '+ mutantId + "\n" +
-            'case ' + mutantIdNumber + ': {\n' +
-            srcCode + "\n" +
-            breakCode +
-            '}\n' +
-            'default: {\n'
+            "switch(MUID_STATIC) {\n" +
+              "// " +
+              mutantId +
+              "\n" +
+              "case " +
+              mutantIdNumber +
+              ": {\n" +
+              srcCode +
+              "\n" +
+              breakCode +
+              "}\n" +
+              "default: {\n"
           );
 
-
-          mutated.insertAfter(
-            breakCode + 
-            '}\n' +
-            '}\n'
-            );
-
+          mutated.insertAfter(breakCode + "}\n" + "}\n");
         }
 
         mutator.restore();
@@ -296,7 +316,6 @@ function addMuidStatic($file) {
     return;
   }
 
-
   const children = mainClass.children;
   if (children.length === 0) {
     println("Could not find any element inside class " + mainClass.name);
@@ -308,7 +327,7 @@ function addMuidStatic($file) {
   for (const child of children) {
     types.push(child.joinPointType);
 
-    if(child.instanceOf("enumValue")) {
+    if (child.instanceOf("enumValue")) {
       continue;
     }
 
@@ -338,12 +357,12 @@ function addMuidStatic($file) {
 
 function insertMuidStaticCode(mainClass, insertPoint, isAndroid) {
   // Not Android, using Java properties
-  if(!isAndroid) {
+  if (!isAndroid) {
     // Declare MUID_STATIC
     insertPoint.insertBefore(
       'static final String ORIGINAL_MUID_STATIC = System.getProperty("MUID");\n' +
-      'static final int MUID_STATIC = ORIGINAL_MUID_STATIC != null ? Integer.parseInt(ORIGINAL_MUID_STATIC) : -1;'      
-    );    
+        "static final int MUID_STATIC = ORIGINAL_MUID_STATIC != null ? Integer.parseInt(ORIGINAL_MUID_STATIC) : -1;"
+    );
 
     return;
   }
@@ -391,11 +410,10 @@ function getStatementCode(mutated) {
 }
 */
 
-
 /**
  * Specific patches for some of the tests.
- * 
- * @param {file} file 
+ *
+ * @param {file} file
  */
 /*
 function patchFile(file) {
