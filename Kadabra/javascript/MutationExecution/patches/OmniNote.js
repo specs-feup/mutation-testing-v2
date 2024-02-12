@@ -9,47 +9,19 @@ function patchFile(file) {
     if(file.name === "NotificationChannels.java") {
         // cahnnels must not be final, otherwise fully qualified names will not work
         Query.search("field", "channels").first().removeModifier("final");
-        //patchAnonymousExecFieldAccess(file, "NotificationChannels");     
-    } 
-}
-
-function patchAnonymousExecFieldAccess(file, clazz) {
-    //method onCreateView
-    for(const fieldAccess of Query.searchFrom(file, "class", clazz).search("fieldAccess", {code: code => code.endsWith(".channels")})) {
-        println("FOUND!\n" + fieldAccess.code)
-        const stmt = fieldAccess.ancestor("assignment");
-        const stmtCode = stmt.code;
-
-        if(stmtCode.startsWith("it.feio.android.omninotes.helpers.notifications.NotificationChannels.channels")) {
-            println(clazz + " Original Stmt: " + stmtCode);
-            stmt.replaceWith(stmtCode.substring("it.feio.android.omninotes.helpers.notifications.NotificationChannels.".length, stmtCode.length));
-            println(clazz + " Replaced Stmt: " + stmt.code);
-        } else {
-            const fieldAccessCode = fieldAccess.code;
-            println(clazz + " Original Field: " + fieldAccessCode);
-            fieldAccess.replaceWith(fieldAccessCode.substring("it.feio.android.omninotes.helpers.notifications.NotificationChannels.".length, fieldAccessCode.length));
-            println(clazz + " Replaced Field: " + fieldAccess.code);
-        }
+    } else if(file.name === "IntroSlide5.java") {
+        patchCallSection(file,"onActivityCreated")
     }
 }
 
-function patchBinding(file, method) {
-    //method onCreateView
-    for(const fieldAccess of Query.searchFrom(file, "method", method).search("fieldAccess", {code: code => code.endsWith(".binding.introBackground.setBackgroundColor")})) {
-        println("FOUND!\n" + fieldAccess.code)
-        const stmt = fieldAccess.ancestor("statement");
-        const stmtCode = stmt.code;
+function patchCallSection(file, method) {
+    println(Query.searchFrom(file, "method", method).first().ast);
+        
+    const prefix = "it.feio.android.omninotes.intro.IntroFragment.";
+    const varName = "binding.";
 
-        if(stmtCode.startsWith("it.feio.android.omninotes.intro.IntroFragment.binding.introBackground.setBackgroundColor")) {
-            println(method + " Original Stmt: " + stmtCode);
-            stmt.replaceWith(stmtCode.substring("it.feio.android.omninotes.intro.IntroFragment.".length, stmtCode.length));
-            println(method + " Replaced Stmt: " + stmt.code);
-        } else {
-            const fieldAccessCode = fieldAccess.code;
-            println(method + " Original Field: " + fieldAccessCode);
-            fieldAccess.replaceWith(fieldAccessCode.substring("it.feio.android.omninotes.intro.IntroFragment.".length, fieldAccessCode.length));
-            println(method + " Replaced Field: " + fieldAccess.code);
-        }
+    for(const jp of Query.searchFrom(file, "method", method).search("call", {"code" : c => c.startsWith(prefix + varName)})) {
+            jp.replaceWith(jp.code.substring(prefix.length));
     }
 }
 
