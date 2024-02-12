@@ -6,7 +6,10 @@ function changeVarDeclarations() {
       jp.instanceOf("localVariable") &&
       jp.init !== undefined &&
       !(jp.parent.type == "for") &&
-      !jp.parent.instanceOf("try")
+      !jp.parent.instanceOf("try") &&
+      // TODO: Add attribute in Kadabra to check if declaration is 'var', and use it instead of this
+      // As an alternative, if var, replace var with the type
+      !jp.code.startsWith("var ")
     ) {
 
       
