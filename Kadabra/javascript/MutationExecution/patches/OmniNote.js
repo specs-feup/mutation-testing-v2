@@ -7,7 +7,9 @@ laraImport("weaver.Query")
  */
 function patchFile(file) {
     if(file.name === "NotificationChannels.java") {
-        patchAnonymousExecFieldAccess(file, "NotificationChannels");
+        // cahnnels must not be final, otherwise fully qualified names will not work
+        Query.search("field", "channels").first().removeModifier("final");
+        //patchAnonymousExecFieldAccess(file, "NotificationChannels");     
     } 
 }
 
