@@ -6,14 +6,22 @@ laraImport("weaver.Query")
  * @param {file} file 
  */
 function patchFile(file) {
-    if(file.name === "AbstractReferenceMap.java" || 
-        file.name === "PwDatabaseV4.java" ||
-        file.name === "DateUtil.java" ||
-        file.name ==="EntryEditActivityV3.java") {
-        // cahnnels must not be final, otherwise fully qualified names will not work
-        Query.search("field", "channels").first().removeModifier("final");
-    } 
+    if(file.name === "GroupBaseActivity.java" ) {
+        removeFinal("mGroup")
+    } else if(file.name === "EntryEditActivity.java" ) {
+        removeFinal("mEntry")
+    } else if(file.name === "DateUtil.java" ) {
+        removeFinal("epochOffset")
+    } else if(file.name === "PwDatabase.java") {
+        removeFinal("rootGroup")
+    } else if (file.name === "AbstractHashedMap.java") {
+        removeFinal("data")
+    }
+}
+
+function removeFinal(fieldName) {
+    Query.search("field", fieldName).first().removeModifier("final");
 }
 
 globalThis.patchFile = patchFile;
-globalThis.AntennaPod = {"patchFile": patchFile}
+globalThis.Keepassdroid = {"patchFile": patchFile}
