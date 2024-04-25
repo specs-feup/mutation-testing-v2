@@ -44,6 +44,7 @@ const mutationType = laraArgs.mutationType;
 const fullyQualifiedNames = laraArgs.fullyQualifiedNames;
 const patch = laraArgs.patch;
 const excludeList = laraArgs.excludeList ?? [];
+const includeList = laraArgs.includeList ?? [];
 
 main();
 
@@ -179,7 +180,11 @@ function filterFiles(filesToUsePerProjectUnfiltered) {
     const files = filesToUsePerProjectUnfiltered[key];
     const filteredFiles = [];
 
-    for (file of files) {
+    // If include list is set, only consider those files
+    const acceptedFiles = includedFiles(files); 
+
+    for (file of acceptedFiles) {
+
       if (excludeFile(file)) {
         println(
           "Excluding file '" +
@@ -210,6 +215,23 @@ function excludeFile(file) {
 
     throw "Filtering not implemented for objects of type "(typeof filter);
   }
+}
+
+function includedFiles(files) {
+  if(includeList.length === 0) {
+    return files;
+  }
+
+  println("Include list filter is present, applying it");
+  const filteredFiles = [];
+
+  for (file of files) {
+    if(includeList.includes(file.getName())) {
+      filteredFiles.push(file);
+    }
+  }
+
+  return filteredFiles;
 }
 
 function getFilesToUse() {
