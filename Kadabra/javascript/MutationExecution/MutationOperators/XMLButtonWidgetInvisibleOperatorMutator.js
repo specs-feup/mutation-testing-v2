@@ -62,7 +62,7 @@ class XMLButtonWidgetInvisibleOperatorMutator extends Mutator {
 
                             }
                             if (this.nameOfFileToMutate.toString().includes(".") || this.nameOfFileToMutate.toString().includes("()")) { } else {
-                                if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
+                                if (this.mutationPoints.length < 0 || !(this.mutationPoints.includes(this.nameOfFileToMutate))) {
                                     this.mutationPoints.push(this.nameOfFileToMutate);
 
                                     let randomIndex = 0;

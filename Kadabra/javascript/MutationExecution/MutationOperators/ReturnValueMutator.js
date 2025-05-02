@@ -35,9 +35,9 @@ class ReturnValueMutator extends Mutator {
 		if (joinpoint != undefined && joinpoint.instanceOf('method')) {
 			// Check it is a method capable of being mutated
 			let mutationValue;
-			if (methodZeroTypes.contains(joinpoint.returnType)) {
+			if (methodZeroTypes.includes(joinpoint.returnType)) {
 				mutationValue = '0';
-			} else if (methodTrueTypes.contains(joinpoint.returnType)) {
+			} else if (methodTrueTypes.includes(joinpoint.returnType)) {
 				mutationValue = 'true';
 			} else {
 				return false;

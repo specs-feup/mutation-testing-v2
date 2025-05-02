@@ -53,7 +53,7 @@ class IntentTargetReplacementOperatorMutator extends Mutator {
 
                     println(getPackage[0] === this.package);
 
-                    if (getPackage[0] === this.package && !this.targetValues.contains(getPackage[1])) {
+                    if (getPackage[0] === this.package && !this.targetValues.includes(getPackage[1])) {
                         {
                             this.targetValues.push(getPackage[1]);
                             println("Adding '"+getPackage[1]+"'")

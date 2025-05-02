@@ -63,7 +63,7 @@ class XMLEditTextWidgetChangeAppearanceOperatorMutator extends Mutator {
                                 this.nameOfFileToMutate = this.parentPoint.children[1];
 
                             } if (this.nameOfFileToMutate.toString().includes(".") || this.nameOfFileToMutate.toString().includes("()")) { } else {
-                                if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
+                                if (this.mutationPoints.length < 0 || !(this.mutationPoints.includes(this.nameOfFileToMutate))) {
                                     this.mutationPoints.push(this.nameOfFileToMutate);
 
                                     let randomIndex = 0;

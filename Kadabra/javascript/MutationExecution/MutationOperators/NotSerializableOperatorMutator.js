@@ -21,7 +21,7 @@ class NotSerializableOperatorMutator extends Mutator {
     addJp(joinpoint) {
       
         if (joinpoint.instanceOf("class")) {
-            if (joinpoint.interfaces.contains("java.io.Serializable")) {
+            if (joinpoint.interfaces.includes("java.io.Serializable")) {
                 this.mutationPoints.push(joinpoint);
                 return true;
             }

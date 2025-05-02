@@ -28,11 +28,11 @@ class UnaryMutator extends Mutator {
         if (joinpoint != undefined && joinpoint.parent != undefined && joinpoint.instanceOf("unaryExpression") && !(joinpoint.parent.type == "for") &&
             joinpoint.operator == this.original) {
 
-            if (this.rightHand.contains(this.original) && this.rightHand.contains(this.result)) {
+            if (this.rightHand.includes(this.original) && this.rightHand.includes(this.result)) {
                 if (joinpoint.parent.type == undefined) { this.putSemicolon = ";"; } else { this.putSemicolon = ""; }
                 this.mutationPoints.push(joinpoint);
             }
-            else if (this.leftHand.contains(this.original) && this.leftHand.contains(this.result)) {
+            else if (this.leftHand.includes(this.original) && this.leftHand.includes(this.result)) {
                 if (joinpoint.parent.type == undefined) { this.putSemicolon = ";"; } else { this.putSemicolon = ""; }
                 this.mutationPoints.push(joinpoint);
             } else {
