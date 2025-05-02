@@ -46,7 +46,7 @@ class NotSerializableOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
         this.currentIndex++;
@@ -69,7 +69,7 @@ class NotSerializableOperatorMutator extends Mutator {
         println(" this.mutationPoint" + this.mutationPoint);
     }
 
-    _restorePrivate() {
+    restorePrivate() {
         this.mutationPoint = this.mutationPoint.addInterface(this.removedInterface);
         this.previousValue = undefined;
         this.mutationPoint = undefined;

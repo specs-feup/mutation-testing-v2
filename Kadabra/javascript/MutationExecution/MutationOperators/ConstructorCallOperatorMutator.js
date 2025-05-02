@@ -59,7 +59,7 @@ class ConstructorCallOperatorMutator extends Mutator {
 	}
 
 
-	_mutatePrivate() {
+	mutatePrivate() {
 		this.mutationPoint = this.mutationPoints[this.currentIndex++];
 
 		// "new" can be part of a chained method call, go back until we get the whole chain
@@ -112,7 +112,7 @@ class ConstructorCallOperatorMutator extends Mutator {
 
 	}
 
-	_restorePrivate() {
+	restorePrivate() {
 		this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
 		this.previousValue = undefined;
 		this.mutationPoint = undefined;

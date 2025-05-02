@@ -46,7 +46,7 @@ class BinaryOperatorDeletionMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
 
         let mutationPoint = this.mutationPoints[this.currentIndex];
 
@@ -71,7 +71,7 @@ class BinaryOperatorDeletionMutator extends Mutator {
         println("/*--------------------------------------*/");
 
     }
-    _restorePrivate() {
+    restorePrivate() {
         // Restore operator
         println("Restore  prev: " + this.previousValue.code);
         println("Restore new: " + this.newValue.code);

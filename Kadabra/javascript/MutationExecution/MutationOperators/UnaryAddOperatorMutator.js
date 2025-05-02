@@ -55,7 +55,7 @@ class UnaryAddOperatorMutator extends Mutator {
     }
 
 
-    _mutatePrivate() {
+    mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
         println(this.mutationPoint);
         this.currentIndex++;
@@ -81,7 +81,7 @@ class UnaryAddOperatorMutator extends Mutator {
         println("/*--------------------------------------*/");
     }
 
-    _restorePrivate() {
+    restorePrivate() {
         // Restore operator
         println("Restoring " + this.previousValue + " from " + this.mutationPoint);
 

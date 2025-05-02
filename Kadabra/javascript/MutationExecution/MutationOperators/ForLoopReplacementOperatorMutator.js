@@ -66,7 +66,7 @@ class ForLoopReplacementOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
         var randomNumber = Math.floor(this.random.next() * (100)) + 1;
@@ -91,7 +91,7 @@ class ForLoopReplacementOperatorMutator extends Mutator {
 
 
 
-    _restorePrivate() {
+    restorePrivate() {
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
         this.mutationPoint = undefined;

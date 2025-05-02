@@ -113,7 +113,7 @@ class BinaryMutator extends Mutator {
     }
   }
 
-  _mutatePrivate() {
+  mutatePrivate() {
     this.mutationPoint = this.mutationPoints[this.currentIndex];
     this.currentIndex++;
 
@@ -135,7 +135,7 @@ class BinaryMutator extends Mutator {
     println("/*--------------------------------------*/");
   }
 
-  _restorePrivate() {
+  restorePrivate() {
     this.mutationPoint.operator = this.previousValue;
 
     // println("Restore_mutationPoint " + this.mutationPoint)

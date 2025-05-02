@@ -51,7 +51,7 @@ class FindViewByIdReturnsNullOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
 
@@ -68,7 +68,7 @@ class FindViewByIdReturnsNullOperatorMutator extends Mutator {
 
 
     }
-    _restorePrivate() {
+    restorePrivate() {
 
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;

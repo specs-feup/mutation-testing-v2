@@ -61,7 +61,7 @@ class ReturnValueMutator extends Mutator {
 	}
 
 
-	_mutatePrivate() {
+	mutatePrivate() {
 		let mutationInfo = this.mutationPoints[this.currentIndex++];
 
 		this.returnExpression = mutationInfo[0];
@@ -78,7 +78,7 @@ class ReturnValueMutator extends Mutator {
 		println("/*--------------------------------------*/");
 	}
 
-	_restorePrivate() {
+	restorePrivate() {
 		this.returnExpression = this.returnExpression.insertReplace(this.originalReturnExpression);
 
 		this.originalReturnExpression = undefined;

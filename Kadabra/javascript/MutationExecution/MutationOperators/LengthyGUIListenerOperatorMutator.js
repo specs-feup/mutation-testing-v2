@@ -81,7 +81,7 @@ class LengthyGUIListenerOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
         //println("this.mutationPoint: " + this.mutationPoint.joinPointType);
         let codeSnippet = "try { Thread.sleep(10000); } catch (InterruptedException e) { e.printStackTrace(); }";
@@ -102,7 +102,7 @@ class LengthyGUIListenerOperatorMutator extends Mutator {
 
 
     }
-    _restorePrivate() {
+    restorePrivate() {
 
         this.mutationPoint = this.mutationPoint.replaceWith(this.previousValue);
         this.previousValue = undefined;

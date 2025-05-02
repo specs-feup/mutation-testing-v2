@@ -92,7 +92,7 @@ class StringCallReplacementOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
 
         let randomIndex = Math.floor(this.random.next() * this.methodsOfJavaLang0arguments.length);
         let randomIndex1 = Math.floor(this.random.next() * this.methodsOfJavaLang1arguments.length);
@@ -140,7 +140,7 @@ class StringCallReplacementOperatorMutator extends Mutator {
 
     }
 
-    _restorePrivate() {
+    restorePrivate() {
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
     }

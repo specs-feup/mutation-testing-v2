@@ -47,7 +47,7 @@ class NullBluetoothAdapterOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
 
@@ -64,7 +64,7 @@ class NullBluetoothAdapterOperatorMutator extends Mutator {
 
 
     }
-    _restorePrivate() {
+    restorePrivate() {
 
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;

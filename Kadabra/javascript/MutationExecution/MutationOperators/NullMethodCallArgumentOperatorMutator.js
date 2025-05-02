@@ -48,7 +48,7 @@ class NullMethodCallArgumentOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
@@ -68,7 +68,7 @@ class NullMethodCallArgumentOperatorMutator extends Mutator {
 
     }
 
-    _restorePrivate() {
+    restorePrivate() {
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
         this.mutationPoint = undefined;

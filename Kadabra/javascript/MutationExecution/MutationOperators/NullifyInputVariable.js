@@ -46,7 +46,7 @@ class NullifyInputVariable extends Mutator {
 			}
 		}
 	}
-	_mutatePrivate() {
+	mutatePrivate() {
 
 		this.mutationPoint = this.mutationPoints[this.currentIndex];
 
@@ -66,7 +66,7 @@ class NullifyInputVariable extends Mutator {
 	}
 
 
-	_restorePrivate() {
+	restorePrivate() {
 		this.mutationPoint.insertReplace(this.previousValue);
 		this.mutationPoint = undefined;
 

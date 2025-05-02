@@ -77,7 +77,7 @@ class NonVoidCallMutator extends Mutator {
 		return this.currentIndex < this.toMutate.length;
 	}
 
-	_mutatePrivate() {
+	mutatePrivate() {
 		let mutationInfo = this.toMutate[this.currentIndex];
 
 		if (!mutationInfo == "undefined") {
@@ -107,7 +107,7 @@ class NonVoidCallMutator extends Mutator {
 			println("/*--------------------------------------*/");
 		}
 	}
-	_restorePrivate() {
+	restorePrivate() {
 
 		try {
 			this.getMutationPoint().parent.insertReplace(this.originalCode);

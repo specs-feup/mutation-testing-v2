@@ -56,7 +56,7 @@ class UnaryDeletionOperatorMutator extends Mutator {
     }
 
 
-    _mutatePrivate() {
+    mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
         this.currentIndex++;
 
@@ -80,7 +80,7 @@ class UnaryDeletionOperatorMutator extends Mutator {
         println("/*--------------------------------------*/");
     }
 
-    _restorePrivate() {
+    restorePrivate() {
 
         this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;

@@ -64,7 +64,7 @@ class InvalidViewFocusOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
         //println("Mutation point: " + this.mutationPoint.code)
@@ -99,7 +99,7 @@ class InvalidViewFocusOperatorMutator extends Mutator {
 
 
     }
-    _restorePrivate() {
+    restorePrivate() {
 
         //this.mutationPoint = this.mutationPoint.replaceWith("");
         this.mutationPoint.replaceWith(this.previousValue);

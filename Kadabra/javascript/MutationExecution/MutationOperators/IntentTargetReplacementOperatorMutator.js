@@ -97,7 +97,7 @@ class IntentTargetReplacementOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
         //println("Target values: " + this.targetValues.length)
         const randomIndex = Math.floor(this.random.next() * this.targetValues.length);
 
@@ -118,7 +118,7 @@ class IntentTargetReplacementOperatorMutator extends Mutator {
 
     }
 
-    _restorePrivate() {
+    restorePrivate() {
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
         this.mutationPoint = undefined;

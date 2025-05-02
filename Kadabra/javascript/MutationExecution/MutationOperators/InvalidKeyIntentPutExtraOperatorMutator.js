@@ -67,7 +67,7 @@ class InvalidKeyIntentPutExtraOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
         let randomValue = (this.random.next() + 1).toString(36).substring(2);
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
@@ -87,7 +87,7 @@ class InvalidKeyIntentPutExtraOperatorMutator extends Mutator {
 
 
 
-    _restorePrivate() {
+    restorePrivate() {
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
         this.mutationPoint = undefined;

@@ -78,7 +78,7 @@ class ConditionalExpressionReplacementOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
 
 
         let randomIndex = Math.floor(this.random.next() * this.valuesToAssignExpression2OfConditionalExpression.length);
@@ -106,7 +106,7 @@ class ConditionalExpressionReplacementOperatorMutator extends Mutator {
 
 
 
-    _restorePrivate() {
+    restorePrivate() {
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
 

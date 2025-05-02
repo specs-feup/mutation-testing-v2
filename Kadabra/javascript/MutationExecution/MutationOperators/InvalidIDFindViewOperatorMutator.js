@@ -48,7 +48,7 @@ class InvalidIDFindViewOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
         const randomIndex = Math.floor(this.random.next() * 1000000).toString();
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
@@ -66,7 +66,7 @@ class InvalidIDFindViewOperatorMutator extends Mutator {
 
 
     }
-    _restorePrivate() {
+    restorePrivate() {
 
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;

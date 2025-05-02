@@ -67,7 +67,7 @@ class UnaryMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
         this.previousValue = this.mutationPoint.toString().replace("Unary Expression:", "");
@@ -86,7 +86,7 @@ class UnaryMutator extends Mutator {
 
     }
 
-    _restorePrivate() {
+    restorePrivate() {
 
         this.mutationPoint = this.mutationPoint.replaceWith(this.previousValue + this.putSemicolon);
         this.previousValue = undefined;

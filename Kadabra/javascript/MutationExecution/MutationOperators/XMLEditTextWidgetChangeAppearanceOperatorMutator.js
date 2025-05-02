@@ -139,7 +139,7 @@ class XMLEditTextWidgetChangeAppearanceOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
         this.previousValue = this.mutationPoint;
@@ -160,7 +160,7 @@ class XMLEditTextWidgetChangeAppearanceOperatorMutator extends Mutator {
 
     }
 
-    _restorePrivate() {
+    restorePrivate() {
 
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
