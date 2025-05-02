@@ -91,7 +91,7 @@ function runTreeAndApplyMetaMutant() {
 
   var mutantList = [];
   for (var $jp of Query.root().descendants) {
-    var $call = $jp.ancestor("call");
+    var $call = $jp.getAncestor("call");
 
     // Ignore nodes that are children of $call with the name <init>
     if ($call !== undefined && $call.name === "<init>") continue;
@@ -137,7 +137,7 @@ function runTreeAndApplyMetaMutant() {
         } else {
           var mutated = mutator.getMutationPoint().isStatement
             ? mutator.getMutationPoint()
-            : mutator.getMutationPoint().ancestor("statement");
+            : mutator.getMutationPoint().getAncestor("statement");
         }
 
         if (mutator.isAndroidSpecific() && mutationType === "MUTANTSCHEMATA") {

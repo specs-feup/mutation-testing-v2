@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 laraImport("lara.util.Random");
 
@@ -64,7 +64,7 @@ class InvalidDateOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
 
         let randomValue = Math.floor(this.random.next() * 6553600);
         let s = "new Date(" + randomValue + ")";
@@ -89,7 +89,7 @@ class InvalidDateOperatorMutator extends Mutator {
 
 
 
-    _restorePrivate() {
+    restorePrivate() {
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
         this.mutationPoint = undefined;

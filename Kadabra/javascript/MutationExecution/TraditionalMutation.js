@@ -68,7 +68,7 @@ function applyTraditionalMutation() {
   //println("FILE:\n"+Query.search("file").first().ast);
   for (var $jp of Query.root().descendants) {
 
-    var $call = $jp.ancestor("call");
+    var $call = $jp.getAncestor("call");
 
     // Ignore nodes that are children of $call with the name <init>
     if ($call !== undefined && $call.name === "<init>") {

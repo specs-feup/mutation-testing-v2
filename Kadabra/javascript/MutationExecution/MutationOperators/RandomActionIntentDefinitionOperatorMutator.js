@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 laraImport("lara.util.Random");
 laraImport("MutatorUtils");
@@ -56,7 +56,7 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
 
         let randomValue = Math.floor(this.random.next() * this.targetValues.length);
 
@@ -89,7 +89,7 @@ class RandomActionIntentDefinitionOperatorMutator extends Mutator {
 
 
 
-    _restorePrivate() {
+    restorePrivate() {
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
         this.mutationPoint = undefined;

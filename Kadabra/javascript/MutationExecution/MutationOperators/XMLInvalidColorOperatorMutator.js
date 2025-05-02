@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 laraImport("lara.util.Random");
 
@@ -63,7 +63,7 @@ class XMLInvalidColorOperatorMutator extends Mutator {
                                 this.nameOfFileToMutate = this.parentPoint.children[1];
 
                             } if (this.nameOfFileToMutate.toString().includes(".") || this.nameOfFileToMutate.toString().includes("()")) { } else {
-                                if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
+                                if (this.mutationPoints.length < 0 || !(this.mutationPoints.includes(this.nameOfFileToMutate))) {
                                     this.mutationPoints.push(this.nameOfFileToMutate);
 
                                     let randomIndex = 0;
@@ -73,7 +73,7 @@ class XMLInvalidColorOperatorMutator extends Mutator {
 
                                         //XML PART
                                         for (let textColor of Query.searchFrom(root, "xmlElement")) {
-                                            if (textColor.attribute("android:textColor") != "" && !this.colors.contains(textColor.attribute("android:textColor"))) {
+                                            if (textColor.attribute("android:textColor") != "" && !this.colors.includes(textColor.attribute("android:textColor"))) {
                                                 this.colors.push(textColor.attribute("android:textColor"));
                                                 this.colors.push("#FF0000");
                                                 this.colors.push("#FF00FF");
@@ -128,7 +128,7 @@ class XMLInvalidColorOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
         this.previousValue = this.mutationPoint;
@@ -149,7 +149,7 @@ class XMLInvalidColorOperatorMutator extends Mutator {
 
     }
 
-    _restorePrivate() {
+    restorePrivate() {
 
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;

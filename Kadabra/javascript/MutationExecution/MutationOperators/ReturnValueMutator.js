@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+laraImport("weaver.Query");
 laraImport("weaver.Weaver");
 /**
  *  @param {joinpoint} joinpoint - Joinpoint used as starting point to search for methods whose return value will be mutated.
@@ -35,16 +35,16 @@ class ReturnValueMutator extends Mutator {
 		if (joinpoint != undefined && joinpoint.instanceOf('method')) {
 			// Check it is a method capable of being mutated
 			let mutationValue;
-			if (methodZeroTypes.contains(joinpoint.returnType)) {
+			if (methodZeroTypes.includes(joinpoint.returnType)) {
 				mutationValue = '0';
-			} else if (methodTrueTypes.contains(joinpoint.returnType)) {
+			} else if (methodTrueTypes.includes(joinpoint.returnType)) {
 				mutationValue = 'true';
 			} else {
 				return false;
 			}
 
 			// Store return statement for later modification
-			let methodReturn = WeaverJps.searchFrom(joinpoint, 'return').first();
+			let methodReturn = Query.searchFrom(joinpoint, 'return').first();
 			if (methodReturn != undefined || methodReturn != null) {
 				this.mutationPoints.push([methodReturn, mutationValue]);
 			}
@@ -61,7 +61,7 @@ class ReturnValueMutator extends Mutator {
 	}
 
 
-	_mutatePrivate() {
+	mutatePrivate() {
 		let mutationInfo = this.mutationPoints[this.currentIndex++];
 
 		this.returnExpression = mutationInfo[0];
@@ -78,7 +78,7 @@ class ReturnValueMutator extends Mutator {
 		println("/*--------------------------------------*/");
 	}
 
-	_restorePrivate() {
+	restorePrivate() {
 		this.returnExpression = this.returnExpression.insertReplace(this.originalReturnExpression);
 
 		this.originalReturnExpression = undefined;

@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 
 
@@ -60,7 +60,7 @@ class FailOnNullOperatorMutator extends Mutator {
 	}
 
 
-	_mutatePrivate() {
+	mutatePrivate() {
 
 		this.mutationPoint = this.mutationPoints[this.currentIndex];
 		this.previousValue = this.mutationPoint;
@@ -78,7 +78,7 @@ class FailOnNullOperatorMutator extends Mutator {
 		this.currentIndex++;
 	}
 
-	_restorePrivate() {
+	restorePrivate() {
 		// Restore operator
 		this.mutationPoint = this.mutationPoint.replaceWith("");
 

@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 
 class ConstantOperatorMutator extends Mutator {
@@ -61,7 +61,7 @@ class ConstantOperatorMutator extends Mutator {
     }
   }
 
-  _mutatePrivate() {
+  mutatePrivate() {
     var mutationPoint = this.mutationPoints[this.currentIndex];
 
     if ( 
@@ -96,7 +96,7 @@ class ConstantOperatorMutator extends Mutator {
     println("/*--------------------------------------*/");
   }
 
-  _restorePrivate() {
+  restorePrivate() {
      this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
     this.previousValue = undefined;
     this.mutationPoint = undefined;

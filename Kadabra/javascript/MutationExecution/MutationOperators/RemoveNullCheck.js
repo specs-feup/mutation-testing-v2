@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Query");
 
 class RemoveNullCheck extends Mutator {
@@ -46,7 +46,7 @@ class RemoveNullCheck extends Mutator {
 		}
 	}
 
-	_mutatePrivate() {
+	mutatePrivate() {
 
 		var mutationPoint = this.mutationPoints[this.currentIndex];
 
@@ -74,7 +74,7 @@ class RemoveNullCheck extends Mutator {
 
 
 
-	_restorePrivate() {
+	restorePrivate() {
 		// Restore operator
 		println("Restore  prev: " + this.previousValue.code);
 		println("Restore new: " + this.newValue.code);

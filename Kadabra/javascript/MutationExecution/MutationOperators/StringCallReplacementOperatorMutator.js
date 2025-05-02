@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 laraImport("lara.util.Random");
 
@@ -41,7 +41,7 @@ class StringCallReplacementOperatorMutator extends Mutator {
             for (let i = 0; i < joinpoint.call.numChildren; i++) {
 
                 if (joinpoint.call.children[i] != undefined && joinpoint.call.children[i].instanceOf('reference') && joinpoint.call.children[i].type === "Executable") {
-                    if (this.nameOfmethodsOfJavaLang.contains(joinpoint.call.children[i].name)) {
+                    if (this.nameOfmethodsOfJavaLang.includes(joinpoint.call.children[i].name)) {
                         if (joinpoint.call.numChildren == 2) {
                             //joinpoint
                             this.mutationPoints.push(joinpoint.call);
@@ -92,7 +92,7 @@ class StringCallReplacementOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
 
         let randomIndex = Math.floor(this.random.next() * this.methodsOfJavaLang0arguments.length);
         let randomIndex1 = Math.floor(this.random.next() * this.methodsOfJavaLang1arguments.length);
@@ -140,7 +140,7 @@ class StringCallReplacementOperatorMutator extends Mutator {
 
     }
 
-    _restorePrivate() {
+    restorePrivate() {
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
     }

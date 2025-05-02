@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Query");
 
 class FindViewByIdDeletionMutator extends Mutator {
@@ -43,7 +43,7 @@ class FindViewByIdDeletionMutator extends Mutator {
             return undefined;
         }
     }
-    _mutatePrivate() {
+    mutatePrivate() {
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
@@ -56,7 +56,7 @@ class FindViewByIdDeletionMutator extends Mutator {
 
     }
 
-    _restorePrivate() {
+    restorePrivate() {
         // Restore operator
         println("Restoring: " + this.mutationPoint + " to " + this.previousValue);
         this.mutationPoint.insertReplace(this.previousValue);

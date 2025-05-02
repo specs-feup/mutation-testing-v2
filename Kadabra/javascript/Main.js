@@ -3,6 +3,7 @@ laraImport("lara.Strings");
 laraImport("weaver.Query");
 laraImport("weaver.WeaverOptions");
 laraImport("Arguments");
+laraImport("weaver.Weaver");
 
 var contextFolder = WeaverOptions.getData().getContextFolder();
 
@@ -181,10 +182,9 @@ function filterFiles(filesToUsePerProjectUnfiltered) {
     const filteredFiles = [];
 
     // If include list is set, only consider those files
-    const acceptedFiles = includedFiles(files); 
+    const acceptedFiles = includedFiles(files);
 
     for (file of acceptedFiles) {
-
       if (excludeFile(file)) {
         println(
           "Excluding file '" +
@@ -218,7 +218,7 @@ function excludeFile(file) {
 }
 
 function includedFiles(files) {
-  if(includeList.length === 0) {
+  if (includeList.length === 0) {
     return files;
   }
 
@@ -226,7 +226,7 @@ function includedFiles(files) {
   const filteredFiles = [];
 
   for (file of files) {
-    if(includeList.includes(file.getName())) {
+    if (includeList.includes(file.getName())) {
       filteredFiles.push(file);
     }
   }

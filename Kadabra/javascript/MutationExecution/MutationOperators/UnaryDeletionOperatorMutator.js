@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 
 class UnaryDeletionOperatorMutator extends Mutator {
@@ -24,8 +24,8 @@ class UnaryDeletionOperatorMutator extends Mutator {
 
             var lhs = joinpoint.lhs;
             var rhs = joinpoint.rhs;
-            if (((this.targetConstant.contains(lhs.srcCode) && lhs.isFinal)
-                || (this.targetConstant.contains(rhs.srcCode) && rhs.isFinal))
+            if (((this.targetConstant.includes(lhs.srcCode) && lhs.isFinal)
+                || (this.targetConstant.includes(rhs.srcCode) && rhs.isFinal))
                 && joinpoint.type !== 'boolean') {
 
                 this.toMutate.push(joinpoint);
@@ -56,15 +56,15 @@ class UnaryDeletionOperatorMutator extends Mutator {
     }
 
 
-    _mutatePrivate() {
+    mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
         this.currentIndex++;
 
         this.previousValue = this.mutationPoint;
 
-        if (this.targetConstant.contains(this.mutationPoint.lhs.srcCode)) {
+        if (this.targetConstant.includes(this.mutationPoint.lhs.srcCode)) {
             this.mutationPoint = this.mutationPoint.insertReplace(this.mutationPoint.rhs);
-        } else if (this.targetConstant.contains(this.mutationPoint.rhs.srcCode)) {
+        } else if (this.targetConstant.includes(this.mutationPoint.rhs.srcCode)) {
             this.mutationPoint = this.mutationPoint.insertReplace(this.mutationPoint.lhs);
         }
 
@@ -80,7 +80,7 @@ class UnaryDeletionOperatorMutator extends Mutator {
         println("/*--------------------------------------*/");
     }
 
-    _restorePrivate() {
+    restorePrivate() {
 
         this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;

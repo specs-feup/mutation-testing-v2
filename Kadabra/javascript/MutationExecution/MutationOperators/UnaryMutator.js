@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 
 class UnaryMutator extends Mutator {
@@ -28,11 +28,11 @@ class UnaryMutator extends Mutator {
         if (joinpoint != undefined && joinpoint.parent != undefined && joinpoint.instanceOf("unaryExpression") && !(joinpoint.parent.type == "for") &&
             joinpoint.operator == this.original) {
 
-            if (this.rightHand.contains(this.original) && this.rightHand.contains(this.result)) {
+            if (this.rightHand.includes(this.original) && this.rightHand.includes(this.result)) {
                 if (joinpoint.parent.type == undefined) { this.putSemicolon = ";"; } else { this.putSemicolon = ""; }
                 this.mutationPoints.push(joinpoint);
             }
-            else if (this.leftHand.contains(this.original) && this.leftHand.contains(this.result)) {
+            else if (this.leftHand.includes(this.original) && this.leftHand.includes(this.result)) {
                 if (joinpoint.parent.type == undefined) { this.putSemicolon = ";"; } else { this.putSemicolon = ""; }
                 this.mutationPoints.push(joinpoint);
             } else {
@@ -67,7 +67,7 @@ class UnaryMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
         this.previousValue = this.mutationPoint.toString().replace("Unary Expression:", "");
@@ -86,7 +86,7 @@ class UnaryMutator extends Mutator {
 
     }
 
-    _restorePrivate() {
+    restorePrivate() {
 
         this.mutationPoint = this.mutationPoint.replaceWith(this.previousValue + this.putSemicolon);
         this.previousValue = undefined;

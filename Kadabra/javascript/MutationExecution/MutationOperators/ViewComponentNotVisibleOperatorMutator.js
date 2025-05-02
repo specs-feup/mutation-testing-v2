@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 laraImport("MutatorUtils");
 
@@ -59,11 +59,11 @@ class ViewComponentNotVisibleOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
-        const stmt = this.mutationPoint.isStatement ? this.mutationPoint : this.mutationPoint.ancestor("statement");
+        const stmt = this.mutationPoint.isStatement ? this.mutationPoint : this.mutationPoint.getAncestor("statement");
 
         // Mutation point is assignment, use left-hand
         const variable = this.mutationPoint.lhs.code;
@@ -86,7 +86,7 @@ class ViewComponentNotVisibleOperatorMutator extends Mutator {
 
 
     }
-    _restorePrivate() {
+    restorePrivate() {
 
         this.mutationPoint.replaceWith(this.previousValue);
         this.previousValue = undefined;

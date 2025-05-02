@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 
 class OnClickEventReplacementOperatorMutator extends Mutator {
@@ -61,7 +61,7 @@ class OnClickEventReplacementOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
         let codeSnippet = "try { Thread.sleep(10000); } catch (InterruptedException e) { e.printStackTrace(); }";
 
@@ -77,7 +77,7 @@ class OnClickEventReplacementOperatorMutator extends Mutator {
 
 
     }
-    _restorePrivate() {
+    restorePrivate() {
         let replace = "";
         this.mutationPoint = this.mutationPoint.replaceWith(replace);
         this.previousValue = undefined;

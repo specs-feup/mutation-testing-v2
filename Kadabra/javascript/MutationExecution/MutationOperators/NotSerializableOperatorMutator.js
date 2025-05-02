@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 
 class NotSerializableOperatorMutator extends Mutator {
@@ -21,7 +21,7 @@ class NotSerializableOperatorMutator extends Mutator {
     addJp(joinpoint) {
       
         if (joinpoint.instanceOf("class")) {
-            if (joinpoint.interfaces.contains("java.io.Serializable")) {
+            if (joinpoint.interfaces.includes("java.io.Serializable")) {
                 this.mutationPoints.push(joinpoint);
                 return true;
             }
@@ -46,7 +46,7 @@ class NotSerializableOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
         this.currentIndex++;
@@ -69,7 +69,7 @@ class NotSerializableOperatorMutator extends Mutator {
         println(" this.mutationPoint" + this.mutationPoint);
     }
 
-    _restorePrivate() {
+    restorePrivate() {
         this.mutationPoint = this.mutationPoint.addInterface(this.removedInterface);
         this.previousValue = undefined;
         this.mutationPoint = undefined;

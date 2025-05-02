@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 
 class NullValueIntentOperatorMutator extends Mutator {
@@ -37,7 +37,7 @@ class NullValueIntentOperatorMutator extends Mutator {
                 if (joinpoint.children[2] != undefined) {
                     this.mutationPoints.push(joinpoint.children[2]);
 
-                    if (joinpoint.ancestor("file")) {
+                    if (joinpoint.getAncestor("file")) {
                         joinpoint.addImport("android.os.Parcelable");
                     }
                 }
@@ -65,7 +65,7 @@ class NullValueIntentOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
 
@@ -86,7 +86,7 @@ class NullValueIntentOperatorMutator extends Mutator {
 
 
 
-    _restorePrivate() {
+    restorePrivate() {
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
         this.mutationPoint = undefined;

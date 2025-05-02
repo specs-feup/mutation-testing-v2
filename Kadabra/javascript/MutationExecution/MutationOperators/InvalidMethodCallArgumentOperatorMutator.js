@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 laraImport("lara.util.Random");
 
@@ -65,7 +65,7 @@ class InvalidMethodCallArgumentOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
         let randomValue = (this.random.next() + 1).toString(36).substring(2);
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
@@ -85,7 +85,7 @@ class InvalidMethodCallArgumentOperatorMutator extends Mutator {
 
     }
 
-    _restorePrivate() {
+    restorePrivate() {
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
         this.mutationPoint = undefined;

@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 laraImport("lara.util.Random");
 
@@ -53,7 +53,7 @@ class IntentTargetReplacementOperatorMutator extends Mutator {
 
                     println(getPackage[0] === this.package);
 
-                    if (getPackage[0] === this.package && !this.targetValues.contains(getPackage[1])) {
+                    if (getPackage[0] === this.package && !this.targetValues.includes(getPackage[1])) {
                         {
                             this.targetValues.push(getPackage[1]);
                             println("Adding '"+getPackage[1]+"'")
@@ -97,7 +97,7 @@ class IntentTargetReplacementOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
         //println("Target values: " + this.targetValues.length)
         const randomIndex = Math.floor(this.random.next() * this.targetValues.length);
 
@@ -118,7 +118,7 @@ class IntentTargetReplacementOperatorMutator extends Mutator {
 
     }
 
-    _restorePrivate() {
+    restorePrivate() {
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;
         this.mutationPoint = undefined;

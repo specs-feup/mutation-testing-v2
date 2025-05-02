@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 
 class XMLEditTextWidgetDeletionOperatorMutator extends Mutator {
@@ -62,7 +62,7 @@ class XMLEditTextWidgetDeletionOperatorMutator extends Mutator {
                                 this.nameOfFileToMutate = this.parentPoint.children[1];
 
                             } if (this.nameOfFileToMutate.toString().includes(".") || this.nameOfFileToMutate.toString().includes("()")) { } else {
-                                if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
+                                if (this.mutationPoints.length < 0 || !(this.mutationPoints.includes(this.nameOfFileToMutate))) {
                                     this.mutationPoints.push(this.nameOfFileToMutate);
 
                                     let randomIndex = 0;
@@ -133,7 +133,7 @@ class XMLEditTextWidgetDeletionOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
         this.previousValue = this.mutationPoint;
@@ -154,7 +154,7 @@ class XMLEditTextWidgetDeletionOperatorMutator extends Mutator {
 
     }
 
-    _restorePrivate() {
+    restorePrivate() {
 
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;

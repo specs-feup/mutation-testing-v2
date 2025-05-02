@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 class FindViewByIdReturnsNullOperatorMutator extends Mutator {
     constructor() {
@@ -20,7 +20,7 @@ class FindViewByIdReturnsNullOperatorMutator extends Mutator {
         ) {
             
             // Do not apply if in a chained call
-            if(joinpoint.ancestor("call") !== undefined) {
+            if(joinpoint.getAncestor("call") !== undefined) {
                 return false;
             }
 
@@ -51,7 +51,7 @@ class FindViewByIdReturnsNullOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
 
@@ -68,7 +68,7 @@ class FindViewByIdReturnsNullOperatorMutator extends Mutator {
 
 
     }
-    _restorePrivate() {
+    restorePrivate() {
 
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;

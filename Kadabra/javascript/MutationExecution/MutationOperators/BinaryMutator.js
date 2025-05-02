@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 
 class BinaryMutator extends Mutator {
@@ -35,53 +35,53 @@ class BinaryMutator extends Mutator {
       !(joinpoint.type === "char") &&
       !(joinpoint.rhs.type === "char") &&
       !(joinpoint.lhs.type === "char") &&
-      joinpoint.ancestor("statement") !== undefined // To ensure we get a mutation point. Schemata specific.
+      joinpoint.getAncestor("statement") !== undefined // To ensure we get a mutation point. Schemata specific.
     ) {
       if (
-        this.arithmeticOperators.contains(this.original) &&
-        this.arithmeticOperators.contains(this.result)
+        this.arithmeticOperators.includes(this.original) &&
+        this.arithmeticOperators.includes(this.result)
       ) {
         if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }
       } else if (
-        this.bitwiseOperators.contains(this.original) &&
-        this.bitwiseOperators.contains(this.result)
+        this.bitwiseOperators.includes(this.original) &&
+        this.bitwiseOperators.includes(this.result)
       ) {
         if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }
       } else if (
-        this.bitwiseOperators2.contains(this.original) &&
-        this.bitwiseOperators2.contains(this.result)
+        this.bitwiseOperators2.includes(this.original) &&
+        this.bitwiseOperators2.includes(this.result)
       ) {
         if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }
       } else if (
-        this.comparisonOperators.contains(this.original) &&
-        this.comparisonOperators.contains(this.result)
+        this.comparisonOperators.includes(this.original) &&
+        this.comparisonOperators.includes(this.result)
       ) {
         if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }
       } else if (
-        this.comparisonOperators2.contains(this.original) &&
-        this.comparisonOperators2.contains(this.result)
+        this.comparisonOperators2.includes(this.original) &&
+        this.comparisonOperators2.includes(this.result)
       ) {
         if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }
       } else if (
-        this.logicalOperators.contains(this.original) &&
-        this.logicalOperators.contains(this.result)
+        this.logicalOperators.includes(this.original) &&
+        this.logicalOperators.includes(this.result)
       ) {
         if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
         }
       } else if (
-        this.assignmentOperators.contains(this.original) &&
-        this.assignmentOperators.contains(this.result)
+        this.assignmentOperators.includes(this.original) &&
+        this.assignmentOperators.includes(this.result)
       ) {
         if (joinpoint != undefined) {
           this.mutationPoints.push(joinpoint);
@@ -113,7 +113,7 @@ class BinaryMutator extends Mutator {
     }
   }
 
-  _mutatePrivate() {
+  mutatePrivate() {
     this.mutationPoint = this.mutationPoints[this.currentIndex];
     this.currentIndex++;
 
@@ -135,7 +135,7 @@ class BinaryMutator extends Mutator {
     println("/*--------------------------------------*/");
   }
 
-  _restorePrivate() {
+  restorePrivate() {
     this.mutationPoint.operator = this.previousValue;
 
     // println("Restore_mutationPoint " + this.mutationPoint)

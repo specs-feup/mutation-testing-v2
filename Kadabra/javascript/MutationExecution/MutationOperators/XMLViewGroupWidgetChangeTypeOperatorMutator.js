@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 laraImport("lara.util.Random");
 
@@ -64,7 +64,7 @@ class XMLViewGroupWidgetChangeTypeOperatorMutator extends Mutator {
 
                             }
                             if (this.nameOfFileToMutate.toString().includes(".") || this.nameOfFileToMutate.toString().includes("()")) { } else {
-                                if (this.mutationPoints.length < 0 || !(this.mutationPoints.contains(this.nameOfFileToMutate))) {
+                                if (this.mutationPoints.length < 0 || !(this.mutationPoints.includes(this.nameOfFileToMutate))) {
                                     this.mutationPoints.push(this.nameOfFileToMutate);
 
                                     let mutated = false;
@@ -123,7 +123,7 @@ class XMLViewGroupWidgetChangeTypeOperatorMutator extends Mutator {
         }
     }
 
-    _mutatePrivate() {
+    mutatePrivate() {
         this.mutationPoint = this.mutationPoints[this.currentIndex];
 
         this.previousValue = this.mutationPoint;
@@ -144,7 +144,7 @@ class XMLViewGroupWidgetChangeTypeOperatorMutator extends Mutator {
 
     }
 
-    _restorePrivate() {
+    restorePrivate() {
 
         this.mutationPoint = this.mutationPoint.insertReplace(this.previousValue);
         this.previousValue = undefined;

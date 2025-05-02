@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Query");
 
 class NullifyReturnValue extends Mutator {
@@ -51,7 +51,7 @@ class NullifyReturnValue extends Mutator {
 		}
 	}
 
-	_mutatePrivate() {
+	mutatePrivate() {
 
 		this.mutationPoint = this.mutationPoints[this.currentIndex];
 		this.previousValue = this.mutationPoint;
@@ -65,7 +65,7 @@ class NullifyReturnValue extends Mutator {
 		println("/*--------------------------------------*/");
 
 	}
-	_restorePrivate() {
+	restorePrivate() {
 		// Restore operator
 		println("Restore  prev: " + this.previousValue);
 		println("Restore new: \n" + this.mutationPoint);
