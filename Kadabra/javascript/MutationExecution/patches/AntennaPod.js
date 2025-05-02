@@ -37,7 +37,7 @@ function patchViewBinding(file, method) {
     //method onCreateView
     for(const fieldAccess of Query.searchFrom(file, "method", method).search("fieldAccess", {code: code => code.endsWith(".viewBinding")})) {
         //println("FOUND!\n" + fieldAccess.code)
-        const stmt = fieldAccess.ancestor("statement");
+        const stmt = fieldAccess.getAncestor("statement");
         const stmtCode = stmt.code;
 
         if(stmtCode.startsWith("de.danoeh.antennapod.ui.home.HomeSection.viewBinding")) {

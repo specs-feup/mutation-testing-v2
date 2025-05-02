@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 class FindViewByIdReturnsNullOperatorMutator extends Mutator {
     constructor() {
@@ -20,7 +20,7 @@ class FindViewByIdReturnsNullOperatorMutator extends Mutator {
         ) {
             
             // Do not apply if in a chained call
-            if(joinpoint.ancestor("call") !== undefined) {
+            if(joinpoint.getAncestor("call") !== undefined) {
                 return false;
             }
 

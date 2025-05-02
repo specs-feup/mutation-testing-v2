@@ -1,7 +1,7 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
 
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 /**
  *  @param {joinpoint} joinpoint - Joinpoint used as starting point to search for non void method calls which will be replaced by a hardcoded value.

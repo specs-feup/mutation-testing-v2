@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 laraImport("MutatorUtils");
 
@@ -68,7 +68,7 @@ class InvalidViewFocusOperatorMutator extends Mutator {
 
         this.mutationPoint = this.mutationPoints[this.currentIndex];
         //println("Mutation point: " + this.mutationPoint.code)
-        const stmt = this.mutationPoint.isStatement ? this.mutationPoint : this.mutationPoint.ancestor("statement");
+        const stmt = this.mutationPoint.isStatement ? this.mutationPoint : this.mutationPoint.getAncestor("statement");
         //println("Mutation point statement: " + stmt.ast)
 
         // Mutation point is assignment, use left-hand

@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 /**
  *  @param {$joinPoint} $joinPoint - A join point to use as startpoint to search for constructor calls to replace with null.

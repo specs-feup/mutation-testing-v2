@@ -91,7 +91,7 @@ function runTreeAndApplyMetaMutant() {
     //  this.addMuidStatic($jp);
     //}
 
-    var $call = $jp.ancestor("call");
+    var $call = $jp.getAncestor("call");
 
     // Ignore nodes that are children of $call with the name <init>
     if ($call !== undefined && $call.name === "<init>") {
@@ -157,7 +157,7 @@ function runTreeAndApplyMetaMutant() {
         });
 
         const mutationPoint = mutator.getMutationPoint();
-        //println("SRC CODE BEFORE:\n" + mutationPoint.ancestor("statement"))
+        //println("SRC CODE BEFORE:\n" + mutationPoint.getAncestor("statement"))
 
         // Mutate
         println(
@@ -173,7 +173,7 @@ function runTreeAndApplyMetaMutant() {
         } else {
           var mutated = mutator.getMutationPoint().isStatement
             ? mutator.getMutationPoint()
-            : mutator.getMutationPoint().ancestor("statement");
+            : mutator.getMutationPoint().getAncestor("statement");
 
           if (
             mutated === undefined &&
@@ -184,7 +184,7 @@ function runTreeAndApplyMetaMutant() {
 
           // If case, get corresponding switch
           if (mutated.instanceOf("case")) {
-            mutated = mutated.ancestor("switch");
+            mutated = mutated.getAncestor("switch");
             if (mutated === undefined) {
               throw (
                 "Could not get corresponding 'switch' of case '" + mutated + "'"
@@ -193,7 +193,7 @@ function runTreeAndApplyMetaMutant() {
           }
 
           println("Mutated: " + mutated.code);
-          var tryStmt = mutated.ancestor("try");
+          var tryStmt = mutated.getAncestor("try");
           //println("TryStmt: " + tryStmt);
           if (tryStmt !== undefined) {
             mutated = tryStmt;
@@ -204,7 +204,7 @@ function runTreeAndApplyMetaMutant() {
         const breakCode = MutatorUtils.isReturningStmt(mutated)
           ? ""
           : "break;\n";
-        //println("SRC CODE AFTER MUTATION:\n" + mutationPoint.ancestor("statement"))
+        //println("SRC CODE AFTER MUTATION:\n" + mutationPoint.getAncestor("statement"))
         //print(mutator.toJson());
 
         if (needElseIf) {
@@ -285,7 +285,7 @@ function runTreeAndApplyMetaMutant() {
 
         mutator.restore();
 
-        //println("SRC CODE AFTER RESTORE:\n" + mutationPoint.ancestor("statement"))
+        //println("SRC CODE AFTER RESTORE:\n" + mutationPoint.getAncestor("statement"))
       }
     }
 

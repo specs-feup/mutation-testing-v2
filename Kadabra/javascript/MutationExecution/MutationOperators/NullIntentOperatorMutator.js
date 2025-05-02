@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 class NullIntentOperatorMutator extends Mutator {
     constructor() {
@@ -18,7 +18,7 @@ class NullIntentOperatorMutator extends Mutator {
 
         if (joinpoint != undefined) {
             // If part of a member call, do not apply
-            if(joinpoint.ancestor("call") !== undefined) {
+            if(joinpoint.getAncestor("call") !== undefined) {
                 return false;
             }
 

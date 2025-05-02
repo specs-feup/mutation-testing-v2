@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+laraImport("weaver.Query");
 laraImport("weaver.Weaver");
 /**
  *  @param {joinpoint} joinpoint - Joinpoint used as starting point to search for methods whose return value will be mutated.
@@ -44,7 +44,7 @@ class ReturnValueMutator extends Mutator {
 			}
 
 			// Store return statement for later modification
-			let methodReturn = WeaverJps.searchFrom(joinpoint, 'return').first();
+			let methodReturn = Query.searchFrom(joinpoint, 'return').first();
 			if (methodReturn != undefined || methodReturn != null) {
 				this.mutationPoints.push([methodReturn, mutationValue]);
 			}

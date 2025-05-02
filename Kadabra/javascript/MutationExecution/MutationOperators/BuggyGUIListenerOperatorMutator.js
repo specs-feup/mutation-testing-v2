@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 
 class BuggyGUIListenerOperatorMutator extends Mutator {
@@ -20,7 +20,7 @@ class BuggyGUIListenerOperatorMutator extends Mutator {
         if (
             joinpoint.type === "OnClickListener" && joinpoint.instanceOf('expression') && !joinpoint.instanceOf('var') 
             // This is to ensure it works on MutantSchemata
-            && joinpoint.ancestor("statement") !== undefined 
+            && joinpoint.getAncestor("statement") !== undefined 
         ) {
             this.mutationPoints.push(joinpoint);
         }

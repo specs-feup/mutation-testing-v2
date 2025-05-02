@@ -1,6 +1,6 @@
 laraImport("lara.mutation.Mutator");
 laraImport("kadabra.KadabraNodes");
-laraImport("weaver.WeaverJps");
+
 laraImport("weaver.Weaver");
 
 class BinaryMutator extends Mutator {
@@ -35,7 +35,7 @@ class BinaryMutator extends Mutator {
       !(joinpoint.type === "char") &&
       !(joinpoint.rhs.type === "char") &&
       !(joinpoint.lhs.type === "char") &&
-      joinpoint.ancestor("statement") !== undefined // To ensure we get a mutation point. Schemata specific.
+      joinpoint.getAncestor("statement") !== undefined // To ensure we get a mutation point. Schemata specific.
     ) {
       if (
         this.arithmeticOperators.contains(this.original) &&
