@@ -1,13 +1,11 @@
-laraImport("lara.mutation.Mutator");
-laraImport("kadabra.KadabraNodes");
-
-laraImport("weaver.Weaver");
-laraImport("lara.util.Random");
+import Mutator from "@specs-feup/lara/api/lara/mutation/Mutator.js";
+import Random from "@specs-feup/lara/api/lara/util/Random.js";
+import { println } from "@specs-feup/lara/api/core/output.js";
 
 /**
  *  @param {$joinPoint} $joinPoint - A join point to use as starting point to search for conditionals to insert '!'.
  */
-class ConditionalExpressionReplacementOperatorMutator extends Mutator {
+export default class ConditionalExpressionReplacementOperatorMutator extends Mutator {
     //Parent constructor
     constructor(seed) {
 

@@ -1,12 +1,11 @@
-laraImport("lara.Io");
-laraImport("lara.Strings");
-laraImport("weaver.Query");
-laraImport("weaver.Script");
-laraImport("kadabra.KadabraNodes");
-laraImport("MutationOperators.*");
-laraImport("MutatorList");
-laraImport("Decomposition");
-laraImport("MutatorUtils");
+import Io from "@specs-feup/lara/api/lara/Io.js";
+import Query from "@specs-feup/lara/api/weaver/Query.js";
+import Script from "@specs-feup/lara/api/weaver/Script.js";
+import { MutatorList } from "./MutatorList.js";
+import { Decomposition } from "./Decomposition.js";
+import MutatorUtils from "./MutatorUtils.js";
+import { setDebug, debug } from "@specs-feup/lara/api/lara/core/LaraCore.js";
+import { println } from "@specs-feup/lara/api/core/output.js";
 
 const outputPath = laraArgs.outputPath;
 const filePath = laraArgs.filePath;

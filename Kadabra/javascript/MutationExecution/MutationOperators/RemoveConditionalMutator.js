@@ -1,12 +1,10 @@
-laraImport("lara.mutation.Mutator");
-laraImport("kadabra.KadabraNodes");
-laraImport("weaver.Query");
-laraImport("weaver.Weaver");
+import Mutator from "@specs-feup/lara/api/lara/mutation/Mutator.js";
+import { println } from "@specs-feup/lara/api/core/output.js";
+
 /**
  *  @param {$joinpoint} $joinpoint - Joinpoint used as starting point to search for if clauses whose condition will be replaced by true.
  */
-
-class RemoveConditionalMutator extends Mutator {
+export default class RemoveConditionalMutator extends Mutator {
 	constructor() {
 		//Parent constructor
 		super("RemoveConditionalMutator");

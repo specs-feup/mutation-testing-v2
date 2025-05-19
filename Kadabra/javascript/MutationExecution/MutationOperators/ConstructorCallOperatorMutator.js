@@ -1,11 +1,10 @@
-laraImport("lara.mutation.Mutator");
-laraImport("kadabra.KadabraNodes");
+import Mutator from "@specs-feup/lara/api/lara/mutation/Mutator.js";
+import { println } from "@specs-feup/lara/api/core/output.js";
 
-laraImport("weaver.Weaver");
 /**
  *  @param {$joinPoint} $joinPoint - A join point to use as startpoint to search for constructor calls to replace with null.
  */
-class ConstructorCallOperatorMutator extends Mutator {
+export default class ConstructorCallOperatorMutator extends Mutator {
 	//Parent constructor
 	constructor() {
 		super("ConstructorCallOperatorMutator");

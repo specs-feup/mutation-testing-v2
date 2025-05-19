@@ -1,9 +1,7 @@
-laraImport("lara.mutation.Mutator");
-laraImport("kadabra.KadabraNodes");
+import Mutator from "@specs-feup/lara/api/lara/mutation/Mutator.js";
+import { println } from "@specs-feup/lara/api/core/output.js";
 
-laraImport("weaver.Weaver");
-
-class InvalidKeyIntentOperatorMutator extends Mutator {
+export default class InvalidKeyIntentOperatorMutator extends Mutator {
     constructor() {
         super("InvalidKeyIntentOperatorMutator");
 

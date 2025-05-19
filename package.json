@@ -1,0 +1,10 @@
+{
+    "name": "@specs-feup/mutation-testing-v2",
+    "version": "1.0.0",
+    "author": "L. Sousa",
+    "description": "",
+    "type": "module",
+    "dependencies": {
+        "@specs-feup/kadabra": "next"
+    }
+}

@@ -1,10 +1,8 @@
-laraImport("lara.mutation.Mutator");
-laraImport("kadabra.KadabraNodes");
+import Mutator from "@specs-feup/lara/api/lara/mutation/Mutator.js";
+import Random from "@specs-feup/lara/api/lara/util/Random.js";
+import { println } from "@specs-feup/lara/api/core/output.js";
 
-laraImport("weaver.Weaver");
-laraImport("lara.util.Random");
-
-class InvalidMethodCallArgumentOperatorMutator extends Mutator {
+export default class InvalidMethodCallArgumentOperatorMutator extends Mutator {
     constructor(seed) {
         super("InvalidMethodCallArgumentOperatorMutator");
 

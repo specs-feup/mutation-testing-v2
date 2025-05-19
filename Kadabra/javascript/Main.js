@@ -1,9 +1,9 @@
-laraImport("lara.Io");
-laraImport("lara.Strings");
-laraImport("weaver.Query");
-laraImport("weaver.WeaverOptions");
-laraImport("Arguments");
-laraImport("weaver.Weaver");
+import Io from "@specs-feup/lara/api/lara/Io.js";
+import WeaverOptions from "@specs-feup/lara/api/weaver/WeaverOptions.js";
+import Arguments from "./Arguments.js";
+import Weaver from "@specs-feup/lara/api/weaver/Weaver.js";
+import { setDebug } from "@specs-feup/lara/api/lara/core/LaraCore.js";
+import { println } from "@specs-feup/lara/api/core/output.js";
 
 var contextFolder = WeaverOptions.getData().getContextFolder();
 

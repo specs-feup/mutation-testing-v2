@@ -1,9 +1,7 @@
-laraImport("lara.mutation.Mutator");
-laraImport("kadabra.KadabraNodes");
+import Mutator from "@specs-feup/lara/api/lara/mutation/Mutator.js";
+import { println } from "@specs-feup/lara/api/core/output.js";
 
-laraImport("weaver.Weaver");
-
-class UnaryMutator extends Mutator {
+export default class UnaryMutator extends Mutator {
     constructor(original, result) {
         super("UnaryMutator")
         this.original = original;

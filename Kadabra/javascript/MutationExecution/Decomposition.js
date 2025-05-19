@@ -1,6 +1,7 @@
-laraImport("kadabra.KadabraNodes");
+import { KadabraNodes } from "@specs-feup/kadabra/api/kadabra/KadabraNodes.js";
+import Query from "@specs-feup/lara/api/weaver/Query.js";
 
-function changeVarDeclarations() {
+export function changeVarDeclarations() {
   for (var jp of Query.root().descendants) {
     if (
       jp.instanceOf("localVariable") &&
@@ -30,5 +31,5 @@ function changeVarDeclarations() {
 }
 
 // To avoid a warning, and follow the convention that a JS file of a given name exposes a variable with the same name
-const Decomposition = {};
+export const Decomposition = {};
 Decomposition.changeVarDeclarations = changeVarDeclarations;

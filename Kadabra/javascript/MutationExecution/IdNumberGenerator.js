@@ -1,4 +1,4 @@
-class IdNumberGenerator {
+export default class IdNumberGenerator {
 
     #base
     #multiplier

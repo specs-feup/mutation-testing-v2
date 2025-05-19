@@ -1,4 +1,4 @@
-class MutatorUtils {
+export default class MutatorUtils {
   /**
    *
    * @param {*} stmt

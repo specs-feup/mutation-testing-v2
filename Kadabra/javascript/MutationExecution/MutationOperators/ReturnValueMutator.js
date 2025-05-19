@@ -1,14 +1,14 @@
-laraImport("lara.mutation.Mutator");
-laraImport("kadabra.KadabraNodes");
-laraImport("weaver.Query");
-laraImport("weaver.Weaver");
+import Mutator from "@specs-feup/lara/api/lara/mutation/Mutator.js";
+import Query from "@specs-feup/lara/api/weaver/Query.js";
+import { println } from "@specs-feup/lara/api/core/output.js";
+
 /**
  *  @param {joinpoint} joinpoint - Joinpoint used as starting point to search for methods whose return value will be mutated.
  *  Return value mutations:
  *  - If method type is primitive INT, SHORT, LONG, CHAR, FLOAT or DOUBLE, return value is replaced with 0.
  *  - If method type is primitive or boxed BOOLEAN, return value is replaced by true.
  */
-class ReturnValueMutator extends Mutator {
+export default class ReturnValueMutator extends Mutator {
 
 	constructor() {
 		//Parent constructor

@@ -1,11 +1,9 @@
-laraImport("lara.mutation.Mutator");
-laraImport("kadabra.KadabraNodes");
+import Mutator from "@specs-feup/lara/api/lara/mutation/Mutator.js";
+import Random from "@specs-feup/lara/api/lara/util/Random.js";
+import MutatorUtils from "../MutatorUtils.js";
+import { println } from "@specs-feup/lara/api/core/output.js";
 
-laraImport("weaver.Weaver");
-laraImport("lara.util.Random");
-laraImport("MutatorUtils");
-
-class RandomActionIntentDefinitionOperatorMutator extends Mutator {
+export default class RandomActionIntentDefinitionOperatorMutator extends Mutator {
     constructor(seed) {
         super("RandomActionIntentDefinitionOperatorMutator");
 

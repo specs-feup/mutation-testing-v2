@@ -1,8 +1,7 @@
-laraImport("lara.mutation.Mutator");
-laraImport("kadabra.KadabraNodes");
+import Mutator from "@specs-feup/lara/api/lara/mutation/Mutator.js";
+import { KadabraNodes } from "@specs-feup/kadabra/api/kadabra/KadabraNodes.js";
+import { println } from "@specs-feup/lara/api/core/output.js";
 
-
-laraImport("weaver.Weaver");
 /**
  *  @param {joinpoint} joinpoint - Joinpoint used as starting point to search for non void method calls which will be replaced by a hardcoded value.
  *  Method call mutations:
@@ -12,7 +11,7 @@ laraImport("weaver.Weaver");
  *  - If method type is primitive CHAR, method call is replaced by '\u0000'.
  *  - If method type is non of the above, method call is replaced by null.
  */
-class NonVoidCallMutator extends Mutator {
+export default class NonVoidCallMutator extends Mutator {
 	constructor() {
 		//Parent constructor
 		super("NonVoidCallMutator");

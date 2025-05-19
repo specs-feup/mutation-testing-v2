@@ -1,18 +1,19 @@
 
-laraImport("IntentTargetReplacementOperatorMutator");
+import IntentTargetReplacementOperatorMutator from "./Kadabra/javascript/MutationExecution/MutationOperators/IntentTargetReplacementOperatorMutator.js";
 
-laraImport("InvalidMethodCallArgumentOperatorMutator");
-laraImport("RemoveConditionalMutator");
-laraImport("NullIntentOperatorMutator");
-laraImport("BinaryMutator");
-laraImport("ReturnValueMutator");
-laraImport("NullifyReturnValue");
-laraImport("ConditionalExpressionReplacementOperatorMutator");
+import InvalidMethodCallArgumentOperatorMutator from "./Kadabra/javascript/MutationExecution/MutationOperators/InvalidMethodCallArgumentOperatorMutator.js";
+import RemoveConditionalMutator from "./Kadabra/javascript/MutationExecution/MutationOperators/RemoveConditionalMutator.js";
+import NullIntentOperatorMutator from "./Kadabra/javascript/MutationExecution/MutationOperators/NullIntentOperatorMutator.js";
+import BinaryMutator from "./Kadabra/javascript/MutationExecution/MutationOperators/BinaryMutator.js";
+import ReturnValueMutator from "./Kadabra/javascript/MutationExecution/MutationOperators/ReturnValueMutator.js";
+import NullifyReturnValue from "./Kadabra/javascript/MutationExecution/MutationOperators/NullifyReturnValue.js";
+import ConditionalExpressionReplacementOperatorMutator from "./Kadabra/javascript/MutationExecution/MutationOperators/ConditionalExpressionReplacementOperatorMutator.js";
 
-
-laraImport("lara.Io");
-laraImport("weaver.Query");
-laraImport("kadabra.KadabraNodes");
+import Io from "@specs-feup/lara/api/lara/Io.js";
+import Query from "@specs-feup/lara/api/weaver/Query.js";
+import { KadabraNodes } from "@specs-feup/kadabra/api/kadabra/KadabraNodes.js";
+import { debug } from "@specs-feup/lara/api/lara/core/LaraCore.js";
+import { println } from "@specs-feup/lara/api/core/output.js";
 
 
 
