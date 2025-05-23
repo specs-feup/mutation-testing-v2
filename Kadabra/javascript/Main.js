@@ -7,6 +7,8 @@ import { println } from "@specs-feup/lara/api/core/output.js";
 
 var contextFolder = WeaverOptions.getData().getContextFolder();
 
+const laraArgs = Weaver.laraArgs;
+
 // Support for paths relative to the configuration file
 const projectPaths = parsePathList(contextFolder, laraArgs.projectPath);
 
@@ -133,8 +135,8 @@ function main() {
     //filesToUse = getFilesToUse();
 
     //Creates the arguments for each kadabra parallel execution
-    for (i in filesToUse) {
-      args = {
+    for (let i in filesToUse) {
+      let args = {
         outputPath: outputPath.trim(),
         filePath: filesToUse[i].toString(),
         projectPath: projectPath,
@@ -177,14 +179,14 @@ function main() {
 function filterFiles(filesToUsePerProjectUnfiltered) {
   const filteredProjectFiles = {};
 
-  for (key in filesToUsePerProjectUnfiltered) {
+  for (let key in filesToUsePerProjectUnfiltered) {
     const files = filesToUsePerProjectUnfiltered[key];
     const filteredFiles = [];
 
     // If include list is set, only consider those files
     const acceptedFiles = includedFiles(files);
 
-    for (file of acceptedFiles) {
+    for (let file of acceptedFiles) {
       if (excludeFile(file)) {
         println(
           "Excluding file '" +

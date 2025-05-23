@@ -1,11 +1,14 @@
 import Io from "@specs-feup/lara/api/lara/Io.js";
 import Strings from "@specs-feup/lara/api/lara/Strings.js";
 import Query from "@specs-feup/lara/api/weaver/Query.js";
+import Weaver from "@specs-feup/lara/api/weaver/Weaver.js";
 import Script from "@specs-feup/lara/api/weaver/Script.js";
 import { mutatorList } from "./MutatorList.js";
 import { changeVarDeclarations } from "./Decomposition.js";
 import { setDebug, debug } from "@specs-feup/lara/api/lara/core/LaraCore.js";
 import { println } from "@specs-feup/lara/api/core/output.js";
+
+const laraArgs = Weaver.laraArgs;
 
 const outputPath = laraArgs.outputPath;
 const filePath = laraArgs.filePath;

@@ -49,6 +49,8 @@ import XMLTextViewWidgetDeletionOperatorMutator from "./MutationOperators/XMLTex
 import XMLViewGroupWidgetChangeTypeOperatorMutator from "./MutationOperators/XMLViewGroupWidgetChangeTypeOperatorMutator.js";
 import XMLViewGroupWidgetInvisibleOperatorMutator from "./MutationOperators/XMLViewGroupWidgetInvisibleOperatorMutator.js";
 
+import Weaver from "@specs-feup/lara/api/weaver/Weaver.js";
+
 const classes = {
   AssignmentOperatorMutator,
   BinaryMutator,
@@ -105,6 +107,7 @@ const classes = {
 // To avoid a warning, and follow the convention that a JS file of a given name exposes a variable with the same name
 export const MutatorList = {};
 
+const laraArgs = Weaver.laraArgs;
 
 MutatorList.getMutators = function() {
   let operatorNameList = laraArgs.operatorNameList;
