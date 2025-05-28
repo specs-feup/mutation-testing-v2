@@ -1,9 +1,7 @@
-laraImport("lara.mutation.Mutator");
-laraImport("kadabra.KadabraNodes");
+import Mutator from "@specs-feup/lara/api/lara/mutation/Mutator.js";
+import { println } from "@specs-feup/lara/api/core/output.js";
 
-laraImport("weaver.Weaver");
-
-class NotSerializableOperatorMutator extends Mutator {
+export default class NotSerializableOperatorMutator extends Mutator {
     constructor() {
         super("NotSerializableOperatorMutator");
 

@@ -1,4 +1,6 @@
-class Arguments {
+import Io from "@specs-feup/lara/api/lara/Io.js";
+
+export default class Arguments {
   constructor(
     outputFolder,
     args,

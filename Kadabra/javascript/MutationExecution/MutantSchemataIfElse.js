@@ -1,12 +1,15 @@
-laraImport("lara.Io");
-laraImport("lara.Strings");
-laraImport("weaver.Query");
-laraImport("weaver.Script");
-laraImport("kadabra.KadabraNodes");
-laraImport("MutationOperators.*");
-laraImport("MutatorList");
-laraImport("Decomposition");
-laraImport("MutatorUtils");
+import Io from "@specs-feup/lara/api/lara/Io.js";
+import Query from "@specs-feup/lara/api/weaver/Query.js";
+import Weaver from "@specs-feup/lara/api/weaver/Weaver.js";
+import Script from "@specs-feup/lara/api/weaver/Script.js";
+import { KadabraNodes } from "@specs-feup/kadabra/api/kadabra/KadabraNodes.js";
+import { MutatorList } from "./MutatorList.js";
+import { Decomposition } from "./Decomposition.js";
+import MutatorUtils from "./MutatorUtils.js";
+import { setDebug, debug } from "@specs-feup/lara/api/lara/core/LaraCore.js";
+import { println } from "@specs-feup/lara/api/core/output.js";
+
+const laraArgs = Weaver.laraArgs;
 
 // ToDo: This should be a class with instance variables, not a script with global variables
 const outputPath = laraArgs.outputPath;

@@ -1,9 +1,8 @@
-laraImport("lara.mutation.Mutator");
-laraImport("kadabra.KadabraNodes");
+import Mutator from "@specs-feup/lara/api/lara/mutation/Mutator.js";
+import { debug } from "@specs-feup/lara/api/lara/core/LaraCore.js";
+import { println } from "@specs-feup/lara/api/core/output.js";
 
-laraImport("weaver.Weaver");
-
-class IntentPayloadReplacementOperatorMutator extends Mutator {
+export default class IntentPayloadReplacementOperatorMutator extends Mutator {
     constructor() {
         super("IntentPayloadReplacementOperatorMutator");
 

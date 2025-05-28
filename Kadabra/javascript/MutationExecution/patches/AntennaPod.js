@@ -1,4 +1,5 @@
-laraImport("weaver.Query")
+import Query from "@specs-feup/lara/api/weaver/Query.js";
+import { println } from "@specs-feup/lara/api/core/output.js";
 
 /**
  * Specific patches for the Aegis project.

@@ -1,8 +1,6 @@
-laraImport("lara.mutation.Mutator");
-laraImport("kadabra.KadabraNodes");
-
-laraImport("weaver.Weaver");
-laraImport("MutatorUtils");
+import Mutator from "@specs-feup/lara/api/lara/mutation/Mutator.js";
+import MutatorUtils from "../MutatorUtils.js";
+import { println } from "@specs-feup/lara/api/core/output.js";
 
 /***
  * TODO: This operator seems to not be working, is taking certain assumptions with the code and is not making the necessary verifications.
@@ -12,7 +10,7 @@ laraImport("MutatorUtils");
  * - Is not verifying if the call is the return value of the assign statement
  * - Mutation is also not correct since it is inserting code  after, and not replacing the mutation point (or statement of the point) itself
  */
-class InvalidViewFocusOperatorMutator extends Mutator {
+export default class InvalidViewFocusOperatorMutator extends Mutator {
     constructor() {
         super("InvalidViewFocusOperatorMutator");
 

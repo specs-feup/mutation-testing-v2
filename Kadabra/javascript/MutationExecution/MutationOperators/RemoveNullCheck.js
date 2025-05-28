@@ -1,9 +1,7 @@
-laraImport("lara.mutation.Mutator");
-laraImport("kadabra.KadabraNodes");
+import Mutator from "@specs-feup/lara/api/lara/mutation/Mutator.js";
+import { println } from "@specs-feup/lara/api/core/output.js";
 
-laraImport("weaver.Query");
-
-class RemoveNullCheck extends Mutator {
+export default class RemoveNullCheck extends Mutator {
 	constructor() {
 		//Parent constructor
 		super("RemoveNullCheck")

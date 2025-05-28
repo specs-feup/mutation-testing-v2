@@ -1,9 +1,8 @@
-laraImport("lara.mutation.Mutator");
-laraImport("kadabra.KadabraNodes");
-laraImport("weaver.Query");
-laraImport("weaver.Weaver");
+import Mutator from "@specs-feup/lara/api/lara/mutation/Mutator.js";
+import { debug } from "@specs-feup/lara/api/lara/core/LaraCore.js";
+import { println } from "@specs-feup/lara/api/core/output.js";
 
-class AssignmentOperatorMutator extends Mutator {
+export default class AssignmentOperatorMutator extends Mutator {
     constructor(original, result) {
         super("AssignmentOperatorMutator");
 
